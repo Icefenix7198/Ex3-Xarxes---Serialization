@@ -25,7 +25,7 @@ public class ServerUDP : MonoBehaviour
     public Socket userSocket;
     public EndPoint userRemote;
 
-    List<UserUDP> userSocketsList;
+    public List<UserUDP> userSocketsList;
     public TMP_InputField insertNameServer;
 
     public struct UserUDP
@@ -141,28 +141,29 @@ public class ServerUDP : MonoBehaviour
             //TO DO 4
             //When our UDP server receives a message from a random remote, it has to send a ping,
             //Call a send thread
-            Thread newConnection = new Thread(() => Send(serverText));
+            Thread newConnection = new Thread(() => Send(Encoding.ASCII.GetBytes(serverText)));
             newConnection.Start();
 
         }
     }
 
-    public void Send(string message = "PING")
+    public void Send(byte[] data, int ID = -1)
     {
         foreach (var scoketsUser in userSocketsList)
         {
             //TO DO 4
             //Use socket.SendTo to send a ping using the remote we stored earlier.
-            byte[] data = new byte[1024];
+            //byte[] data = new byte[1024];
 
-            if (passScene.firstConnection == true)
+            //if (passScene.firstConnection == true)
+            //{
+            //    message = "\n" + "Server: " + serverName;
+            //}
+
+            if(scoketsUser.NetID != ID) //Para mandar el mensaje a todo usar ID = -1
             {
-                message = "\n" + "Server: " + serverName;
+                scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
             }
-
-            data = Encoding.ASCII.GetBytes(message);
-
-            scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
 
             if (passScene != null && passScene.firstConnection)
             {
@@ -173,7 +174,5 @@ public class ServerUDP : MonoBehaviour
                 passScene.firstConnection = false;
             }
         }
-
-        serverText = message;
     }
 }
