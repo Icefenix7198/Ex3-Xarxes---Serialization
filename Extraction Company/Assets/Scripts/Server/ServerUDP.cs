@@ -30,9 +30,10 @@ public class ServerUDP : MonoBehaviour
 
     public struct UserUDP
     {
-        public string name;
         public EndPoint Remote;
         public Socket socket;
+
+        public uint NetID;
     }
 
     void Start()

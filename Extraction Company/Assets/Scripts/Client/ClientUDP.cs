@@ -138,6 +138,8 @@ public class ClientUDP : MonoBehaviour
                 passSceneManager.client = true;
                 passSceneManager.clientUDP = true;
                 passSceneManager.firstConnection = false;
+
+                //Hacer CreatePlayer!
             }
         }
     }
