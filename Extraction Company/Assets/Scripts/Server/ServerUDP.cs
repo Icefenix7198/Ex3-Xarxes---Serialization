@@ -21,8 +21,6 @@ public class ServerUDP : MonoBehaviour
 
     public GameObject connected;
     public GameObject noConnected;
-    public GameObject connectedTCP;
-    bool enableServer = false;
 
     public Socket userSocket;
     public EndPoint userRemote;
@@ -45,6 +43,9 @@ public class ServerUDP : MonoBehaviour
         if(UItextObj != null)
             UItext = UItextObj.GetComponent<TextMeshProUGUI>();
 
+        DontDestroyOnLoad(this.gameObject);
+
+        startServer();
     }
     public void startServer()
     {
@@ -84,17 +85,10 @@ public class ServerUDP : MonoBehaviour
     {
         if (UItextObj != null)
             UItext.text = serverText;
-
-        if (Input.GetKeyDown(KeyCode.U) && !enableServer && !connectedTCP.active)
-        {
-            startServer();
-            enableServer = true;
-        }
     }
  
     void Receive()
     {
-
         int recv;
         byte[] data = new byte[1024];
 
@@ -114,14 +108,14 @@ public class ServerUDP : MonoBehaviour
 
         while (true)
         {
-
             recv = socket.ReceiveFrom(data, ref Remote);
 
-            if(recv == 0)
+            Debug.Log("HERE");
+
+            if (recv == 0)
             {
                 break;
             }
-
             if (passScene.isConnected == false)
             {
                 //serverText = serverText + "\n" + "Message received from {0}:" + Remote.ToString();
@@ -136,8 +130,10 @@ public class ServerUDP : MonoBehaviour
             u.socket = socket;
             u.Remote = Remote;
 
-            userSocketsList.Add(u);
-
+            if (!userSocketsList.Contains(u))
+            {
+                userSocketsList.Add(u);
+            }
 
             Debug.Log(serverText);
 
@@ -146,6 +142,7 @@ public class ServerUDP : MonoBehaviour
             //Call a send thread
             Thread newConnection = new Thread(() => Send(serverText));
             newConnection.Start();
+
         }
     }
 

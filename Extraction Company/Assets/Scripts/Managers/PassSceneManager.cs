@@ -37,7 +37,7 @@ public class PassSceneManager : MonoBehaviour
             serverObject = this.gameObject;
             DontDestroyOnLoad(serverObject);
 
-            SceneManager.LoadScene("ChatScene");
+            SceneManager.LoadScene("Lobby");
             isConnected = true;
             connected = false;
         }

@@ -15,6 +15,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Sockets/ClientScene.unity
     guid: 7b4fac99401261e4bbd604fcfd00ce81
   - enabled: 1
-    path: Assets/Scenes/Sockets/ChatScene.unity
-    guid: 62b8e337de4e33d44b1153db8ef3673e
+    path: Assets/Scenes/Sockets/Lobby.unity
+    guid: 382c022519a413848af31195361fbd8b
   m_configObjects: {}

@@ -19,10 +19,8 @@ public class ClientUDP : MonoBehaviour
 
     public GameObject connected;
     public GameObject noConnected;
-    public GameObject ConnectedTCP;
-    bool enableServer = false;
 
-    public PassSceneManager passSceneManager;
+    PassSceneManager passSceneManager;
     public TMP_InputField insertNameClient;
     public IPEndPoint ipepServer;
 
@@ -33,7 +31,6 @@ public class ClientUDP : MonoBehaviour
             UItext = UItextObj.GetComponent<TextMeshProUGUI>();
 
         passSceneManager = GetComponent<PassSceneManager>();
-
     }
     public void StartClient()
     {
@@ -69,12 +66,6 @@ public class ClientUDP : MonoBehaviour
     {
         if (UItextObj != null)
             UItext.text = clientText;
-
-        if (Input.GetKeyDown(KeyCode.U) && !enableServer && !ConnectedTCP.active)
-        {
-            StartClient();
-            enableServer = true;
-        }
     }
 
     public void Send()
