@@ -4,6 +4,7 @@ using System.Text;
 using UnityEngine;
 using System.Threading;
 using TMPro;
+using static Serialization;
 
 public class ClientUDP : MonoBehaviour
 {
@@ -90,7 +91,14 @@ public class ClientUDP : MonoBehaviour
         string handshake = "HANDSHAKE";
         data = Encoding.ASCII.GetBytes(handshake);
 
-        server.SendTo(data, data.Length, SocketFlags.None, ipep);
+        Serialization serialization = new Serialization();
+
+        if (!passSceneManager.isConnected)
+        {
+            serialization.serializeCreatePlayer(ActionType.CREATE_PLAYER);
+        }
+
+        //server.SendTo(data, data.Length, SocketFlags.None, ipep);
 
         ////TO DO 5
         ////We'll wait for a server response,

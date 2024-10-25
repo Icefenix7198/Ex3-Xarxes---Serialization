@@ -28,12 +28,14 @@ public class ServerUDP : MonoBehaviour
     public List<UserUDP> userSocketsList;
     public TMP_InputField insertNameServer;
 
+    int[] clientsIdList;
+
     public struct UserUDP
     {
         public EndPoint Remote;
         public Socket socket;
 
-        public uint NetID;
+        public int NetID;
     }
 
     void Start()
@@ -111,21 +113,15 @@ public class ServerUDP : MonoBehaviour
         {
             recv = socket.ReceiveFrom(data, ref Remote);
 
-            Debug.Log("HERE");
-
             if (recv == 0)
             {
                 break;
             }
-            if (passScene.isConnected == false)
-            {
-                //serverText = serverText + "\n" + "Message received from {0}:" + Remote.ToString();
-            }
 
-            if (Encoding.ASCII.GetString(data, 0, recv) != "PING" && serverText != Encoding.ASCII.GetString(data, 0, recv))
-            {
-                serverText = "\n" + Encoding.ASCII.GetString(data, 0, recv);
-            }
+            //if (Encoding.ASCII.GetString(data, 0, recv) != "PING" && serverText != Encoding.ASCII.GetString(data, 0, recv))
+            //{
+            //    serverText = "\n" + Encoding.ASCII.GetString(data, 0, recv);
+            //}
 
             UserUDP u = new UserUDP();
             u.socket = socket;
@@ -133,6 +129,20 @@ public class ServerUDP : MonoBehaviour
 
             if (!userSocketsList.Contains(u))
             {
+                if(clientsIdList.Length > 0)
+                {
+                    int tempID = clientsIdList[clientsIdList.Length - 1];
+                    clientsIdList[tempID] = tempID++;
+                }
+                else
+                {
+                    clientsIdList[0] = 1;
+                }
+
+                u.NetID = clientsIdList[clientsIdList.Length - 1];
+
+                Serialization serialization = new Serialization();
+                serialization.AddId(data, u.NetID);
                 userSocketsList.Add(u);
             }
 
@@ -141,7 +151,7 @@ public class ServerUDP : MonoBehaviour
             //TO DO 4
             //When our UDP server receives a message from a random remote, it has to send a ping,
             //Call a send thread
-            Thread newConnection = new Thread(() => Send(Encoding.ASCII.GetBytes(serverText)));
+            Thread newConnection = new Thread(() => Send(data, u.NetID));
             newConnection.Start();
 
         }

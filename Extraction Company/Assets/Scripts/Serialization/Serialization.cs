@@ -21,23 +21,21 @@ public class Serialization : MonoBehaviour
 
     byte[] bytes;
 
-    public void serializeCreatePlayer(int ID, ActionType action)
+    public void serializeCreatePlayer(ActionType action)
     {
-        int id = ID;
         ActionType type = action;
 
         stream = new MemoryStream();
         BinaryWriter writer = new BinaryWriter(stream);
-        writer.Write(ID);
         writer.Write((int)type);
 
         Debug.Log("serialized!");
         bytes = stream.ToArray();
 
-        Send(bytes, id);
+        Send(bytes);
     }
 
-    public void serializeMovement(int ID, ActionType action, Vector3 movement)
+    public int serializeMovement(int ID, ActionType action, Vector3 movement)
     {
         int id = ID;
         ActionType type = action;
@@ -57,6 +55,8 @@ public class Serialization : MonoBehaviour
         bytes = stream.ToArray();
 
         Send(bytes, id);
+
+        return id;
     }
 
     public void deserialize(byte[] message)
@@ -91,7 +91,7 @@ public class Serialization : MonoBehaviour
         }
     }
 
-        private void Send(byte[] message, int id)
+    private void Send(byte[] message, int id = 0)
     {
         if (c_udp != null)
         {
@@ -112,5 +112,27 @@ public class Serialization : MonoBehaviour
     public void SendToClient(byte[] message, int ID)
     {
         s_udp.Send(message, ID);
+    }
+
+    public byte[] AddId(byte[] message, int id)
+    {
+        stream = new MemoryStream();
+        stream.Write(message, 0, message.Length);
+        BinaryReader reader = new BinaryReader(stream);
+        stream.Seek(0, SeekOrigin.Begin);
+
+        ActionType action = (ActionType)reader.ReadInt32();
+
+        int ID = id;
+
+        stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+        writer.Write(ID);
+        writer.Write((int)action);
+
+        Debug.Log("serialized!");
+        bytes = stream.ToArray();
+
+        return bytes;
     }
 }
