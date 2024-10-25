@@ -12,32 +12,82 @@ public class Serialization : MonoBehaviour
     public enum ActionType
     {
         CREATE_PLAYER,
-        MOVE
+        MOVE,
+        ID
     }
 
     static MemoryStream stream;
-    public ClientUDP c_udp;
-    public ServerUDP s_udp;
+
+    ClientUDP c_udp;
+    public bool isC_udp;
+
+    ServerUDP s_udp;
+    public bool isS_udp;
 
     byte[] bytes;
 
-    public void serializeCreatePlayer(ActionType action)
+    //Scripts
+    CreatePlayer createPlayer;
+
+    private void Start()
     {
-        ActionType type = action;
+        if (isC_udp)
+        {
+            c_udp = new ClientUDP();
+            c_udp = this.GetComponent<ClientUDP>();
+        }
+
+        if (isS_udp)
+        {
+            s_udp = new ServerUDP();
+            s_udp = this.GetComponent<ServerUDP>();
+        }
+    }
+
+    private void Update()
+    {
+        if (isC_udp)
+        {
+            if (createPlayer == null && c_udp.passSceneManager.isConnected)
+            {
+                createPlayer = GameObject.Find("PlayerSpawner").GetComponent<CreatePlayer>();
+            }
+        }
+    }
+
+    public void serializeID(string id)
+    {
+        ActionType type = ActionType.ID;
 
         stream = new MemoryStream();
         BinaryWriter writer = new BinaryWriter(stream);
+        writer.Write(id);
         writer.Write((int)type);
 
         Debug.Log("serialized!");
         bytes = stream.ToArray();
 
-        Send(bytes);
+        Send(bytes, id);
     }
 
-    public int serializeMovement(int ID, ActionType action, Vector3 movement)
+    public void serializeCreatePlayer(string id)
     {
-        int id = ID;
+        ActionType type = ActionType.CREATE_PLAYER;
+
+        stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+        writer.Write(id);
+        writer.Write((int)type);
+
+        Debug.Log("serialized!");
+        bytes = stream.ToArray();
+
+        Send(bytes, id);
+    }
+
+    public string serializeMovement(string ID, ActionType action, Vector3 movement)
+    {
+        string id = ID;
         ActionType type = action;
         float[] move = { movement.x, movement.y, movement.z };
 
@@ -66,8 +116,8 @@ public class Serialization : MonoBehaviour
         BinaryReader reader = new BinaryReader(stream);
         stream.Seek(0, SeekOrigin.Begin);
 
-        int ID = reader.ReadInt32();
-        Debug.Log("ID " + ID.ToString());
+        string ID = reader.ReadString();
+        Debug.Log("ID " + ID);
 
         ActionType action = (ActionType)reader.ReadInt32();
         Debug.Log((int)action);
@@ -75,7 +125,7 @@ public class Serialization : MonoBehaviour
         switch (action)
         {
             case ActionType.CREATE_PLAYER:
-                //Llamar función CreatePlayer(int ID)
+                createPlayer.NewPlayer();
                 break;
             case ActionType.MOVE:
                 float[] moveList = new float[3];
@@ -91,14 +141,14 @@ public class Serialization : MonoBehaviour
         }
     }
 
-    private void Send(byte[] message, int id = 0)
+    private void Send(byte[] message, string id)
     {
-        if (c_udp != null)
+        if (isC_udp)
         {
             SendToServer(bytes);
         }
 
-        if (s_udp != null)
+        if (isS_udp)
         {
             SendToClient(bytes, id);
         }
@@ -109,30 +159,37 @@ public class Serialization : MonoBehaviour
         c_udp.server.SendTo(message, message.Length, SocketFlags.None, c_udp.ipepServer);
     }   
     
-    public void SendToClient(byte[] message, int ID)
+    public void SendToClient(byte[] message, string ID)
     {
         s_udp.Send(message, ID);
     }
 
-    public byte[] AddId(byte[] message, int id)
+    public string TakeID(byte[] message)
     {
         stream = new MemoryStream();
         stream.Write(message, 0, message.Length);
         BinaryReader reader = new BinaryReader(stream);
         stream.Seek(0, SeekOrigin.Begin);
 
+        string ID = reader.ReadString();
+
+        Debug.Log("ID Taked!");
+
+        return ID;
+    }
+
+    public ActionType TakeAction(byte[] message)
+    {
+        stream = new MemoryStream();
+        stream.Write(message, 0, message.Length);
+        BinaryReader reader = new BinaryReader(stream);
+        stream.Seek(0, SeekOrigin.Begin);
+
+        string ID = reader.ReadString();
         ActionType action = (ActionType)reader.ReadInt32();
 
-        int ID = id;
+        Debug.Log("Action Taked!");
 
-        stream = new MemoryStream();
-        BinaryWriter writer = new BinaryWriter(stream);
-        writer.Write(ID);
-        writer.Write((int)action);
-
-        Debug.Log("serialized!");
-        bytes = stream.ToArray();
-
-        return bytes;
+        return action;
     }
 }

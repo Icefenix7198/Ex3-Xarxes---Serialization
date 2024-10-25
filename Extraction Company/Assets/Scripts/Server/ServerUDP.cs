@@ -5,6 +5,8 @@ using UnityEngine;
 using System.Threading;
 using TMPro;
 using System.Collections.Generic;
+using System;
+using static Serialization;
 
 public class ServerUDP : MonoBehaviour
 {
@@ -27,26 +29,29 @@ public class ServerUDP : MonoBehaviour
 
     public List<UserUDP> userSocketsList;
     public TMP_InputField insertNameServer;
+    Serialization serialization;
 
-    int[] clientsIdList;
+    List<string> clientsIdList;
 
     public struct UserUDP
     {
         public EndPoint Remote;
         public Socket socket;
 
-        public int NetID;
+        public string NetID;
     }
 
     void Start()
     {
         userSocketsList = new List<UserUDP>();
+        clientsIdList = new List<String>();
         passScene = GetComponent<PassSceneManager>();
 
         if(UItextObj != null)
             UItext = UItextObj.GetComponent<TextMeshProUGUI>();
 
         DontDestroyOnLoad(this.gameObject);
+        serialization = GetComponent<Serialization>();
 
         startServer();
     }
@@ -123,26 +128,19 @@ public class ServerUDP : MonoBehaviour
             //    serverText = "\n" + Encoding.ASCII.GetString(data, 0, recv);
             //}
 
+            Debug.Log(Encoding.ASCII.GetString(data, 0, recv));
+
             UserUDP u = new UserUDP();
             u.socket = socket;
             u.Remote = Remote;
 
             if (!userSocketsList.Contains(u))
             {
-                if(clientsIdList.Length > 0)
-                {
-                    int tempID = clientsIdList[clientsIdList.Length - 1];
-                    clientsIdList[tempID] = tempID++;
-                }
-                else
-                {
-                    clientsIdList[0] = 1;
-                }
+                string id;
+                id = serialization.TakeID(data);
 
-                u.NetID = clientsIdList[clientsIdList.Length - 1];
-
-                Serialization serialization = new Serialization();
-                serialization.AddId(data, u.NetID);
+                u.NetID = id;
+                clientsIdList.Add(u.NetID);
                 userSocketsList.Add(u);
             }
 
@@ -153,11 +151,10 @@ public class ServerUDP : MonoBehaviour
             //Call a send thread
             Thread newConnection = new Thread(() => Send(data, u.NetID));
             newConnection.Start();
-
         }
     }
 
-    public void Send(byte[] data, int ID = -1)
+    public void Send(byte[] data, string ID = "-1")
     {
         foreach (var scoketsUser in userSocketsList)
         {
@@ -170,9 +167,18 @@ public class ServerUDP : MonoBehaviour
             //    message = "\n" + "Server: " + serverName;
             //}
 
-            if(scoketsUser.NetID != ID) //Para mandar el mensaje a todo usar ID = -1
+            ActionType action =  serialization.TakeAction(data);
+
+            if(action == ActionType.ID || action == ActionType.CREATE_PLAYER)
             {
                 scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
+            }
+            else
+            {
+                if (scoketsUser.NetID != ID) //Para mandar el mensaje a todo usar ID = -1
+                {
+                    scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
+                }
             }
 
             if (passScene != null && passScene.firstConnection)

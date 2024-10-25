@@ -5,6 +5,7 @@ using UnityEngine;
 using System.Threading;
 using TMPro;
 using static Serialization;
+using System;
 
 public class ClientUDP : MonoBehaviour
 {
@@ -17,13 +18,20 @@ public class ClientUDP : MonoBehaviour
     public int port = 9050;
     public string clientName = "DefaultClient";
     public string address = "127.0.0.1";
+    public string clientID;
+
+    bool deserializate;
+    byte[] tempData; 
 
     public GameObject connected;
     public GameObject noConnected;
 
-    PassSceneManager passSceneManager;
+    [SerializeField]
+    public PassSceneManager passSceneManager;
+
     public TMP_InputField insertNameClient;
-    public IPEndPoint ipepServer;
+    public IPEndPoint ipepServer; 
+    Serialization serialization;
 
     // Start is called before the first frame update
     void Start()
@@ -32,6 +40,8 @@ public class ClientUDP : MonoBehaviour
             UItext = UItextObj.GetComponent<TextMeshProUGUI>();
 
         passSceneManager = GetComponent<PassSceneManager>();
+        serialization = GetComponent<Serialization>();
+        deserializate = false;
     }
     public void StartClient()
     {
@@ -67,6 +77,12 @@ public class ClientUDP : MonoBehaviour
     {
         if (UItextObj != null)
             UItext.text = clientText;
+
+        if (deserializate)
+        {
+            serialization.deserialize(tempData);
+            deserializate = false;
+        }
     }
 
     public void Send()
@@ -91,11 +107,11 @@ public class ClientUDP : MonoBehaviour
         string handshake = "HANDSHAKE";
         data = Encoding.ASCII.GetBytes(handshake);
 
-        Serialization serialization = new Serialization();
-
         if (!passSceneManager.isConnected)
         {
-            serialization.serializeCreatePlayer(ActionType.CREATE_PLAYER);
+            string id = System.Guid.NewGuid().ToString();
+            clientID = id;
+            serialization.serializeID(id);
         }
 
         //server.SendTo(data, data.Length, SocketFlags.None, ipep);
@@ -130,13 +146,16 @@ public class ClientUDP : MonoBehaviour
 
             if (recv != 0)
             {
+                deserializate = true;
+                tempData = data;
+
                 if (passSceneManager.isConnected == false)
                 {
                     //clientText = ("Message received from {0}: " + Remote.ToString());
                 }
 
-                clientText = "\n" + Encoding.ASCII.GetString(data, 0, recv);
-                Debug.Log(clientText);
+                //clientText = "\n" + Encoding.ASCII.GetString(data, 0, recv);
+                //Debug.Log(clientText);
             }
 
             if (recv != 0 && passSceneManager.firstConnection)
@@ -151,6 +170,5 @@ public class ClientUDP : MonoBehaviour
             }
         }
     }
-
 }
 

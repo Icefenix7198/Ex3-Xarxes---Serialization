@@ -268,6 +268,7 @@ GameObject:
   - component: {fileID: 452955240}
   - component: {fileID: 452955239}
   - component: {fileID: 452955238}
+  - component: {fileID: 452955242}
   m_Layer: 0
   m_Name: UDP_ClientManager
   m_TagString: Untagged
@@ -282,7 +283,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 452955237}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cebc2a67d30ce7a41908cd2f24e19383, type: 3}
   m_Name: 
@@ -352,6 +353,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &452955242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 452955237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bacf7953de621546aa1fd196a89fc73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isC_udp: 1
+  isS_udp: 0
 --- !u!1 &575459179
 GameObject:
   m_ObjectHideFlags: 0

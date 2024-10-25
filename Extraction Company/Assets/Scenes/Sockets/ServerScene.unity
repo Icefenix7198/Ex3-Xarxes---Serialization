@@ -1635,6 +1635,7 @@ GameObject:
   - component: {fileID: 1437072676}
   - component: {fileID: 1437072678}
   - component: {fileID: 1437072679}
+  - component: {fileID: 1437072680}
   m_Layer: 0
   m_Name: UDP_ServerManager
   m_TagString: Untagged
@@ -1705,7 +1706,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1437072674}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cebc2a67d30ce7a41908cd2f24e19383, type: 3}
   m_Name: 
@@ -1717,6 +1718,20 @@ MonoBehaviour:
   s_udp: {fileID: 1437072676}
   c_tcp: {fileID: 0}
   c_udp: {fileID: 0}
+--- !u!114 &1437072680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1437072674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bacf7953de621546aa1fd196a89fc73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isC_udp: 0
+  isS_udp: 1
 --- !u!1 &1597129216
 GameObject:
   m_ObjectHideFlags: 0
