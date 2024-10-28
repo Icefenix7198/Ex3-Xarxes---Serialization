@@ -159,9 +159,11 @@ public class Serialization : MonoBehaviour
 
         ActionType action = (ActionType)reader.ReadInt32();
 
-
         switch (action)
         {
+            case ActionType.ID:
+                string ID0 = reader.ReadString();
+                break;
             case ActionType.CREATE_PLAYER:
                 string ID1 = reader.ReadString();
                 playerManager.NewPlayer(ID1);
@@ -197,10 +199,16 @@ public class Serialization : MonoBehaviour
                     pList.Add(pServer);
                 }
 
-                playerManager.ClientMove(pServer.ID, pServer.position);
+                string idTmp = pServer.ID;
 
-                pList.RemoveAt(lenghtSize);
-                playerManager.SpawnAllPlayers(pList);
+                if (playerManager.player.playerObj == null && pList.Count > 1)
+                {
+                    pList.RemoveAt(lenghtSize - 1);
+                    playerManager.SpawnAllPlayers(pList);
+                }
+
+                playerManager.NewPlayer(idTmp);
+
                 break;
             default:
                 break;

@@ -8,7 +8,7 @@ public class PlayerManager : MonoBehaviour
 {
     public GameObject playerPref;
     public ClientUDP c_udp;
-    public ClientUDP s_udp;
+    public ServerUDP s_udp;
     public Serialization serialization;
     public GameObject clientParent;
 
@@ -49,7 +49,7 @@ public class PlayerManager : MonoBehaviour
 
         if (s_udp == null)
         {
-            s_udp = GameObject.Find("UDP_Manager").GetComponent<ClientUDP>();
+            s_udp = GameObject.Find("UDP_Manager").GetComponent<ServerUDP>();
         }
     }
 
@@ -76,15 +76,26 @@ public class PlayerManager : MonoBehaviour
                 player.textID = player.playerObj.GetComponent<TextMeshProUGUI>();
                 player.textID.text = playerId;
             }
-            //else
-            //{
-                //Instantiate(playerPref, clientParent.transform);
-            //}
+            else
+            {
+                Instantiate(playerPref, clientParent.transform);
+            }
         }
 
         if(s_udp != null)
         {
+            player = new Player();
+            player.ID = playerId;
+
             GameObject tmp = Instantiate(playerPref, clientParent.transform);
+
+            player.playerObj = tmp;
+
+            player.playerRb = player.playerObj.GetComponent<Rigidbody>();
+            player.playerRb.freezeRotation = true;
+
+            player.textID = player.playerObj.GetComponent<TextMeshProUGUI>();
+            player.textID.text = playerId;
 
             PlayerServer pServer = new PlayerServer();
             pServer.ID = playerId;

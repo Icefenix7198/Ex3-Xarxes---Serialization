@@ -181,10 +181,12 @@ public class ServerUDP : MonoBehaviour
 
             if (action == ActionType.ID || action == ActionType.SPAWN_PLAYERS)
             {
+                scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
+            }
+            else if (action == ActionType.CREATE_PLAYER)
+            {
                 deserializate = true;
                 tempData = data;
-
-                scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
             }
             else
             {
