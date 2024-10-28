@@ -1,0 +1,157 @@
+using System.Collections;
+using System.Collections.Generic;
+using TMPro;
+using UnityEngine;
+using static PlayerManager;
+
+public class PlayerManager : MonoBehaviour
+{
+    public GameObject playerPref;
+    public ClientUDP c_udp;
+    public ClientUDP s_udp;
+    public Serialization serialization;
+    public GameObject clientParent;
+
+    public struct Player
+    {
+        public string name;
+        public string ID;
+        public GameObject playerObj;
+        public Rigidbody playerRb;
+        public TextMeshProUGUI textID;
+    }
+
+    public struct PlayerServer
+    {
+        public string ID;
+        public Vector3 position;
+    }
+
+    public Player player;
+    List<PlayerServer> playerList = new List<PlayerServer>();
+
+    float movementHorizontal;
+    float movementVertical;
+    public float speed;
+    Vector3 movement;
+
+    private void Update()
+    {
+        if (serialization == null)
+        {
+            serialization = GameObject.Find("UDP_Manager").GetComponent<Serialization>();
+        }
+
+        if (c_udp == null)
+        {
+            c_udp = GameObject.Find("UDP_Manager").GetComponent<ClientUDP>();
+        }
+
+        if (s_udp == null)
+        {
+            s_udp = GameObject.Find("UDP_Manager").GetComponent<ClientUDP>();
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        MovePlayer();
+    }
+
+    public void NewPlayer(string playerId)
+    {
+        //Hacer versión para server! El tiene que crear un player, y mandar a dicho cliente que lo ha creado la lista entera de players para que les haga spawn
+        if(c_udp != null)
+        {
+            if (player.playerObj == null)
+            {
+                player = new Player();
+                player.ID = playerId;
+
+                player.playerObj = Instantiate(playerPref, clientParent.transform);
+
+                player.playerRb = player.playerObj.GetComponent<Rigidbody>();
+                player.playerRb.freezeRotation = true;
+
+                player.textID = player.playerObj.GetComponent<TextMeshProUGUI>();
+                player.textID.text = playerId;
+            }
+            //else
+            //{
+                //Instantiate(playerPref, clientParent.transform);
+            //}
+        }
+
+        if(s_udp != null)
+        {
+            GameObject tmp = Instantiate(playerPref, clientParent.transform);
+
+            PlayerServer pServer = new PlayerServer();
+            pServer.ID = playerId;
+            pServer.position = tmp.transform.position;
+
+            playerList.Add(pServer);
+
+            serialization.SendAllPlayers(playerList);
+        }
+
+        Debug.Log("CreatePlayer!");
+    }
+
+    public void CreateNewPlayer()
+    {
+        serialization.serializeCreatePlayer(c_udp.clientID);
+    }
+
+    public void SpawnAllPlayers(List<PlayerServer> pList)
+    {
+        foreach (var pServer in pList) 
+        {
+            GameObject tmpPlayer = Instantiate(playerPref, clientParent.transform);
+            tmpPlayer.transform.position = pServer.position;
+        }
+    }
+
+    public void MovePlayer()
+    {
+        movementHorizontal = Input.GetAxis("Horizontal");
+        movementVertical = Input.GetAxis("Vertical");
+
+        if (movementHorizontal != 0 || movementVertical != 0)
+        {
+            movement = transform.forward * movementVertical + transform.right * movementHorizontal;
+
+            player.playerRb.velocity += movement.normalized * speed;
+
+            serialization.serializeMovement(player.ID, player.playerObj.transform.position);
+        }
+    }
+
+    public void ClientMove(string ID, Vector3 moveTo)
+    {
+        List<GameObject> clientList = new List<GameObject>();
+
+        foreach (Transform child in transform) //Cogemos todos los hijos del padre ClientList
+        {
+            clientList.Add(child.gameObject);
+
+            string idClient = child.gameObject.GetComponent<TextMeshProUGUI>().text;
+
+            if(ID == idClient)
+            {
+                child.gameObject.transform.position = moveTo;
+
+                foreach(var pServer in playerList)
+                {
+                    if(pServer.ID == ID)
+                    {
+                        PlayerServer pTmp = new PlayerServer();
+                        pTmp = pServer;
+                        pTmp.position = moveTo;
+                        playerList.FindIndex(pServer => pServer.Equals(pTmp));
+                    }
+                }
+            }
+        }
+    }
+}

@@ -6,6 +6,7 @@ using UnityEngine.Networking;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using static PlayerManager;
 
 public class Serialization : MonoBehaviour
 {
@@ -13,7 +14,8 @@ public class Serialization : MonoBehaviour
     {
         CREATE_PLAYER,
         MOVE,
-        ID
+        ID,
+        SPAWN_PLAYERS
     }
 
     static MemoryStream stream;
@@ -27,7 +29,7 @@ public class Serialization : MonoBehaviour
     byte[] bytes;
 
     //Scripts
-    CreatePlayer createPlayer;
+    PlayerManager playerManager;
 
     private void Start()
     {
@@ -48,21 +50,28 @@ public class Serialization : MonoBehaviour
     {
         if (isC_udp)
         {
-            if (createPlayer == null && c_udp.passSceneManager.isConnected)
+            if (playerManager == null && c_udp.passSceneManager.isConnected)
             {
-                createPlayer = GameObject.Find("PlayerSpawner").GetComponent<CreatePlayer>();
+                playerManager = GameObject.Find("PlayerSpawner").GetComponent<PlayerManager>();
+            }
+        }
+
+        if (isS_udp)
+        {
+            if (playerManager == null && s_udp.passScene.isConnected)
+            {
+                playerManager = GameObject.Find("PlayerSpawner").GetComponent<PlayerManager>();
             }
         }
     }
-
     public void serializeID(string id)
     {
         ActionType type = ActionType.ID;
 
         stream = new MemoryStream();
         BinaryWriter writer = new BinaryWriter(stream);
-        writer.Write(id);
         writer.Write((int)type);
+        writer.Write(id);
 
         Debug.Log("serialized!");
         bytes = stream.ToArray();
@@ -76,25 +85,57 @@ public class Serialization : MonoBehaviour
 
         stream = new MemoryStream();
         BinaryWriter writer = new BinaryWriter(stream);
-        writer.Write(id);
         writer.Write((int)type);
+        writer.Write(id);
 
         Debug.Log("serialized!");
         bytes = stream.ToArray();
 
         Send(bytes, id);
     }
+    
+    public void SendAllPlayers(List<PlayerServer> playerList)
+    {
+        ActionType type = ActionType.SPAWN_PLAYERS;
 
-    public string serializeMovement(string ID, ActionType action, Vector3 movement)
+        stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+
+        string lastID = "-1";
+
+        writer.Write((int)type);
+        writer.Write(playerList.Count);
+
+        foreach (var a in playerList) //Se guarda ID = ..... move = [x, y, z], ID....
+        {
+            writer.Write(a.ID);
+
+            float[] move = { a.position.x, a.position.y, a.position.z };
+
+            foreach (var b in move)
+            {
+                writer.Write(b);
+            }
+
+            lastID = a.ID;
+        }
+
+        Debug.Log("serialized!");
+        bytes = stream.ToArray();
+
+        Send(bytes, lastID);
+    }
+
+    public string serializeMovement(string ID, Vector3 movement)
     {
         string id = ID;
-        ActionType type = action;
+        ActionType type = ActionType.MOVE;
         float[] move = { movement.x, movement.y, movement.z };
 
         stream = new MemoryStream();
         BinaryWriter writer = new BinaryWriter(stream);
-        writer.Write(ID);
         writer.Write((int)type);
+        writer.Write(ID);
 
         foreach (var i in move)
         {
@@ -116,25 +157,50 @@ public class Serialization : MonoBehaviour
         BinaryReader reader = new BinaryReader(stream);
         stream.Seek(0, SeekOrigin.Begin);
 
-        string ID = reader.ReadString();
-        Debug.Log("ID " + ID);
-
         ActionType action = (ActionType)reader.ReadInt32();
-        Debug.Log((int)action);
+
 
         switch (action)
         {
             case ActionType.CREATE_PLAYER:
-                createPlayer.NewPlayer();
+                string ID1 = reader.ReadString();
+                playerManager.NewPlayer(ID1);
                 break;
             case ActionType.MOVE:
+                string ID2 = reader.ReadString();
                 float[] moveList = new float[3];
                 for (int i = 0; i < moveList.Length; i++)
                 {
                     moveList[i] = reader.ReadInt32();
                 }
                 Vector3 movement = new Vector3(moveList[0], moveList[1], moveList[2]);
-                //Llamar función MovePlayer(int ID, Vector3 movement)
+                playerManager.ClientMove(ID2, movement);
+                break;
+            case ActionType.SPAWN_PLAYERS:
+                int lenghtSize = reader.ReadInt32();
+
+                List<PlayerServer> pList = new List<PlayerServer>();
+
+                PlayerServer pServer = new PlayerServer();
+
+                for (int i = 0; i < lenghtSize; i++)
+                {
+                    pServer.ID = reader.ReadString();
+
+                    float[] moveList1 = new float[3];
+                    for (int a = 0; a < moveList1.Length; a++)
+                    {
+                        moveList1[a] = reader.ReadInt32();
+                    }
+
+                    pServer.position = new Vector3(moveList1[0], moveList1[1], moveList1[2]);
+                    pList.Add(pServer);
+                }
+
+                playerManager.ClientMove(pServer.ID, pServer.position);
+
+                pList.RemoveAt(lenghtSize);
+                playerManager.SpawnAllPlayers(pList);
                 break;
             default:
                 break;
@@ -171,6 +237,7 @@ public class Serialization : MonoBehaviour
         BinaryReader reader = new BinaryReader(stream);
         stream.Seek(0, SeekOrigin.Begin);
 
+        ActionType action = (ActionType)reader.ReadInt32();
         string ID = reader.ReadString();
 
         Debug.Log("ID Taked!");
@@ -185,8 +252,8 @@ public class Serialization : MonoBehaviour
         BinaryReader reader = new BinaryReader(stream);
         stream.Seek(0, SeekOrigin.Begin);
 
-        string ID = reader.ReadString();
         ActionType action = (ActionType)reader.ReadInt32();
+        string ID = reader.ReadString();
 
         Debug.Log("Action Taked!");
 

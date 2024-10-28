@@ -1637,7 +1637,7 @@ GameObject:
   - component: {fileID: 1437072679}
   - component: {fileID: 1437072680}
   m_Layer: 0
-  m_Name: UDP_ServerManager
+  m_Name: UDP_Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

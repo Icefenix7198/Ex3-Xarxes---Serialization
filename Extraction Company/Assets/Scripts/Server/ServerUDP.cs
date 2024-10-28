@@ -33,6 +33,9 @@ public class ServerUDP : MonoBehaviour
 
     List<string> clientsIdList;
 
+    bool deserializate;
+    byte[] tempData;
+
     public struct UserUDP
     {
         public EndPoint Remote;
@@ -93,6 +96,12 @@ public class ServerUDP : MonoBehaviour
     {
         if (UItextObj != null)
             UItext.text = serverText;
+
+        if (deserializate)
+        {
+            serialization.deserialize(tempData);
+            deserializate = false;
+        }
     }
  
     void Receive()
@@ -169,13 +178,17 @@ public class ServerUDP : MonoBehaviour
 
             ActionType action =  serialization.TakeAction(data);
 
-            if(action == ActionType.ID || action == ActionType.CREATE_PLAYER)
+
+            if (action == ActionType.ID || action == ActionType.SPAWN_PLAYERS)
             {
+                deserializate = true;
+                tempData = data;
+
                 scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
             }
             else
             {
-                if (scoketsUser.NetID != ID) //Para mandar el mensaje a todo usar ID = -1
+                if (scoketsUser.NetID != ID) //Este es para mandar a todo el mundo menos él
                 {
                     scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
                 }

@@ -270,7 +270,7 @@ GameObject:
   - component: {fileID: 452955238}
   - component: {fileID: 452955242}
   m_Layer: 0
-  m_Name: UDP_ClientManager
+  m_Name: UDP_Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -335,8 +335,10 @@ MonoBehaviour:
   port: 9050
   clientName: DefaultClient
   address: 127.0.0.1
+  clientID: 
   connected: {fileID: 775684977}
   noConnected: {fileID: 1227874326}
+  passSceneManager: {fileID: 0}
   insertNameClient: {fileID: 636097860}
 --- !u!4 &452955241
 Transform:
