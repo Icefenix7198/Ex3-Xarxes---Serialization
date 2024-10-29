@@ -173,7 +173,7 @@ public class Serialization : MonoBehaviour
                 float[] moveList = new float[3];
                 for (int i = 0; i < moveList.Length; i++)
                 {
-                    moveList[i] = reader.ReadInt32();
+                    moveList[i] = reader.ReadSingle();
                 }
                 Vector3 movement = new Vector3(moveList[0], moveList[1], moveList[2]);
                 playerManager.ClientMove(ID2, movement);
@@ -192,7 +192,7 @@ public class Serialization : MonoBehaviour
                     float[] moveList1 = new float[3];
                     for (int a = 0; a < moveList1.Length; a++)
                     {
-                        moveList1[a] = reader.ReadInt32();
+                        moveList1[a] = reader.ReadSingle();
                     }
 
                     pServer.position = new Vector3(moveList1[0], moveList1[1], moveList1[2]);

@@ -120,6 +120,17 @@ public class PlayerManager : MonoBehaviour
         {
             GameObject tmpPlayer = Instantiate(playerPref, clientParent.transform);
             tmpPlayer.transform.position = pServer.position;
+
+            Player _player = new Player();
+            _player.ID = pServer.ID;
+
+            _player.playerObj = tmpPlayer;
+
+            _player.playerRb = _player.playerObj.GetComponent<Rigidbody>();
+            _player.playerRb.freezeRotation = true;
+
+            _player.textID = _player.playerObj.GetComponent<TextMeshProUGUI>();
+            _player.textID.text = pServer.ID;
         }
     }
 
@@ -142,7 +153,7 @@ public class PlayerManager : MonoBehaviour
     {
         List<GameObject> clientList = new List<GameObject>();
 
-        foreach (Transform child in transform) //Cogemos todos los hijos del padre ClientList
+        foreach (Transform child in clientParent.transform) //Cogemos todos los hijos del padre ClientList
         {
             clientList.Add(child.gameObject);
 
