@@ -78,7 +78,16 @@ public class PlayerManager : MonoBehaviour
             }
             else
             {
-                Instantiate(playerPref, clientParent.transform);
+                Player pTemp = new Player();
+                pTemp.ID = playerId;
+
+                pTemp.playerObj = Instantiate(playerPref, clientParent.transform);
+
+                pTemp.playerRb = pTemp.playerObj.GetComponent<Rigidbody>();
+                pTemp.playerRb.freezeRotation = true;
+
+                pTemp.textID = pTemp.playerObj.GetComponent<TextMeshProUGUI>();
+                pTemp.textID.text = playerId;
             }
         }
 
