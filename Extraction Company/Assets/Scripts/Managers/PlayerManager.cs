@@ -152,7 +152,7 @@ public class PlayerManager : MonoBehaviour
         {
             movement = transform.forward * movementVertical + transform.right * movementHorizontal;
 
-            player.playerRb.velocity += movement.normalized * speed;
+            player.playerRb.velocity += movement.normalized * speed * Time.deltaTime; //We need to add a Delta Time to make sure the speed don't depends on computer processing speed.
 
             serialization.serializeMovement(player.ID, player.playerObj.transform.position);
         }

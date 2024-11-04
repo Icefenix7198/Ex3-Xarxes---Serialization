@@ -99,7 +99,7 @@ public class ServerUDP : MonoBehaviour
 
         if (deserializate)
         {
-            serialization.deserialize(tempData);
+            serialization.Deserialize(tempData);
             deserializate = false;
         }
     }
@@ -146,7 +146,7 @@ public class ServerUDP : MonoBehaviour
             if (!userSocketsList.Contains(u))
             {
                 string id;
-                id = serialization.TakeID(data);
+                id = serialization.ExtractID(data);
 
                 u.NetID = id;
                 clientsIdList.Add(u.NetID);
@@ -165,7 +165,7 @@ public class ServerUDP : MonoBehaviour
 
     public void Send(byte[] data, string ID = "-1")
     {
-        foreach (var scoketsUser in userSocketsList)
+        foreach (var scoketsUser in userSocketsList) //We send the data to each client that collected to the sever
         {
             //TO DO 4
             //Use socket.SendTo to send a ping using the remote we stored earlier.
@@ -176,7 +176,7 @@ public class ServerUDP : MonoBehaviour
             //    message = "\n" + "Server: " + serverName;
             //}
 
-            ActionType action =  serialization.TakeAction(data);
+            ActionType action =  serialization.ExtractAction(data);
 
 
             if (action == ActionType.ID || action == ActionType.SPAWN_PLAYERS)

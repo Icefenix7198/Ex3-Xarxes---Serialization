@@ -12,10 +12,10 @@ public class Serialization : MonoBehaviour
 {
     public enum ActionType
     {
-        CREATE_PLAYER,
-        MOVE,
+        CREATE_PLAYER, //Create Player for new Client
+        MOVE, //Move all players positions
         ID,
-        SPAWN_PLAYERS
+        SPAWN_PLAYERS //Create player in scene for other clients
     }
 
     static MemoryStream stream;
@@ -26,7 +26,7 @@ public class Serialization : MonoBehaviour
     ServerUDP s_udp;
     public bool isS_udp;
 
-    byte[] bytes;
+    byte[] bytes; //ERIC: Esto maybe seria mas correcto escrito como Data
 
     //Scripts
     PlayerManager playerManager;
@@ -48,6 +48,7 @@ public class Serialization : MonoBehaviour
 
     private void Update()
     {
+        //On each frame we check if we connected to assign the player manager. Once we have it assigned we stop trying
         if (isC_udp)
         {
             if (playerManager == null && c_udp.passSceneManager.isConnected)
@@ -73,7 +74,7 @@ public class Serialization : MonoBehaviour
         writer.Write((int)type);
         writer.Write(id);
 
-        Debug.Log("serialized!");
+        Debug.Log("Assign ID serialized!");
         bytes = stream.ToArray();
 
         Send(bytes, id);
@@ -88,12 +89,13 @@ public class Serialization : MonoBehaviour
         writer.Write((int)type);
         writer.Write(id);
 
-        Debug.Log("serialized!");
+        Debug.Log("Create player serialized!");
         bytes = stream.ToArray();
 
         Send(bytes, id);
     }
     
+    //Tell all current existing player
     public void SendAllPlayers(List<PlayerServer> playerList)
     {
         ActionType type = ActionType.SPAWN_PLAYERS;
@@ -120,7 +122,7 @@ public class Serialization : MonoBehaviour
             lastID = a.ID;
         }
 
-        Debug.Log("serialized!");
+        Debug.Log("Send all players serialized!");
         bytes = stream.ToArray();
 
         Send(bytes, lastID);
@@ -142,7 +144,7 @@ public class Serialization : MonoBehaviour
             writer.Write(i);
         }
 
-        Debug.Log("serialized!");
+        Debug.Log("Movement was serialized!");
         bytes = stream.ToArray();
 
         Send(bytes, id);
@@ -150,7 +152,7 @@ public class Serialization : MonoBehaviour
         return id;
     }
 
-    public void deserialize(byte[] message)
+    public void Deserialize(byte[] message)
     {
         stream = new MemoryStream();
         stream.Write(message, 0, message.Length);
@@ -215,6 +217,7 @@ public class Serialization : MonoBehaviour
         }
     }
 
+    //The send is generic as SendToServer only requieres bytes of data and just ignores the ID as the server don't have one.
     private void Send(byte[] message, string id)
     {
         if (isC_udp)
@@ -228,32 +231,35 @@ public class Serialization : MonoBehaviour
         }
     }
 
-    public void SendToServer(byte[] message)
+    //Send from the Client to the server
+    public void SendToServer(byte[] message) 
     {
         c_udp.server.SendTo(message, message.Length, SocketFlags.None, c_udp.ipepServer);
     }   
     
+    //Send from the Server to the Client
     public void SendToClient(byte[] message, string ID)
     {
         s_udp.Send(message, ID);
     }
 
-    public string TakeID(byte[] message)
+    public string ExtractID(byte[] message)
     {
         stream = new MemoryStream();
         stream.Write(message, 0, message.Length);
         BinaryReader reader = new BinaryReader(stream);
         stream.Seek(0, SeekOrigin.Begin);
 
-        ActionType action = (ActionType)reader.ReadInt32();
+        //ActionType action = (ActionType)reader.ReadInt32();
         string ID = reader.ReadString();
 
-        Debug.Log("ID Taked!");
+        Debug.Log("ID Taked! It was:" + ID);
 
         return ID;
     }
 
-    public ActionType TakeAction(byte[] message)
+    //Takes bytes of data and extracts the first bits of information to return the first action type of the string.
+    public ActionType ExtractAction(byte[] message)
     {
         stream = new MemoryStream();
         stream.Write(message, 0, message.Length);
@@ -263,7 +269,7 @@ public class Serialization : MonoBehaviour
         ActionType action = (ActionType)reader.ReadInt32();
         string ID = reader.ReadString();
 
-        Debug.Log("Action Taked!");
+        Debug.Log("Action Taked! It was: " + action);
 
         return action;
     }
