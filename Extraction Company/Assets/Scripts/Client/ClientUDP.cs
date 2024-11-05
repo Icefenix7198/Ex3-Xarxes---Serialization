@@ -141,7 +141,7 @@ public class ClientUDP : MonoBehaviour
             }
             catch
             {
-                //
+                //If there is no message to recive do nothing instead of break
             }
 
             if (recv != 0)
@@ -168,6 +168,14 @@ public class ClientUDP : MonoBehaviour
 
                 //Hacer CreatePlayer!
             }
+        }
+    }
+
+    private void OnApplicationQuit()
+    {
+        foreach (var socketsUser in userSocketsList)
+        {
+            socketsUser.socket.Close();
         }
     }
 }
