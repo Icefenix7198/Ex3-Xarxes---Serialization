@@ -7,6 +7,7 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using static PlayerManager;
+using System.Diagnostics;
 
 public class Serialization : MonoBehaviour
 {
@@ -27,6 +28,7 @@ public class Serialization : MonoBehaviour
     public bool isS_udp;
 
     byte[] bytes; //ERIC: Esto maybe seria mas correcto escrito como Data
+    byte[] chainData; //WIP: All the bytes to send each update, where more than one serialized action is found, separated by a ";;"
 
     //Scripts
     PlayerManager playerManager;
@@ -250,7 +252,7 @@ public class Serialization : MonoBehaviour
         BinaryReader reader = new BinaryReader(stream);
         stream.Seek(0, SeekOrigin.Begin);
 
-        ActionType action = (ActionType)reader.ReadInt32();
+        ActionType action = (ActionType)reader.ReadInt32(); //We exctract the action to have next the ID and be able to read it.
         string ID = reader.ReadString();
 
         Debug.Log("ID Taked! It was:" + ID);
@@ -272,5 +274,24 @@ public class Serialization : MonoBehaviour
         Debug.Log("Action Taked! It was: " + action);
 
         return action;
+    }
+
+    public byte[] AddToSerializeChain(byte[] message)
+    {
+        stream = new MemoryStream();
+        stream.Write(message, 0, message.Length);
+        BinaryReader reader = new BinaryReader(stream);
+        stream.Seek(0, SeekOrigin.Begin);
+
+        string chain = reader.ToString();
+        Debug.Log(chain);
+
+        chain += ";;";
+
+        stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+        writer.Write(chain);
+
+        return stream.ToArray();
     }
 }
