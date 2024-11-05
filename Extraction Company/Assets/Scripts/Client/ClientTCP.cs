@@ -127,12 +127,12 @@ public class ClientTCP : MonoBehaviour
             if (recv != 0)
             {
                 clientText = "\n" + Encoding.ASCII.GetString(data, 0, recv);
-                Debug.Log(clientText);
+                 UnityEngine.Debug.Log(clientText);
             }
 
             if (recv != 0 && passSceneManager.firstConnection)
             {
-                Debug.Log("Pass Scene");
+                 UnityEngine.Debug.Log("Pass Scene");
                 passSceneManager.connected = true;
                 passSceneManager.client = true;
                 passSceneManager.clientTCP = true;

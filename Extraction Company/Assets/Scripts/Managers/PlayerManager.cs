@@ -137,7 +137,7 @@ public class PlayerManager : MonoBehaviour
             serialization.SendAllPlayers(playerList);
         }
 
-        Debug.Log("CreatePlayer!");
+         UnityEngine.Debug.Log("CreatePlayer!");
     }
 
     public void CreateNewPlayer()

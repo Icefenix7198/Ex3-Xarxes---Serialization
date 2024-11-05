@@ -149,7 +149,7 @@ public class ServerTCP : MonoBehaviour
             }
 
             string message = serverText;
-            Debug.Log(message);
+             UnityEngine.Debug.Log(message);
 
             //TO DO 6
             //We'll send a ping back every time a message is received
@@ -180,7 +180,7 @@ public class ServerTCP : MonoBehaviour
 
             if (passScene != null && passScene.firstConnection)
             {
-                Debug.Log("PassScene");
+                 UnityEngine.Debug.Log("PassScene");
                 passScene.connected = true;
                 passScene.server = true;
                 passScene.serverTCP = true;

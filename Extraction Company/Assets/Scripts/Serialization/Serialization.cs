@@ -76,7 +76,7 @@ public class Serialization : MonoBehaviour
         writer.Write((int)type);
         writer.Write(id);
 
-        Debug.Log("Assign ID serialized!");
+        UnityEngine.Debug.Log("Assign ID serialized!");
         bytes = stream.ToArray();
 
         Send(bytes, id);
@@ -91,7 +91,7 @@ public class Serialization : MonoBehaviour
         writer.Write((int)type);
         writer.Write(id);
 
-        Debug.Log("Create player serialized!");
+         UnityEngine.Debug.Log("Create player serialized!");
         bytes = stream.ToArray();
 
         Send(bytes, id);
@@ -124,7 +124,7 @@ public class Serialization : MonoBehaviour
             lastID = a.ID;
         }
 
-        Debug.Log("Send all players serialized!");
+        UnityEngine.Debug.Log("Send all players serialized!");
         bytes = stream.ToArray();
 
         Send(bytes, lastID);
@@ -146,7 +146,7 @@ public class Serialization : MonoBehaviour
             writer.Write(i);
         }
 
-        Debug.Log("Movement was serialized!");
+        UnityEngine.Debug.Log("Movement was serialized!");
         bytes = stream.ToArray();
 
         Send(bytes, id);
@@ -255,7 +255,7 @@ public class Serialization : MonoBehaviour
         ActionType action = (ActionType)reader.ReadInt32(); //We exctract the action to have next the ID and be able to read it.
         string ID = reader.ReadString();
 
-        Debug.Log("ID Taked! It was:" + ID);
+        UnityEngine.Debug.Log("ID Taked! It was:" + ID);
 
         return ID;
     }
@@ -271,7 +271,7 @@ public class Serialization : MonoBehaviour
         ActionType action = (ActionType)reader.ReadInt32();
         string ID = reader.ReadString();
 
-        Debug.Log("Action Taked! It was: " + action);
+         UnityEngine.Debug.Log("Action Taked! It was: " + action);
 
         return action;
     }
@@ -284,7 +284,7 @@ public class Serialization : MonoBehaviour
         stream.Seek(0, SeekOrigin.Begin);
 
         string chain = reader.ToString();
-        Debug.Log(chain);
+         UnityEngine.Debug.Log(chain);
 
         chain += ";;";
 
