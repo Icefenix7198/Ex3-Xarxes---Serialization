@@ -35,6 +35,8 @@ public class PlayerManager : MonoBehaviour
     public float speed;
     Vector3 movement;
 
+    bool passedScene = false;
+
     private void Update()
     {
         if (serialization == null)
@@ -51,11 +53,23 @@ public class PlayerManager : MonoBehaviour
         {
             s_udp = GameObject.Find("UDP_Manager").GetComponent<ServerUDP>();
         }
+
+        MovePlayer();
+        SendMovement();
     }
 
-    private void FixedUpdate()
+    private void SendMovement()
     {
-        MovePlayer();
+        if (passedScene)
+        {
+            if (player.playerObj != null)
+            {
+                if (Mathf.Abs(player.playerRb.velocity.magnitude) > 0)
+                {
+                    serialization.serializeMovement(player.ID, player.playerObj.transform.position);
+                }
+            }
+        }
     }
 
     public void NewPlayer(string playerId)
@@ -75,6 +89,8 @@ public class PlayerManager : MonoBehaviour
 
                 player.textID = player.playerObj.GetComponent<TextMeshProUGUI>();
                 player.textID.text = playerId;
+
+                passedScene = true;
             }
             else
             {
@@ -88,6 +104,12 @@ public class PlayerManager : MonoBehaviour
 
                 pTemp.textID = pTemp.playerObj.GetComponent<TextMeshProUGUI>();
                 pTemp.textID.text = playerId;
+
+                PlayerServer pServer = new PlayerServer();
+                pServer.ID = pTemp.ID;
+                pServer.position = pTemp.playerObj.transform.position;
+
+                playerList.Add(pServer);
             }
         }
 
@@ -152,9 +174,11 @@ public class PlayerManager : MonoBehaviour
         {
             movement = transform.forward * movementVertical + transform.right * movementHorizontal;
 
-            player.playerRb.velocity += movement.normalized * speed * Time.deltaTime; //We need to add a Delta Time to make sure the speed don't depends on computer processing speed.
-
-            serialization.serializeMovement(player.ID, player.playerObj.transform.position);
+            player.playerRb.velocity += movement.normalized * speed * Time.deltaTime;
+        }
+        else
+        {
+            player.playerRb.velocity = new Vector3(0, player.playerRb.velocity.y, 0);
         }
     }
 

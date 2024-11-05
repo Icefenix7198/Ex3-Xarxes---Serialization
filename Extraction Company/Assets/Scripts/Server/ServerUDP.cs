@@ -143,12 +143,12 @@ public class ServerUDP : MonoBehaviour
             u.socket = socket;
             u.Remote = Remote;
 
+            string id;
+            id = serialization.ExtractID(data);
+            u.NetID = id;
+
             if (!userSocketsList.Contains(u))
             {
-                string id;
-                id = serialization.ExtractID(data);
-
-                u.NetID = id;
                 clientsIdList.Add(u.NetID);
                 userSocketsList.Add(u);
             }
@@ -204,6 +204,14 @@ public class ServerUDP : MonoBehaviour
                 passScene.serverUDP = true;
                 passScene.firstConnection = false;
             }
+        }
+    }
+
+    private void OnApplicationQuit()
+    {
+        foreach(var socketsUser in userSocketsList)
+        {
+            socketsUser.socket.Close();
         }
     }
 }

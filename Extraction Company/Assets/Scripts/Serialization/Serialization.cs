@@ -250,7 +250,7 @@ public class Serialization : MonoBehaviour
         BinaryReader reader = new BinaryReader(stream);
         stream.Seek(0, SeekOrigin.Begin);
 
-        //ActionType action = (ActionType)reader.ReadInt32();
+        ActionType action = (ActionType)reader.ReadInt32();
         string ID = reader.ReadString();
 
         Debug.Log("ID Taked! It was:" + ID);
