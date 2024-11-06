@@ -55,7 +55,12 @@ public class Serialization : MonoBehaviour
         {
             if (playerManager == null && c_udp.passSceneManager.isConnected)
             {
-                playerManager = GameObject.Find("PlayerSpawner").GetComponent<PlayerManager>();
+                GameObject tmp = GameObject.Find("PlayerSpawner");
+
+                if(tmp != null)
+                {
+                    playerManager = tmp.GetComponent<PlayerManager>();
+                }
             }
         }
 

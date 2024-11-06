@@ -173,10 +173,7 @@ public class ClientUDP : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        foreach (var socketsUser in userSocketsList)
-        {
-            socketsUser.socket.Close();
-        }
+        server.Close();
     }
 }
 

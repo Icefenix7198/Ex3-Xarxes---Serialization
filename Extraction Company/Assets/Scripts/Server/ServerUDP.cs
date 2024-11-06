@@ -213,5 +213,7 @@ public class ServerUDP : MonoBehaviour
         {
             socketsUser.socket.Close();
         }
+
+        socket.Close();
     }
 }

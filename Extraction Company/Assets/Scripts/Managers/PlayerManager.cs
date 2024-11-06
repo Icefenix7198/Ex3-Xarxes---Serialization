@@ -54,8 +54,11 @@ public class PlayerManager : MonoBehaviour
             s_udp = GameObject.Find("UDP_Manager").GetComponent<ServerUDP>();
         }
 
-        MovePlayer();
-        SendMovement();
+        if(player.playerObj != null)
+        {
+            MovePlayer();
+            SendMovement();
+        }
     }
 
     private void SendMovement()
