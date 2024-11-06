@@ -54,7 +54,7 @@ public class PlayerManager : MonoBehaviour
             s_udp = GameObject.Find("UDP_Manager").GetComponent<ServerUDP>();
         }
 
-        if(player.playerObj != null)
+        if(player.playerObj != null && c_udp != null)
         {
             MovePlayer();
             SendMovement();
@@ -199,17 +199,39 @@ public class PlayerManager : MonoBehaviour
             {
                 child.gameObject.transform.position = moveTo;
 
+                List<PlayerServer> tmpPlayers = new List<PlayerServer>(); 
+
                 foreach(var pServer in playerList)
                 {
-                    if(pServer.ID == ID)
+                    PlayerServer pTmp = new PlayerServer();
+                    pTmp = pServer;
+
+                    if (pServer.ID == ID)
                     {
-                        PlayerServer pTmp = new PlayerServer();
-                        pTmp = pServer;
                         pTmp.position = moveTo;
-                        playerList.FindIndex(pServer => pServer.Equals(pTmp));
+                        //playerList.FindIndex(pServer => pServer.Equals(pTmp));
                     }
+
+                    tmpPlayers.Add(pTmp);
                 }
+
+                playerList = tmpPlayers;
             }
         }
+    }
+
+    public GameObject FindPlayer(string ID)
+    {
+        foreach (Transform child in clientParent.transform) //Cogemos todos los hijos del padre ClientList
+        {
+            string idClient = child.gameObject.GetComponent<TextMeshProUGUI>().text;
+
+            if (ID == idClient)
+            {
+                return child.gameObject;
+            }
+        }
+
+        return null;
     }
 }

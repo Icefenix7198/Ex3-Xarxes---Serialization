@@ -14,9 +14,11 @@ public class Serialization : MonoBehaviour
     public enum ActionType
     {
         CREATE_PLAYER, //Create Player for new Client
-        MOVE, //Move all players positions
+        MOVE_SERVER,
+        MOVE_CLIENT,//Move all players positions
         ID,
-        SPAWN_PLAYERS //Create player in scene for other clients
+        SPAWN_PLAYERS, //Create player in scene for other clients
+        NONE
     }
 
     static MemoryStream stream;
@@ -143,7 +145,18 @@ public class Serialization : MonoBehaviour
     public string serializeMovement(string ID, Vector3 movement)
     {
         string id = ID;
-        ActionType type = ActionType.MOVE;
+        ActionType type = ActionType.NONE;
+
+        if (isC_udp)
+        {
+            type = ActionType.MOVE_SERVER;
+        }
+        
+        if(isS_udp)
+        {
+            type = ActionType.MOVE_CLIENT;
+        }
+
         float[] move = { movement.x, movement.y, movement.z };
 
         stream = new MemoryStream();
@@ -171,61 +184,93 @@ public class Serialization : MonoBehaviour
         BinaryReader reader = new BinaryReader(stream);
         stream.Seek(0, SeekOrigin.Begin);
 
-        ActionType action = (ActionType)reader.ReadInt32();
-
-        switch (action)
+        try 
         {
-            case ActionType.ID:
-                string ID0 = reader.ReadString();
-                break;
-            case ActionType.CREATE_PLAYER:
-                string ID1 = reader.ReadString();
-                playerManager.NewPlayer(ID1);
-                break;
-            case ActionType.MOVE:
-                string ID2 = reader.ReadString();
-                float[] moveList = new float[3];
-                for (int i = 0; i < moveList.Length; i++)
-                {
-                    moveList[i] = reader.ReadSingle();
-                }
-                Vector3 movement = new Vector3(moveList[0], moveList[1], moveList[2]);
-                playerManager.ClientMove(ID2, movement);
-                break;
-            case ActionType.SPAWN_PLAYERS:
-                int lenghtSize = reader.ReadInt32();
+            ActionType action = (ActionType)reader.ReadInt32();
 
-                List<PlayerServer> pList = new List<PlayerServer>();
-
-                PlayerServer pServer = new PlayerServer();
-
-                for (int i = 0; i < lenghtSize; i++)
-                {
-                    pServer.ID = reader.ReadString();
-
-                    float[] moveList1 = new float[3];
-                    for (int a = 0; a < moveList1.Length; a++)
+            switch (action)
+            {
+                case ActionType.ID:
                     {
-                        moveList1[a] = reader.ReadSingle();
+                        string ID = reader.ReadString();
+                        break;
                     }
 
-                    pServer.position = new Vector3(moveList1[0], moveList1[1], moveList1[2]);
-                    pList.Add(pServer);
-                }
+                case ActionType.CREATE_PLAYER:
+                    {
+                        string ID = reader.ReadString();
+                        playerManager.NewPlayer(ID);
+                        break;
+                    }
+                case ActionType.MOVE_SERVER:
+                    {
+                        string ID = reader.ReadString();
+                        float[] moveList = new float[3];
+                        for (int i = 0; i < moveList.Length; i++)
+                        {
+                            moveList[i] = reader.ReadSingle();
+                        }
+                        Vector3 movement = new Vector3(moveList[0], moveList[1], moveList[2]);
+                        playerManager.ClientMove(ID, movement); //Movemos el player en el server.
 
-                string idTmp = pServer.ID;
+                        GameObject playerMoved = playerManager.FindPlayer(ID); //Buscamos el player que se ha movido
 
-                if (playerManager.player.playerObj == null && pList.Count > 1)
-                {
-                    pList.RemoveAt(lenghtSize - 1);
-                    playerManager.SpawnAllPlayers(pList);
-                }
+                        if (playerMoved != null) //revisar que el player sea distinto de null para saber que existe
+                        {
+                            serializeMovement(ID, playerMoved.transform.position);
+                        }
+                        break;
+                    }
+                case ActionType.MOVE_CLIENT:
+                    {
+                        string ID = reader.ReadString();
+                        float[] moveList = new float[3];
+                        for (int i = 0; i < moveList.Length; i++)
+                        {
+                            moveList[i] = reader.ReadSingle();
+                        }
+                        Vector3 movement = new Vector3(moveList[0], moveList[1], moveList[2]);
+                        playerManager.ClientMove(ID, movement);
+                        break;
+                    }
+                case ActionType.SPAWN_PLAYERS:
+                    int lenghtSize = reader.ReadInt32();
 
-                playerManager.NewPlayer(idTmp);
+                    List<PlayerServer> pList = new List<PlayerServer>();
 
-                break;
-            default:
-                break;
+                    PlayerServer pServer = new PlayerServer();
+
+                    for (int i = 0; i < lenghtSize; i++)
+                    {
+                        pServer.ID = reader.ReadString();
+
+                        float[] moveList1 = new float[3];
+                        for (int a = 0; a < moveList1.Length; a++)
+                        {
+                            moveList1[a] = reader.ReadSingle();
+                        }
+
+                        pServer.position = new Vector3(moveList1[0], moveList1[1], moveList1[2]);
+                        pList.Add(pServer);
+                    }
+
+                    string idTmp = pServer.ID;
+
+                    if (playerManager.player.playerObj == null && pList.Count > 1)
+                    {
+                        pList.RemoveAt(lenghtSize - 1);
+                        playerManager.SpawnAllPlayers(pList);
+                    }
+
+                    playerManager.NewPlayer(idTmp);
+                    break;
+                default:
+                    break;
+            }
+        }
+        catch 
+        {
+            UnityEngine.Debug.Log("Data was corrupted during deserialization");
         }
     }
 
@@ -260,9 +305,9 @@ public class Serialization : MonoBehaviour
         stream = new MemoryStream();
         stream.Write(message, 0, message.Length);
         BinaryReader reader = new BinaryReader(stream);
-        stream.Seek(0, SeekOrigin.Begin);
+        stream.Seek(sizeof(int), SeekOrigin.Begin);
 
-        ActionType action = (ActionType)reader.ReadInt32(); //We exctract the action to have next the ID and be able to read it.
+        //ActionType action = (ActionType)reader.ReadInt32(); //We exctract the action to have next the ID and be able to read it.
         string ID = reader.ReadString();
 
         UnityEngine.Debug.Log("ID Taked! It was:" + ID);
@@ -278,10 +323,17 @@ public class Serialization : MonoBehaviour
         BinaryReader reader = new BinaryReader(stream);
         stream.Seek(0, SeekOrigin.Begin);
 
-        ActionType action = (ActionType)reader.ReadInt32();
-        string ID = reader.ReadString();
+        ActionType action = ActionType.NONE;
 
-         UnityEngine.Debug.Log("Action Taked! It was: " + action);
+        try
+        {
+            action = (ActionType)reader.ReadInt32();
+            UnityEngine.Debug.Log("Action Taked! It was: " + action);
+        }
+        catch
+        {
+            UnityEngine.Debug.LogWarning("Action could not be catched!");
+        }
 
         return action;
     }

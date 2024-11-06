@@ -137,6 +137,8 @@ public class ServerUDP : MonoBehaviour
             //    serverText = "\n" + Encoding.ASCII.GetString(data, 0, recv);
             //}
 
+            byte[] ogData = data;
+
              UnityEngine.Debug.Log(Encoding.ASCII.GetString(data, 0, recv));
 
             UserUDP u = new UserUDP();
@@ -158,7 +160,7 @@ public class ServerUDP : MonoBehaviour
             //TO DO 4
             //When our UDP server receives a message from a random remote, it has to send a ping,
             //Call a send thread
-            Thread newConnection = new Thread(() => Send(data, u.NetID));
+            Thread newConnection = new Thread(() => Send(ogData, u.NetID));
             newConnection.Start();
         }
     }
@@ -176,6 +178,8 @@ public class ServerUDP : MonoBehaviour
             //    message = "\n" + "Server: " + serverName;
             //}
 
+            byte[] ogData = data;
+
             ActionType action =  serialization.ExtractAction(data);
 
 
@@ -183,10 +187,10 @@ public class ServerUDP : MonoBehaviour
             {
                 scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
             }
-            else if (action == ActionType.CREATE_PLAYER)
+            else if (action == ActionType.CREATE_PLAYER || action == ActionType.MOVE_SERVER)
             {
                 deserializate = true;
-                tempData = data;
+                tempData = ogData;
             }
             else
             {
