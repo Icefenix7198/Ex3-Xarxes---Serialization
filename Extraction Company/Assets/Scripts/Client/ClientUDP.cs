@@ -171,9 +171,9 @@ public class ClientUDP : MonoBehaviour
         }
     }
 
-    private void OnApplicationQuit()
-    {
-        server.Close();
-    }
+    //private void OnApplicationQuit()
+    //{
+    //    server.Close();
+    //}
 }
 

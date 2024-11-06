@@ -198,7 +198,7 @@ public class ServerUDP : MonoBehaviour
 
             if (passScene != null && passScene.firstConnection)
             {
-                 UnityEngine.Debug.Log("PassScene");
+                UnityEngine.Debug.Log("PassScene");
                 passScene.connected = true;
                 passScene.server = true;
                 passScene.serverUDP = true;
