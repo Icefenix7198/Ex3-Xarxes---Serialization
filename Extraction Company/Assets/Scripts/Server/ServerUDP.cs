@@ -151,7 +151,7 @@ public class ServerUDP : MonoBehaviour
 
             lock (userSocketsList)
             {
-                if (!userSocketsList.Contains(u))
+                if (!userSocketsList.Contains(u) && id != "-2")
                 {
                     clientsIdList.Add(u.NetID);
                     userSocketsList.Add(u);

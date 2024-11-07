@@ -308,24 +308,33 @@ public class Serialization : MonoBehaviour
 
     public string ExtractID(byte[] message)
     {
-        stream = new MemoryStream();
-        stream.Write(message, 0, message.Length);
-        BinaryReader reader = new BinaryReader(stream);
-        stream.Seek(sizeof(int), SeekOrigin.Begin);
-
         string ID = "-2";
 
         try
         {
-            //ActionType action = (ActionType)reader.ReadInt32(); //We exctract the action to have next the ID and be able to read it.
-            ID = reader.ReadString();
+            stream = new MemoryStream();
+            stream.Write(message, 0, message.Length);
+            BinaryReader reader = new BinaryReader(stream);
+            stream.Seek(sizeof(int), SeekOrigin.Begin);
+
+            try
+            {
+                //ActionType action = (ActionType)reader.ReadInt32(); //We exctract the action to have next the ID and be able to read it.
+                ID = reader.ReadString();
+            }
+            catch
+            {
+                //UnityEngine.Debug.LogWarning("Id couldn't be taken");
+            }
+
+            //UnityEngine.Debug.Log("ID Taked! It was:" + ID);
+
+
         }
         catch
         {
-            //UnityEngine.Debug.LogWarning("Id couldn't be taken");
-        }
 
-        //UnityEngine.Debug.Log("ID Taked! It was:" + ID);
+        }
 
         return ID; //If return -2 ID == error taking ID
     }
