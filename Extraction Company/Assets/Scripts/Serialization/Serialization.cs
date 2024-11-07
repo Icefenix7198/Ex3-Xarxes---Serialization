@@ -411,7 +411,7 @@ public class Serialization : MonoBehaviour
             else
             {
                 Debug.Log("Error in chain");
-                break;
+                break; //Maybe an idea here is instead of a break activate a protocol to ignore the unsucesful chain and seek the next message to deserialize.
             }
         }
     }
