@@ -1,13 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.IO;
-using UnityEngine.Networking;
-using System.Text;
-using System.Net;
 using System.Net.Sockets;
+using UnityEngine;
 using static PlayerManager;
-using System.Diagnostics;
 
 public class Serialization : MonoBehaviour
 {
@@ -60,7 +55,7 @@ public class Serialization : MonoBehaviour
             {
                 GameObject tmp = GameObject.Find("PlayerSpawner");
 
-                if(tmp != null)
+                if (tmp != null)
                 {
                     playerManager = tmp.GetComponent<PlayerManager>();
                 }
@@ -110,7 +105,7 @@ public class Serialization : MonoBehaviour
 
         Send(bytes, id);
     }
-    
+
     //Tell all current existing player
     public void SendAllPlayers(List<PlayerServer> playerList)
     {
@@ -153,8 +148,8 @@ public class Serialization : MonoBehaviour
         {
             type = ActionType.MOVE_SERVER;
         }
-        
-        if(isS_udp)
+
+        if (isS_udp)
         {
             type = ActionType.MOVE_CLIENT;
         }
@@ -300,11 +295,11 @@ public class Serialization : MonoBehaviour
     }
 
     //Send from the Client to the server
-    public void SendToServer(byte[] message) 
+    public void SendToServer(byte[] message)
     {
         c_udp.server.SendTo(message, message.Length, SocketFlags.None, c_udp.ipepServer);
-    }   
-    
+    }
+
     //Send from the Server to the Client
     public void SendToClient(byte[] message, string ID)
     {
@@ -338,21 +333,30 @@ public class Serialization : MonoBehaviour
     //Takes bytes of data and extracts the first bits of information to return the first action type of the string.
     public ActionType ExtractAction(byte[] message)
     {
-        stream = new MemoryStream();
-        stream.Write(message, 0, message.Length);
-        BinaryReader reader = new BinaryReader(stream);
-        stream.Seek(0, SeekOrigin.Begin);
-
         ActionType action = ActionType.NONE;
 
         try
         {
-            action = (ActionType)reader.ReadInt32();
-            //UnityEngine.Debug.Log("Action Taked! It was: " + action);
+            stream = new MemoryStream();
+            stream.Write(message, 0, message.Length);
+            BinaryReader reader = new BinaryReader(stream);
+            stream.Seek(0, SeekOrigin.Begin);
+
+
+            try
+            {
+                action = (ActionType)reader.ReadInt32();
+                //UnityEngine.Debug.Log("Action Taked! It was: " + action);
+            }
+            catch
+            {
+                //UnityEngine.Debug.LogWarning("Action could not be catched!");
+            }
+
         }
         catch
         {
-            //UnityEngine.Debug.LogWarning("Action could not be catched!");
+
         }
 
         return action;
