@@ -174,7 +174,7 @@ public class Serialization : MonoBehaviour
         return id;
     }
 
-    public void Deserialize(byte[] message)
+    public int Deserialize(byte[] message)
     {
         try
         {
@@ -186,25 +186,25 @@ public class Serialization : MonoBehaviour
             try
             {
                 ActionType action = (ActionType)reader.ReadInt32();
-
+                string ID = "";
                 switch (action)
                 {
                     case ActionType.ID_NAME:
                         {
-                            string ID = reader.ReadString();
+                            ID = reader.ReadString();
                             tmpNameClient = reader.ReadString();
                             break;
                         }
 
                     case ActionType.CREATE_PLAYER:
                         {
-                            string ID = reader.ReadString();
+                            ID = reader.ReadString();
                             playerManager.NewPlayer(ID);
                             break;
                         }
                     case ActionType.MOVE_SERVER:
                         {
-                            string ID = reader.ReadString();
+                            ID = reader.ReadString();
                             float[] moveList = new float[3];
                             for (int i = 0; i < moveList.Length; i++)
                             {
@@ -223,7 +223,7 @@ public class Serialization : MonoBehaviour
                         }
                     case ActionType.MOVE_CLIENT:
                         {
-                            string ID = reader.ReadString();
+                            ID = reader.ReadString();
                             float[] moveList = new float[3];
                             for (int i = 0; i < moveList.Length; i++)
                             {
@@ -267,17 +267,21 @@ public class Serialization : MonoBehaviour
                     default:
                         break;
                 }
+
+                //We return the length of an int (Action), the ID length (as each character is 1 byte) and the specefic size of each parameters
+                return 4 + ID.Length + 0; //WIP
             }
             catch
             {
                 //UnityEngine.Debug.Log("Data was corrupted during deserialization");
             }
-
         }
         catch
         {
 
         }
+
+        return -1; //An error ocurred. WIP: Tengo que pensar/ver que devuelvo aqui.
     }
 
     //The send is generic as SendToServer only requieres bytes of data and just ignores the ID as the server don't have one.
@@ -371,22 +375,44 @@ public class Serialization : MonoBehaviour
         return action;
     }
 
-    public byte[] AddToSerializeChain(byte[] message)
+    public byte[] AddToSerializeChain(byte[] chain , byte[] message) //Old byte array, new btye array to add after it.
     {
-        stream = new MemoryStream();
-        stream.Write(message, 0, message.Length);
-        BinaryReader reader = new BinaryReader(stream);
-        stream.Seek(0, SeekOrigin.Begin);
+        byte[] separator = new byte[] { 2, 59, 59 }; //This is the equivalent of serializing ";;" as a string, its written in this way to make the process faster
 
-        string chain = reader.ToString();
-        //UnityEngine.Debug.Log(chain);
+        //stream = new MemoryStream();
+        //BinaryWriter writer = new BinaryWriter(stream);
+        //writer.Write(";;");
 
-        chain += ";;";
+        //separator = stream.ToArray(); //A byte of ;; is [2][59][59]
 
-        stream = new MemoryStream();
-        BinaryWriter writer = new BinaryWriter(stream);
-        writer.Write(chain);
+        byte[] rv = new byte[chain.Length + message.Length + separator.Length]; //New byte with old chain + message + separators
 
-        return stream.ToArray();
+        //Code extracted from Stackoverflow, just combines the 3 arrays into one (rv)
+        System.Buffer.BlockCopy(chain, 0, rv, 0, chain.Length);
+        System.Buffer.BlockCopy(message, 0, rv, chain.Length, message.Length);
+        System.Buffer.BlockCopy(separator, 0, rv, chain.Length + message.Length, separator.Length);
+
+        return rv;
+    }
+
+    public void DeseralizeLongChain(byte[] message)
+    {
+        int index = 0;
+        while (index < message.Length - 4) //The -4 is to take into account the ";;", maybe they become none necesary but for now I will keep using the ";;" separator
+        {
+            byte[] toSend = new byte[message.Length - index];
+            System.Buffer.BlockCopy(message, index, toSend, 0, toSend.Length);
+            index += Deserialize(toSend);
+            if (message[index + 1] == 2 && message[index + 2] == 59 && message[index + 3] == 59) //Check we have separator, we check the bytes values as its faster.
+            {
+                index += 4; //Although the size of the separator is only 3, due to the index finishing in the last position of the chain prior to the separator we need to move 1 extra position to be over the separator and 3 more to move away from it
+                Debug.Log("Current index is:" + index);
+            }
+            else
+            {
+                Debug.Log("Error in chain");
+                break;
+            }
+        }
     }
 }
