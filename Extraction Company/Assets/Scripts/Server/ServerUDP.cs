@@ -167,6 +167,8 @@ public class ServerUDP : MonoBehaviour
 
     public void Send(byte[] data, string ID = "-1")
     {
+        lock (userSocketsList);
+
         foreach (var scoketsUser in userSocketsList) //We send the data to each client that collected to the sever
         {
             //TO DO 4
@@ -183,7 +185,7 @@ public class ServerUDP : MonoBehaviour
             ActionType action =  serialization.ExtractAction(data);
 
 
-            if (action == ActionType.ID || action == ActionType.SPAWN_PLAYERS)
+            if (action == ActionType.SPAWN_PLAYERS)
             {
                 scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
             }
@@ -191,6 +193,13 @@ public class ServerUDP : MonoBehaviour
             {
                 deserializate = true;
                 tempData = ogData;
+            }
+            else if(action == ActionType.ID_NAME)
+            {
+                if (scoketsUser.NetID == ID) 
+                {
+                    scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
+                }
             }
             else
             {

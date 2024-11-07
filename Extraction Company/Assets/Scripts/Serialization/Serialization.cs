@@ -16,7 +16,7 @@ public class Serialization : MonoBehaviour
         CREATE_PLAYER, //Create Player for new Client
         MOVE_SERVER,
         MOVE_CLIENT,//Move all players positions
-        ID,
+        ID_NAME,
         SPAWN_PLAYERS, //Create player in scene for other clients
         NONE
     }
@@ -28,6 +28,7 @@ public class Serialization : MonoBehaviour
 
     ServerUDP s_udp;
     public bool isS_udp;
+    public string tmpNameClient;
 
     byte[] bytes; //ERIC: Esto maybe seria mas correcto escrito como Data
     byte[] chainData; //WIP: All the bytes to send each update, where more than one serialized action is found, separated by a ";;"
@@ -79,14 +80,15 @@ public class Serialization : MonoBehaviour
             }
         }
     }
-    public void serializeID(string id)
+    public void serializeIDandName(string id, string name)
     {
-        ActionType type = ActionType.ID;
+        ActionType type = ActionType.ID_NAME;
 
         stream = new MemoryStream();
         BinaryWriter writer = new BinaryWriter(stream);
         writer.Write((int)type);
         writer.Write(id);
+        writer.Write(name);
 
         UnityEngine.Debug.Log("Assign ID serialized!");
         bytes = stream.ToArray();
@@ -190,9 +192,10 @@ public class Serialization : MonoBehaviour
 
             switch (action)
             {
-                case ActionType.ID:
+                case ActionType.ID_NAME:
                     {
                         string ID = reader.ReadString();
+                        tmpNameClient = reader.ReadString();
                         break;
                     }
 

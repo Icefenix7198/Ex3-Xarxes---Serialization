@@ -93,6 +93,9 @@ public class PlayerManager : MonoBehaviour
                 player.textID = player.playerObj.GetComponent<TextMeshProUGUI>();
                 player.textID.text = playerId;
 
+                Transform child = player.playerObj.transform.GetChild(0);
+                child.gameObject.GetComponent<TextMeshPro>().text = serialization.tmpNameClient;
+
                 passedScene = true;
             }
             else

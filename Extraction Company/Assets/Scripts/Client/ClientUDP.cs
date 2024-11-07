@@ -111,7 +111,7 @@ public class ClientUDP : MonoBehaviour
         {
             string id = System.Guid.NewGuid().ToString();
             clientID = id;
-            serialization.serializeID(id);
+            serialization.serializeIDandName(id, clientName);
         }
 
         //server.SendTo(data, data.Length, SocketFlags.None, ipep);
