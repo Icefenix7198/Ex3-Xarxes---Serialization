@@ -307,12 +307,21 @@ public class Serialization : MonoBehaviour
         BinaryReader reader = new BinaryReader(stream);
         stream.Seek(sizeof(int), SeekOrigin.Begin);
 
-        //ActionType action = (ActionType)reader.ReadInt32(); //We exctract the action to have next the ID and be able to read it.
-        string ID = reader.ReadString();
+        string ID = "-2";
+
+        try
+        {
+            //ActionType action = (ActionType)reader.ReadInt32(); //We exctract the action to have next the ID and be able to read it.
+            ID = reader.ReadString();
+        }
+        catch
+        {
+            UnityEngine.Debug.LogWarning("Id couldn't be taken");
+        }
 
         UnityEngine.Debug.Log("ID Taked! It was:" + ID);
 
-        return ID;
+        return ID; //If return -2 ID == error taking ID
     }
 
     //Takes bytes of data and extracts the first bits of information to return the first action type of the string.
