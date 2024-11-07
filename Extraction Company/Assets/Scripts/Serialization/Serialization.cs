@@ -181,99 +181,107 @@ public class Serialization : MonoBehaviour
 
     public void Deserialize(byte[] message)
     {
-        stream = new MemoryStream();
-        stream.Write(message, 0, message.Length);
-        BinaryReader reader = new BinaryReader(stream);
-        stream.Seek(0, SeekOrigin.Begin);
-
-        try 
+        try
         {
-            ActionType action = (ActionType)reader.ReadInt32();
+            stream = new MemoryStream();
+            stream.Write(message, 0, message.Length);
+            BinaryReader reader = new BinaryReader(stream);
+            stream.Seek(0, SeekOrigin.Begin);
 
-            switch (action)
+            try
             {
-                case ActionType.ID_NAME:
-                    {
-                        string ID = reader.ReadString();
-                        tmpNameClient = reader.ReadString();
-                        break;
-                    }
+                ActionType action = (ActionType)reader.ReadInt32();
 
-                case ActionType.CREATE_PLAYER:
-                    {
-                        string ID = reader.ReadString();
-                        playerManager.NewPlayer(ID);
-                        break;
-                    }
-                case ActionType.MOVE_SERVER:
-                    {
-                        string ID = reader.ReadString();
-                        float[] moveList = new float[3];
-                        for (int i = 0; i < moveList.Length; i++)
+                switch (action)
+                {
+                    case ActionType.ID_NAME:
                         {
-                            moveList[i] = reader.ReadSingle();
-                        }
-                        Vector3 movement = new Vector3(moveList[0], moveList[1], moveList[2]);
-                        playerManager.ClientMove(ID, movement); //Movemos el player en el server.
-
-                        GameObject playerMoved = playerManager.FindPlayer(ID); //Buscamos el player que se ha movido
-
-                        if (playerMoved != null) //revisar que el player sea distinto de null para saber que existe
-                        {
-                            serializeMovement(ID, playerMoved.transform.position);
-                        }
-                        break;
-                    }
-                case ActionType.MOVE_CLIENT:
-                    {
-                        string ID = reader.ReadString();
-                        float[] moveList = new float[3];
-                        for (int i = 0; i < moveList.Length; i++)
-                        {
-                            moveList[i] = reader.ReadSingle();
-                        }
-                        Vector3 movement = new Vector3(moveList[0], moveList[1], moveList[2]);
-                        playerManager.ClientMove(ID, movement);
-                        break;
-                    }
-                case ActionType.SPAWN_PLAYERS:
-                    int lenghtSize = reader.ReadInt32();
-
-                    List<PlayerServer> pList = new List<PlayerServer>();
-
-                    PlayerServer pServer = new PlayerServer();
-
-                    for (int i = 0; i < lenghtSize; i++)
-                    {
-                        pServer.ID = reader.ReadString();
-
-                        float[] moveList1 = new float[3];
-                        for (int a = 0; a < moveList1.Length; a++)
-                        {
-                            moveList1[a] = reader.ReadSingle();
+                            string ID = reader.ReadString();
+                            tmpNameClient = reader.ReadString();
+                            break;
                         }
 
-                        pServer.position = new Vector3(moveList1[0], moveList1[1], moveList1[2]);
-                        pList.Add(pServer);
-                    }
+                    case ActionType.CREATE_PLAYER:
+                        {
+                            string ID = reader.ReadString();
+                            playerManager.NewPlayer(ID);
+                            break;
+                        }
+                    case ActionType.MOVE_SERVER:
+                        {
+                            string ID = reader.ReadString();
+                            float[] moveList = new float[3];
+                            for (int i = 0; i < moveList.Length; i++)
+                            {
+                                moveList[i] = reader.ReadSingle();
+                            }
+                            Vector3 movement = new Vector3(moveList[0], moveList[1], moveList[2]);
+                            playerManager.ClientMove(ID, movement); //Movemos el player en el server.
 
-                    string idTmp = pServer.ID;
+                            GameObject playerMoved = playerManager.FindPlayer(ID); //Buscamos el player que se ha movido
 
-                    if (playerManager.player.playerObj == null && pList.Count > 1)
-                    {
-                        pList.RemoveAt(lenghtSize - 1);
-                        playerManager.SpawnAllPlayers(pList);
-                    }
+                            if (playerMoved != null) //revisar que el player sea distinto de null para saber que existe
+                            {
+                                serializeMovement(ID, playerMoved.transform.position);
+                            }
+                            break;
+                        }
+                    case ActionType.MOVE_CLIENT:
+                        {
+                            string ID = reader.ReadString();
+                            float[] moveList = new float[3];
+                            for (int i = 0; i < moveList.Length; i++)
+                            {
+                                moveList[i] = reader.ReadSingle();
+                            }
+                            Vector3 movement = new Vector3(moveList[0], moveList[1], moveList[2]);
+                            playerManager.ClientMove(ID, movement);
+                            break;
+                        }
+                    case ActionType.SPAWN_PLAYERS:
+                        int lenghtSize = reader.ReadInt32();
 
-                    playerManager.NewPlayer(idTmp);
-                    break;
-                default:
-                    break;
+                        List<PlayerServer> pList = new List<PlayerServer>();
+
+                        PlayerServer pServer = new PlayerServer();
+
+                        for (int i = 0; i < lenghtSize; i++)
+                        {
+                            pServer.ID = reader.ReadString();
+
+                            float[] moveList1 = new float[3];
+                            for (int a = 0; a < moveList1.Length; a++)
+                            {
+                                moveList1[a] = reader.ReadSingle();
+                            }
+
+                            pServer.position = new Vector3(moveList1[0], moveList1[1], moveList1[2]);
+                            pList.Add(pServer);
+                        }
+
+                        string idTmp = pServer.ID;
+
+                        if (playerManager.player.playerObj == null && pList.Count > 1)
+                        {
+                            pList.RemoveAt(lenghtSize - 1);
+                            playerManager.SpawnAllPlayers(pList);
+                        }
+
+                        playerManager.NewPlayer(idTmp);
+                        break;
+                    default:
+                        break;
+                }
             }
+            catch
+            {
+                //UnityEngine.Debug.Log("Data was corrupted during deserialization");
+            }
+
         }
-        catch 
+        catch
         {
-            //UnityEngine.Debug.Log("Data was corrupted during deserialization");
+
         }
     }
 

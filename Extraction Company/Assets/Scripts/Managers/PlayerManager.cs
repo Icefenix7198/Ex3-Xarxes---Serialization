@@ -148,6 +148,7 @@ public class PlayerManager : MonoBehaviour
 
     public void CreateNewPlayer()
     {
+        //while(player.playerObj == null) { }
         serialization.serializeCreatePlayer(c_udp.clientID);
     }
 
