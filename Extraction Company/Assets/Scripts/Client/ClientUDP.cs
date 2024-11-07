@@ -160,7 +160,7 @@ public class ClientUDP : MonoBehaviour
 
             if (recv != 0 && passSceneManager.firstConnection)
             {
-                 UnityEngine.Debug.Log("Pass Scene");
+                //UnityEngine.Debug.Log("Pass Scene");
                 passSceneManager.connected = true;
                 passSceneManager.client = true;
                 passSceneManager.clientUDP = true;

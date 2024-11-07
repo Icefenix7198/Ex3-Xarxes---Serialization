@@ -90,7 +90,7 @@ public class Serialization : MonoBehaviour
         writer.Write(id);
         writer.Write(name);
 
-        UnityEngine.Debug.Log("Assign ID serialized!");
+        //UnityEngine.Debug.Log("Assign ID serialized!");
         bytes = stream.ToArray();
 
         Send(bytes, id);
@@ -105,7 +105,7 @@ public class Serialization : MonoBehaviour
         writer.Write((int)type);
         writer.Write(id);
 
-         UnityEngine.Debug.Log("Create player serialized!");
+        //UnityEngine.Debug.Log("Create player serialized!");
         bytes = stream.ToArray();
 
         Send(bytes, id);
@@ -138,7 +138,7 @@ public class Serialization : MonoBehaviour
             lastID = a.ID;
         }
 
-        UnityEngine.Debug.Log("Send all players serialized!");
+        //UnityEngine.Debug.Log("Send all players serialized!");
         bytes = stream.ToArray();
 
         Send(bytes, lastID);
@@ -171,7 +171,7 @@ public class Serialization : MonoBehaviour
             writer.Write(i);
         }
 
-        UnityEngine.Debug.Log("Movement was serialized!");
+        //UnityEngine.Debug.Log("Movement was serialized!");
         bytes = stream.ToArray();
 
         Send(bytes, id);
@@ -273,7 +273,7 @@ public class Serialization : MonoBehaviour
         }
         catch 
         {
-            UnityEngine.Debug.Log("Data was corrupted during deserialization");
+            //UnityEngine.Debug.Log("Data was corrupted during deserialization");
         }
     }
 
@@ -319,10 +319,10 @@ public class Serialization : MonoBehaviour
         }
         catch
         {
-            UnityEngine.Debug.LogWarning("Id couldn't be taken");
+            //UnityEngine.Debug.LogWarning("Id couldn't be taken");
         }
 
-        UnityEngine.Debug.Log("ID Taked! It was:" + ID);
+        //UnityEngine.Debug.Log("ID Taked! It was:" + ID);
 
         return ID; //If return -2 ID == error taking ID
     }
@@ -340,11 +340,11 @@ public class Serialization : MonoBehaviour
         try
         {
             action = (ActionType)reader.ReadInt32();
-            UnityEngine.Debug.Log("Action Taked! It was: " + action);
+            //UnityEngine.Debug.Log("Action Taked! It was: " + action);
         }
         catch
         {
-            UnityEngine.Debug.LogWarning("Action could not be catched!");
+            //UnityEngine.Debug.LogWarning("Action could not be catched!");
         }
 
         return action;
@@ -358,7 +358,7 @@ public class Serialization : MonoBehaviour
         stream.Seek(0, SeekOrigin.Begin);
 
         string chain = reader.ToString();
-         UnityEngine.Debug.Log(chain);
+        //UnityEngine.Debug.Log(chain);
 
         chain += ";;";
 

@@ -139,7 +139,7 @@ public class ServerUDP : MonoBehaviour
 
             byte[] ogData = data;
 
-             UnityEngine.Debug.Log(Encoding.ASCII.GetString(data, 0, recv));
+             //UnityEngine.Debug.Log(Encoding.ASCII.GetString(data, 0, recv));
 
             UserUDP u = new UserUDP();
             u.socket = socket;
@@ -155,7 +155,7 @@ public class ServerUDP : MonoBehaviour
                 userSocketsList.Add(u);
             }
 
-             UnityEngine.Debug.Log(serverText);
+             //UnityEngine.Debug.Log(serverText);
 
             //TO DO 4
             //When our UDP server receives a message from a random remote, it has to send a ping,
@@ -211,7 +211,7 @@ public class ServerUDP : MonoBehaviour
 
             if (passScene != null && passScene.firstConnection)
             {
-                UnityEngine.Debug.Log("PassScene");
+                //UnityEngine.Debug.Log("PassScene");
                 passScene.connected = true;
                 passScene.server = true;
                 passScene.serverUDP = true;
