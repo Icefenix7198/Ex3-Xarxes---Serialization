@@ -167,55 +167,56 @@ public class ServerUDP : MonoBehaviour
 
     public void Send(byte[] data, string ID = "-1")
     {
-        lock (userSocketsList);
-
-        foreach (var scoketsUser in userSocketsList) //We send the data to each client that collected to the sever
+        lock (userSocketsList)
         {
-            //TO DO 4
-            //Use socket.SendTo to send a ping using the remote we stored earlier.
-            //byte[] data = new byte[1024];
-
-            //if (passScene.firstConnection == true)
-            //{
-            //    message = "\n" + "Server: " + serverName;
-            //}
-
-            byte[] ogData = data;
-
-            ActionType action =  serialization.ExtractAction(data);
-
-
-            if (action == ActionType.SPAWN_PLAYERS)
+            foreach (var scoketsUser in userSocketsList) //We send the data to each client that collected to the sever
             {
-                scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
-            }
-            else if (action == ActionType.CREATE_PLAYER || action == ActionType.MOVE_SERVER)
-            {
-                deserializate = true;
-                tempData = ogData;
-            }
-            else if(action == ActionType.ID_NAME)
-            {
-                if (scoketsUser.NetID == ID) 
+                //TO DO 4
+                //Use socket.SendTo to send a ping using the remote we stored earlier.
+                //byte[] data = new byte[1024];
+
+                //if (passScene.firstConnection == true)
+                //{
+                //    message = "\n" + "Server: " + serverName;
+                //}
+
+                byte[] ogData = data;
+
+                ActionType action = serialization.ExtractAction(data);
+
+
+                if (action == ActionType.SPAWN_PLAYERS)
                 {
                     scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
                 }
-            }
-            else
-            {
-                if (scoketsUser.NetID != ID) //Este es para mandar a todo el mundo menos él
+                else if (action == ActionType.CREATE_PLAYER || action == ActionType.MOVE_SERVER)
                 {
-                    scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
+                    deserializate = true;
+                    tempData = ogData;
                 }
-            }
+                else if (action == ActionType.ID_NAME)
+                {
+                    if (scoketsUser.NetID == ID)
+                    {
+                        scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
+                    }
+                }
+                else
+                {
+                    if (scoketsUser.NetID != ID) //Este es para mandar a todo el mundo menos él
+                    {
+                        scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
+                    }
+                }
 
-            if (passScene != null && passScene.firstConnection)
-            {
-                //UnityEngine.Debug.Log("PassScene");
-                passScene.connected = true;
-                passScene.server = true;
-                passScene.serverUDP = true;
-                passScene.firstConnection = false;
+                if (passScene != null && passScene.firstConnection)
+                {
+                    //UnityEngine.Debug.Log("PassScene");
+                    passScene.connected = true;
+                    passScene.server = true;
+                    passScene.serverUDP = true;
+                    passScene.firstConnection = false;
+                }
             }
         }
     }
