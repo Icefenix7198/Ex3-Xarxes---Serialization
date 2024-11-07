@@ -149,10 +149,13 @@ public class ServerUDP : MonoBehaviour
             id = serialization.ExtractID(data);
             u.NetID = id;
 
-            if (!userSocketsList.Contains(u))
+            lock (userSocketsList)
             {
-                clientsIdList.Add(u.NetID);
-                userSocketsList.Add(u);
+                if (!userSocketsList.Contains(u))
+                {
+                    clientsIdList.Add(u.NetID);
+                    userSocketsList.Add(u);
+                }
             }
 
              //UnityEngine.Debug.Log(serverText);
