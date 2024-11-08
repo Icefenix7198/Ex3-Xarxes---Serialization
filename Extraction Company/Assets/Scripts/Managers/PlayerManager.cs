@@ -48,16 +48,20 @@ public class PlayerManager : MonoBehaviour
             serialization = GameObject.Find("UDP_Manager").GetComponent<Serialization>();
         }
 
-        if (c_udp == null)
+        if (c_udp == null && s_udp == null)
         {
             c_udp = GameObject.Find("UDP_Manager").GetComponent<ClientUDP>();
         }
 
-        if (s_udp == null)
+        if (s_udp == null && c_udp == null)
         {
             s_udp = GameObject.Find("UDP_Manager").GetComponent<ServerUDP>();
-            button.SetActive(false);
 
+        }
+
+        if (s_udp != null)
+        {
+            button.SetActive(false);
         }
 
         
@@ -66,7 +70,7 @@ public class PlayerManager : MonoBehaviour
         {
             dt += Time.deltaTime;
             MovePlayer();
-            if (dt > 0.1f) //We only send the info some frames not constantly to reduce the server load
+            if (dt > 0.0416f) //We only send the info some frames not constantly to reduce the server load
             {
                 SendMovement();
                 dt = 0;
