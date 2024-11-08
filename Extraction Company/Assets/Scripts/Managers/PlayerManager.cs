@@ -11,6 +11,9 @@ public class PlayerManager : MonoBehaviour
     public ServerUDP s_udp;
     public Serialization serialization;
     public GameObject clientParent;
+    
+    //Boton de crear player (me da TOC que se vea el boton cuando no puede funcionar)
+    public GameObject button;
 
     public struct Player
     {
@@ -53,6 +56,8 @@ public class PlayerManager : MonoBehaviour
         if (s_udp == null)
         {
             s_udp = GameObject.Find("UDP_Manager").GetComponent<ServerUDP>();
+            button.SetActive(false);
+
         }
 
         

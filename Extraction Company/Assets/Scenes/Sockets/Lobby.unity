@@ -625,6 +625,7 @@ MonoBehaviour:
   s_udp: {fileID: 0}
   serialization: {fileID: 0}
   clientParent: {fileID: 561941398}
+  button: {fileID: 471366900}
   speed: 10
 --- !u!1 &1154450230
 GameObject:
