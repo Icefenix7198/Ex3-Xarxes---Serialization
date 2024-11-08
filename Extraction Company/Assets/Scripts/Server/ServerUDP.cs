@@ -138,6 +138,7 @@ public class ServerUDP : MonoBehaviour
             //}
 
             byte[] ogData = data;
+            byte[] ogData1 = data;
 
              //UnityEngine.Debug.Log(Encoding.ASCII.GetString(data, 0, recv));
 
@@ -149,9 +150,11 @@ public class ServerUDP : MonoBehaviour
             id = serialization.ExtractID(data);
             u.NetID = id;
 
+            ActionType action = serialization.ExtractAction(ogData1);
+
             lock (userSocketsList)
             {
-                if (!userSocketsList.Contains(u) && id != "-2")
+                if (!userSocketsList.Contains(u) && id != "-2" && action == ActionType.ID_NAME)
                 {
                     clientsIdList.Add(u.NetID);
                     userSocketsList.Add(u);
