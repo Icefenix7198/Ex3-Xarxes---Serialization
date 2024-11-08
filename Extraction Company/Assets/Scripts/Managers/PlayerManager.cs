@@ -26,8 +26,9 @@ public class PlayerManager : MonoBehaviour
 
     public struct PlayerServer
     {
-        public string ID;
         public Vector3 position;
+        public string ID;
+        public string name;
     }
 
     public Player player;
