@@ -287,7 +287,7 @@ public class Serialization : MonoBehaviour
                 }
 
                 //We return the length of an int (Action), the ID length (as each character is 1 byte) and the specefic size of each parameters
-                return 4 + ID.Length + binaryLength; //WIP
+                return 4 + ID.Length + binaryLength;
             }
             catch
             {

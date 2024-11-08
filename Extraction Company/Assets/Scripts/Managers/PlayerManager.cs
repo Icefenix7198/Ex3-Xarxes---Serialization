@@ -34,6 +34,7 @@ public class PlayerManager : MonoBehaviour
     float movementVertical;
     public float speed;
     Vector3 movement;
+    float dt;
 
     bool passedScene = false;
 
@@ -54,10 +55,19 @@ public class PlayerManager : MonoBehaviour
             s_udp = GameObject.Find("UDP_Manager").GetComponent<ServerUDP>();
         }
 
-        if(player.playerObj != null && c_udp != null)
+        
+        
+        if(player.playerObj != null && c_udp != null) 
         {
+            dt += Time.deltaTime;
             MovePlayer();
-            SendMovement();
+            if (dt > 0.1f) //We only send the info some frames not constantly to reduce the server load
+            {
+                SendMovement();
+                dt = 0;
+            }
+
+            
         }
     }
 
