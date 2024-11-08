@@ -187,12 +187,17 @@ public class Serialization : MonoBehaviour
             {
                 ActionType action = (ActionType)reader.ReadInt32();
                 string ID = "";
+                int binaryLength = 0;
+
                 switch (action)
                 {
                     case ActionType.ID_NAME:
                         {
                             ID = reader.ReadString();
                             tmpNameClient = reader.ReadString();
+
+                            //Length of the name we send
+                            binaryLength = tmpNameClient.Length;
                             break;
                         }
 
@@ -219,6 +224,9 @@ public class Serialization : MonoBehaviour
                             {
                                 serializeMovement(ID, playerMoved.transform.position);
                             }
+
+                            //Size of the 3 floats together
+                            binaryLength = sizeof(float) * 3;
                             break;
                         }
                     case ActionType.MOVE_CLIENT:
@@ -231,24 +239,31 @@ public class Serialization : MonoBehaviour
                             }
                             Vector3 movement = new Vector3(moveList[0], moveList[1], moveList[2]);
                             playerManager.ClientMove(ID, movement);
+
+                            //Size of the 3 floats together
+                            binaryLength = sizeof(float) * 3;
                             break;
                         }
-                    case ActionType.SPAWN_PLAYERS:
-                        int lenghtSize = reader.ReadInt32();
+                    case ActionType.SPAWN_PLAYERS: 
+                        int lengthSize = reader.ReadInt32();
 
                         List<PlayerServer> pList = new List<PlayerServer>();
 
                         PlayerServer pServer = new PlayerServer();
 
-                        for (int i = 0; i < lenghtSize; i++)
+                        int totalLength = 0;
+
+                        for (int i = 0; i < lengthSize; i++)
                         {
                             pServer.ID = reader.ReadString();
+                            totalLength += pServer.ID.Length; //Length ID
 
                             float[] moveList1 = new float[3];
                             for (int a = 0; a < moveList1.Length; a++)
                             {
                                 moveList1[a] = reader.ReadSingle();
                             }
+                            totalLength += sizeof(float) * 3; //Length of the 
 
                             pServer.position = new Vector3(moveList1[0], moveList1[1], moveList1[2]);
                             pList.Add(pServer);
@@ -258,18 +273,21 @@ public class Serialization : MonoBehaviour
 
                         if (playerManager.player.playerObj == null && pList.Count > 1)
                         {
-                            pList.RemoveAt(lenghtSize - 1);
+                            pList.RemoveAt(lengthSize - 1);
                             playerManager.SpawnAllPlayers(pList);
                         }
 
                         playerManager.NewPlayer(idTmp);
+
+                        //Length of the binary: Int (4) + sizeOfTheThings (he calculated during the process of reading)
+                        binaryLength = 4 + lengthSize * totalLength;
                         break;
                     default:
                         break;
                 }
 
                 //We return the length of an int (Action), the ID length (as each character is 1 byte) and the specefic size of each parameters
-                return 4 + ID.Length + 0; //WIP
+                return 4 + ID.Length + binaryLength; //WIP
             }
             catch
             {
