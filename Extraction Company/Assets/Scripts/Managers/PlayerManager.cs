@@ -95,7 +95,7 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public void NewPlayer(string playerId)
+    public void NewPlayer(string playerId, string playerName = "Player")
     {
         //Hacer versión para server! El tiene que crear un player, y mandar a dicho cliente que lo ha creado la lista entera de players para que les haga spawn
         if(c_udp != null)
@@ -114,11 +114,11 @@ public class PlayerManager : MonoBehaviour
                 player.textID.text = playerId;
 
                 Transform child = player.playerObj.transform.GetChild(0);
-                child.gameObject.GetComponent<TextMeshPro>().text = serialization.tmpNameClient;
+                child.gameObject.GetComponent<TextMeshPro>().text = playerName;
 
                 passedScene = true;
             }
-            else
+            else //Todos el resto de player que ya existen spawnean uno nuevo que es el nuevo jugador que se quiere unir
             {
                 Player pTemp = new Player();
                 pTemp.ID = playerId;
@@ -130,6 +130,9 @@ public class PlayerManager : MonoBehaviour
 
                 pTemp.textID = pTemp.playerObj.GetComponent<TextMeshProUGUI>();
                 pTemp.textID.text = playerId;
+
+                Transform child = pTemp.playerObj.transform.GetChild(0);
+                child.gameObject.GetComponent<TextMeshPro>().text = playerName;
 
                 PlayerServer pServer = new PlayerServer();
                 pServer.ID = pTemp.ID;
@@ -154,9 +157,13 @@ public class PlayerManager : MonoBehaviour
             player.textID = player.playerObj.GetComponent<TextMeshProUGUI>();
             player.textID.text = playerId;
 
+            Transform child = player.playerObj.transform.GetChild(0);
+            child.gameObject.GetComponent<TextMeshPro>().text = playerName;
+
             PlayerServer pServer = new PlayerServer();
             pServer.ID = playerId;
             pServer.position = tmp.transform.position;
+            pServer.name = playerName;
 
             playerList.Add(pServer);
 
@@ -169,7 +176,7 @@ public class PlayerManager : MonoBehaviour
     public void CreateNewPlayer()
     {
         //while(player.playerObj == null) { }
-        serialization.serializeCreatePlayer(c_udp.clientID);
+        serialization.serializeCreatePlayer(c_udp.clientID, serialization.tmpNameClient);
     }
 
     public void SpawnAllPlayers(List<PlayerServer> pList)
@@ -189,6 +196,9 @@ public class PlayerManager : MonoBehaviour
 
             _player.textID = _player.playerObj.GetComponent<TextMeshProUGUI>();
             _player.textID.text = pServer.ID;
+
+            Transform child = _player.playerObj.transform.GetChild(0);
+            child.gameObject.GetComponent<TextMeshPro>().text = pServer.name;
         }
     }
 

@@ -91,7 +91,7 @@ public class Serialization : MonoBehaviour
         Send(bytes, id);
     }
 
-    public void serializeCreatePlayer(string id)
+    public void serializeCreatePlayer(string id, string name)
     {
         ActionType type = ActionType.CREATE_PLAYER;
 
@@ -99,6 +99,7 @@ public class Serialization : MonoBehaviour
         BinaryWriter writer = new BinaryWriter(stream);
         writer.Write((int)type);
         writer.Write(id);
+        writer.Write(name);
 
         //UnityEngine.Debug.Log("Create player serialized!");
         bytes = stream.ToArray();
@@ -122,6 +123,7 @@ public class Serialization : MonoBehaviour
         foreach (var a in playerList) //Se guarda ID = ..... move = [x, y, z], ID....
         {
             writer.Write(a.ID);
+            writer.Write(a.name);
 
             float[] move = { a.position.x, a.position.y, a.position.z };
 
@@ -204,7 +206,8 @@ public class Serialization : MonoBehaviour
                     case ActionType.CREATE_PLAYER:
                         {
                             ID = reader.ReadString();
-                            playerManager.NewPlayer(ID);
+                            string playerName = reader.ReadString();
+                            playerManager.NewPlayer(ID, playerName);
                             break;
                         }
                     case ActionType.MOVE_SERVER:
@@ -256,6 +259,8 @@ public class Serialization : MonoBehaviour
                         for (int i = 0; i < lengthSize; i++)
                         {
                             pServer.ID = reader.ReadString();
+                            pServer.name = reader.ReadString();
+
                             totalLength += pServer.ID.Length; //Length ID
 
                             float[] moveList1 = new float[3];
@@ -270,6 +275,7 @@ public class Serialization : MonoBehaviour
                         }
 
                         string idTmp = pServer.ID;
+                        string lastName = pServer.name;
 
                         if (playerManager.player.playerObj == null && pList.Count > 1)
                         {
@@ -277,7 +283,7 @@ public class Serialization : MonoBehaviour
                             playerManager.SpawnAllPlayers(pList);
                         }
 
-                        playerManager.NewPlayer(idTmp);
+                        playerManager.NewPlayer(idTmp, lastName);
 
                         //Length of the binary: Int (4) + sizeOfTheThings (he calculated during the process of reading)
                         binaryLength = 4 + lengthSize * totalLength;
