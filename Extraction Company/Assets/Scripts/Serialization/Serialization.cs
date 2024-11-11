@@ -91,7 +91,7 @@ public class Serialization : MonoBehaviour
         Send(bytes, id);
     }
 
-    public void serializeCreatePlayer(string id, string name)
+    public void serializeCreatePlayer(string id, string name, int numPlayers = -1)
     {
         ActionType type = ActionType.CREATE_PLAYER;
 
@@ -100,6 +100,7 @@ public class Serialization : MonoBehaviour
         writer.Write((int)type);
         writer.Write(id);
         writer.Write(name);
+        writer.Write(numPlayers);
 
         //UnityEngine.Debug.Log("Create player serialized!");
         bytes = stream.ToArray();
@@ -202,12 +203,22 @@ public class Serialization : MonoBehaviour
                             binaryLength = tmpNameClient.Length;
                             break;
                         }
-
                     case ActionType.CREATE_PLAYER:
                         {
                             ID = reader.ReadString();
                             string playerName = reader.ReadString();
-                            playerManager.NewPlayer(ID, playerName);
+                            int numPlayer = -1;
+
+                            int temp = reader.ReadInt32(); //We read the player number sent by create player
+
+                            if(temp<4 && temp >= 0) //We check data isn't corrupted
+                            {
+                                numPlayer = temp;
+                            }
+
+                            playerManager.NewPlayer(ID, playerName, numPlayer);
+
+                            binaryLength = ID.Length + playerName.Length + 4;
                             break;
                         }
                     case ActionType.MOVE_SERVER:

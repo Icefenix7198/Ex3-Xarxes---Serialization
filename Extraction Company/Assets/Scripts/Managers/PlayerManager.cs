@@ -41,6 +41,8 @@ public class PlayerManager : MonoBehaviour
     Vector3 movement;
     float dt;
 
+    public Transform[] spawnPositions;
+
     bool passedScene = false;
 
     private void Update()
@@ -92,17 +94,17 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public void NewPlayer(string playerId, string playerName = "Player")
+    public void NewPlayer(string playerId, string playerName = "Player",int playerNum = -1) //Player num is used for determining spawn positions for clients
     {
-        //Hacer versión para server! El tiene que crear un player, y mandar a dicho cliente que lo ha creado la lista entera de players para que les haga spawn
+        //Hacer versiï¿½n para server! El tiene que crear un player, y mandar a dicho cliente que lo ha creado la lista entera de players para que les haga spawn
         if(c_udp != null)
         {
-            if (player.playerObj == null)
+            if (player.playerObj == null) //The client doesn't have a player yet.
             {
                 player = new Player();
                 player.ID = playerId;
 
-                player.playerObj = Instantiate(playerPref, clientParent.transform);
+                player.playerObj = Instantiate(playerPref, playerNum == -1 ? clientParent.transform : spawnPositions[playerList.Count]); //If we don't recive what player it is we spawn on default position
 
                 player.playerRb = player.playerObj.GetComponent<Rigidbody>();
                 player.playerRb.freezeRotation = true;
@@ -125,12 +127,12 @@ public class PlayerManager : MonoBehaviour
 
                 passedScene = true;
             }
-            else //Todos el resto de player que ya existen spawnean uno nuevo que es el nuevo jugador que se quiere unir
+            else //If the client already has a player spawns the new player in its position to be able to see it.
             {
                 Player pTemp = new Player();
                 pTemp.ID = playerId;
 
-                pTemp.playerObj = Instantiate(playerPref, clientParent.transform);
+                pTemp.playerObj = Instantiate(playerPref, playerNum == -1 ? clientParent.transform : spawnPositions[playerList.Count]);
 
                 pTemp.playerRb = pTemp.playerObj.GetComponent<Rigidbody>();
                 pTemp.playerRb.freezeRotation = true;
@@ -154,7 +156,7 @@ public class PlayerManager : MonoBehaviour
             player = new Player();
             player.ID = playerId;
 
-            GameObject tmp = Instantiate(playerPref, clientParent.transform);
+            GameObject tmp = Instantiate(playerPref, spawnPositions[playerList.Count]);
 
             player.playerObj = tmp;
 
@@ -180,10 +182,11 @@ public class PlayerManager : MonoBehaviour
          //UnityEngine.Debug.Log("CreatePlayer!");
     }
 
-    public void CreateNewPlayer()
+    public void CreateNewPlayer() //This is called by the button CREATE PLAYER.
     {
+
         //while(player.playerObj == null) { }
-        serialization.serializeCreatePlayer(c_udp.clientID, serialization.tmpNameClient);
+        serialization.serializeCreatePlayer(c_udp.clientID, serialization.tmpNameClient, clientParent.transform.childCount);
     }
 
     public void SpawnAllPlayers(List<PlayerServer> pList)
