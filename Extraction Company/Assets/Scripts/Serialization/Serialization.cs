@@ -286,7 +286,7 @@ public class Serialization : MonoBehaviour
                             playerManager.ClientMove(ID, movement, rotaiton);
 
                             //Size of the 3 floats together
-                            binaryLength = sizeof(float) * 3;
+                            binaryLength = sizeof(float) * 7;
                             break;
                         }
                     case ActionType.SPAWN_PLAYERS: 
