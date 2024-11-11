@@ -355,7 +355,7 @@ MonoBehaviour:
   run: 304
   gdmask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   isGrounded: 0
   orientation: {fileID: 3811968528934650133}
 --- !u!224 &4115734487428201158 stripped
