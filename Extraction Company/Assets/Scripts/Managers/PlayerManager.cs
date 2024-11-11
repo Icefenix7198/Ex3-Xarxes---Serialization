@@ -95,7 +95,7 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public void NewPlayer(string playerId, string playerName = "Player",int playerNum = -1) //Player num is used for determining spawn positions for clients
+    public void NewPlayer(string playerId, string playerName = "Player",int playerNum = 4) //Player num is used for determining spawn positions for clients
     {
         //Hacer versi�n para server! El tiene que crear un player, y mandar a dicho cliente que lo ha creado la lista entera de players para que les haga spawn
         if(c_udp != null)
@@ -107,7 +107,7 @@ public class PlayerManager : MonoBehaviour
 
                 player.playerObj = Instantiate(playerPref, clientParent.transform); //If we don't recive what player it is we spawn on default position
 
-                player.playerObj.transform.position = playerNum == -1 ? clientParent.transform.position : spawnPositions[playerList.Count].position;
+                player.playerObj.transform.position = playerNum >= 4 ? clientParent.transform.position : spawnPositions[playerNum].position;
 
                 player.playerRb = player.playerObj.GetComponent<Rigidbody>();
                 player.playerRb.freezeRotation = true;
@@ -137,7 +137,7 @@ public class PlayerManager : MonoBehaviour
 
                 pTemp.playerObj = Instantiate(playerPref, clientParent.transform);
 
-                pTemp.playerObj.transform.position = playerNum == -1 ? clientParent.transform.position : spawnPositions[playerList.Count].position;
+                pTemp.playerObj.transform.position = playerNum >= 4 ? clientParent.transform.position : spawnPositions[playerNum+1].position;
 
                 pTemp.playerRb = pTemp.playerObj.GetComponent<Rigidbody>();
                 pTemp.playerRb.freezeRotation = true;
@@ -190,9 +190,8 @@ public class PlayerManager : MonoBehaviour
 
     public void CreateNewPlayer() //This is called by the button CREATE PLAYER.
     {
-
         //while(player.playerObj == null) { }
-        serialization.serializeCreatePlayer(c_udp.clientID, serialization.tmpNameClient, clientParent.transform.childCount);
+        serialization.serializeCreatePlayer(c_udp.clientID, serialization.tmpNameClient, playerList.Count);
     }
 
     public void SpawnAllPlayers(List<PlayerServer> pList)
@@ -219,28 +218,11 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    //public void MovePlayer()
-    //{
-    //    movementHorizontal = Input.GetAxis("Horizontal");
-    //    movementVertical = Input.GetAxis("Vertical");
-
-    //    if (movementHorizontal != 0 || movementVertical != 0)
-    //    {
-    //        movement = transform.forward * movementVertical + transform.right * movementHorizontal;
-
-    //        player.playerRb.velocity += movement.normalized * speed * Time.deltaTime;
-    //    }
-    //    else
-    //    {
-    //        player.playerRb.velocity = new Vector3(0, player.playerRb.velocity.y, 0);
-    //    }
-    //}
-
     public void ClientMove(string ID, Vector3 moveTo, Quaternion rotation)
     {
         List<GameObject> clientList = new List<GameObject>();
 
-        foreach (Transform child in clientParent.transform) //Cogemos todos los hijos del padre ClientList
+        foreach (Transform child in clientParent.transform)
         {
             clientList.Add(child.gameObject);
 

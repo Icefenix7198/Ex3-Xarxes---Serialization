@@ -121,7 +121,7 @@ public class Serialization : MonoBehaviour
         writer.Write((int)type);
         writer.Write(playerList.Count);
 
-        foreach (var a in playerList) //Se guarda ID = ..... move = [x, y, z], ID....
+        foreach (var a in playerList) //It stores ID = ....., name = ...... move = [x, y, z], ID....
         {
             writer.Write(a.ID);
             writer.Write(a.name);
@@ -335,7 +335,7 @@ public class Serialization : MonoBehaviour
                             playerManager.SpawnAllPlayers(pList);
                         }
 
-                        playerManager.NewPlayer(idTmp, lastName);
+                        playerManager.NewPlayer(idTmp, lastName, pList.Count-1);
 
                         //Length of the binary: Int (4) + sizeOfTheThings (he calculated during the process of reading)
                         binaryLength = 4 + lengthSize * totalLength;
