@@ -28,6 +28,7 @@ public class PlayerManager : MonoBehaviour
     public struct PlayerServer
     {
         public Vector3 position;
+        public Quaternion rotation;
         public string ID;
         public string name;
     }
@@ -88,7 +89,7 @@ public class PlayerManager : MonoBehaviour
             {
                 if (Mathf.Abs(player.playerRb.velocity.magnitude) > 0)
                 {
-                    serialization.serializeMovement(player.ID, player.playerObj.transform.position);
+                    serialization.serializeMovement(player.ID, player.playerObj.transform.position, player.playerObj.transform.rotation);
                 }
             }
         }
@@ -104,7 +105,9 @@ public class PlayerManager : MonoBehaviour
                 player = new Player();
                 player.ID = playerId;
 
-                player.playerObj = Instantiate(playerPref, playerNum == -1 ? clientParent.transform : spawnPositions[playerList.Count]); //If we don't recive what player it is we spawn on default position
+                player.playerObj = Instantiate(playerPref, clientParent.transform); //If we don't recive what player it is we spawn on default position
+
+                player.playerObj.transform.position = playerNum == -1 ? clientParent.transform.position : spawnPositions[playerList.Count].position;
 
                 player.playerRb = player.playerObj.GetComponent<Rigidbody>();
                 player.playerRb.freezeRotation = true;
@@ -120,7 +123,7 @@ public class PlayerManager : MonoBehaviour
                 Transform cam = player.playerObj.transform.GetChild(1);
                 cam.gameObject.SetActive(true);
 
-                if(mainCam != null)
+                if (mainCam != null)
                 {
                     mainCam.SetActive(false);
                 }
@@ -132,7 +135,9 @@ public class PlayerManager : MonoBehaviour
                 Player pTemp = new Player();
                 pTemp.ID = playerId;
 
-                pTemp.playerObj = Instantiate(playerPref, playerNum == -1 ? clientParent.transform : spawnPositions[playerList.Count]);
+                pTemp.playerObj = Instantiate(playerPref, clientParent.transform);
+
+                pTemp.playerObj.transform.position = playerNum == -1 ? clientParent.transform.position : spawnPositions[playerList.Count].position;
 
                 pTemp.playerRb = pTemp.playerObj.GetComponent<Rigidbody>();
                 pTemp.playerRb.freezeRotation = true;
@@ -156,9 +161,10 @@ public class PlayerManager : MonoBehaviour
             player = new Player();
             player.ID = playerId;
 
-            GameObject tmp = Instantiate(playerPref, spawnPositions[playerList.Count]);
+            GameObject tmp = Instantiate(playerPref, clientParent.transform);
 
             player.playerObj = tmp;
+            player.playerObj.transform.position = spawnPositions[playerList.Count].position;
 
             player.playerRb = player.playerObj.GetComponent<Rigidbody>();
             player.playerRb.freezeRotation = true;
@@ -195,6 +201,7 @@ public class PlayerManager : MonoBehaviour
         {
             GameObject tmpPlayer = Instantiate(playerPref, clientParent.transform);
             tmpPlayer.transform.position = pServer.position;
+            tmpPlayer.transform.rotation = pServer.rotation;
 
             Player _player = new Player();
             _player.ID = pServer.ID;
@@ -229,7 +236,7 @@ public class PlayerManager : MonoBehaviour
     //    }
     //}
 
-    public void ClientMove(string ID, Vector3 moveTo)
+    public void ClientMove(string ID, Vector3 moveTo, Quaternion rotation)
     {
         List<GameObject> clientList = new List<GameObject>();
 
@@ -242,6 +249,7 @@ public class PlayerManager : MonoBehaviour
             if(ID == idClient)
             {
                 child.gameObject.transform.position = moveTo;
+                child.gameObject.transform.rotation = rotation;
 
                 List<PlayerServer> tmpPlayers = new List<PlayerServer>(); 
 
@@ -253,6 +261,7 @@ public class PlayerManager : MonoBehaviour
                     if (pServer.ID == ID)
                     {
                         pTmp.position = moveTo;
+                        pTmp.rotation = rotation;
                         //playerList.FindIndex(pServer => pServer.Equals(pTmp));
                     }
 

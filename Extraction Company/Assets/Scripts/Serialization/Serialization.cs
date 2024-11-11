@@ -127,10 +127,16 @@ public class Serialization : MonoBehaviour
             writer.Write(a.name);
 
             float[] move = { a.position.x, a.position.y, a.position.z };
+            float[] rotation = { a.rotation.x, a.rotation.y, a.rotation.z, a.rotation.w };
 
-            foreach (var b in move)
+            foreach (var m in move)
             {
-                writer.Write(b);
+                writer.Write(m);
+            }
+
+            foreach (var r in rotation)
+            {
+                writer.Write(r);
             }
 
             lastID = a.ID;
@@ -142,7 +148,7 @@ public class Serialization : MonoBehaviour
         Send(bytes, lastID);
     }
 
-    public string serializeMovement(string ID, Vector3 movement)
+    public string serializeMovement(string ID, Vector3 movement, Quaternion rotation)
     {
         string id = ID;
         ActionType type = ActionType.NONE;
@@ -158,6 +164,7 @@ public class Serialization : MonoBehaviour
         }
 
         float[] move = { movement.x, movement.y, movement.z };
+        float[] rot = { rotation.x, rotation.y, rotation.z, rotation.w };
 
         stream = new MemoryStream();
         BinaryWriter writer = new BinaryWriter(stream);
@@ -167,6 +174,11 @@ public class Serialization : MonoBehaviour
         foreach (var i in move)
         {
             writer.Write(i);
+        }
+
+        foreach (var r in rot)
+        {
+            writer.Write(r);
         }
 
         //UnityEngine.Debug.Log("Movement was serialized!");
@@ -229,14 +241,24 @@ public class Serialization : MonoBehaviour
                             {
                                 moveList[i] = reader.ReadSingle();
                             }
+
                             Vector3 movement = new Vector3(moveList[0], moveList[1], moveList[2]);
-                            playerManager.ClientMove(ID, movement); //Movemos el player en el server.
+
+                            float[] rotList = new float[4];
+                            for (int i = 0; i < rotList.Length; i++)
+                            {
+                                rotList[i] = reader.ReadSingle();
+                            }
+
+                            Quaternion rotation = new Quaternion(rotList[0], rotList[1], rotList[2], rotList[3]);
+
+                            playerManager.ClientMove(ID, movement, rotation); //Movemos el player en el server.
 
                             GameObject playerMoved = playerManager.FindPlayer(ID); //Buscamos el player que se ha movido
 
                             if (playerMoved != null) //revisar que el player sea distinto de null para saber que existe
                             {
-                                serializeMovement(ID, playerMoved.transform.position);
+                                serializeMovement(ID, playerMoved.transform.position, playerMoved.transform.rotation);
                             }
 
                             //Size of the 3 floats together
@@ -251,8 +273,17 @@ public class Serialization : MonoBehaviour
                             {
                                 moveList[i] = reader.ReadSingle();
                             }
+
                             Vector3 movement = new Vector3(moveList[0], moveList[1], moveList[2]);
-                            playerManager.ClientMove(ID, movement);
+
+                            float[] rotateList = new float[4];
+                            for (int i = 0; i < rotateList.Length; i++)
+                            {
+                                rotateList[i] = reader.ReadSingle();
+                            }
+                            Quaternion rotaiton = new Quaternion(rotateList[0], rotateList[1], rotateList[2], rotateList[3]);
+
+                            playerManager.ClientMove(ID, movement, rotaiton);
 
                             //Size of the 3 floats together
                             binaryLength = sizeof(float) * 3;
@@ -282,6 +313,16 @@ public class Serialization : MonoBehaviour
                             totalLength += sizeof(float) * 3; //Length of the 
 
                             pServer.position = new Vector3(moveList1[0], moveList1[1], moveList1[2]);
+
+                            float[] rotation = new float[4];
+                            for (int a = 0; a < rotation.Length; a++)
+                            {
+                                rotation[a] = reader.ReadSingle();
+                            }
+                            totalLength += sizeof(float) * 4; //Length of the 
+
+                            pServer.rotation = new Quaternion(rotation[0], rotation[1], rotation[2], rotation[3]);
+
                             pList.Add(pServer);
                         }
 
