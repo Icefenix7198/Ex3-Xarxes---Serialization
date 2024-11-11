@@ -11,6 +11,7 @@ public class PlayerManager : MonoBehaviour
     public ServerUDP s_udp;
     public Serialization serialization;
     public GameObject clientParent;
+    public GameObject mainCam;
     
     //Boton de crear player (me da TOC que se vea el boton cuando no puede funcionar)
     public GameObject button;
@@ -68,7 +69,7 @@ public class PlayerManager : MonoBehaviour
         if(player.playerObj != null && c_udp != null) 
         {
             dt += Time.deltaTime;
-            MovePlayer();
+            //MovePlayer();
             if (dt > 0.0416f) //We only send the info some frames not constantly to reduce the server load
             {
                 SendMovement();
@@ -106,11 +107,21 @@ public class PlayerManager : MonoBehaviour
                 player.playerRb = player.playerObj.GetComponent<Rigidbody>();
                 player.playerRb.freezeRotation = true;
 
+                player.playerObj.GetComponent<PlayerMovement>().enabled = true;
+
                 player.textID = player.playerObj.GetComponent<TextMeshProUGUI>();
                 player.textID.text = playerId;
 
                 Transform child = player.playerObj.transform.GetChild(0);
                 child.gameObject.GetComponent<TextMeshPro>().text = playerName;
+                
+                Transform cam = player.playerObj.transform.GetChild(1);
+                cam.gameObject.SetActive(true);
+
+                if(mainCam != null)
+                {
+                    mainCam.SetActive(false);
+                }
 
                 passedScene = true;
             }
@@ -198,22 +209,22 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
-    public void MovePlayer()
-    {
-        movementHorizontal = Input.GetAxis("Horizontal");
-        movementVertical = Input.GetAxis("Vertical");
+    //public void MovePlayer()
+    //{
+    //    movementHorizontal = Input.GetAxis("Horizontal");
+    //    movementVertical = Input.GetAxis("Vertical");
 
-        if (movementHorizontal != 0 || movementVertical != 0)
-        {
-            movement = transform.forward * movementVertical + transform.right * movementHorizontal;
+    //    if (movementHorizontal != 0 || movementVertical != 0)
+    //    {
+    //        movement = transform.forward * movementVertical + transform.right * movementHorizontal;
 
-            player.playerRb.velocity += movement.normalized * speed * Time.deltaTime;
-        }
-        else
-        {
-            player.playerRb.velocity = new Vector3(0, player.playerRb.velocity.y, 0);
-        }
-    }
+    //        player.playerRb.velocity += movement.normalized * speed * Time.deltaTime;
+    //    }
+    //    else
+    //    {
+    //        player.playerRb.velocity = new Vector3(0, player.playerRb.velocity.y, 0);
+    //    }
+    //}
 
     public void ClientMove(string ID, Vector3 moveTo)
     {
