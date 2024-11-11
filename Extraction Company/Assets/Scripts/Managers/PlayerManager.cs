@@ -65,8 +65,6 @@ public class PlayerManager : MonoBehaviour
             button.SetActive(false);
         }
 
-        
-        
         if(player.playerObj != null && c_udp != null) 
         {
             dt += Time.deltaTime;
@@ -76,8 +74,6 @@ public class PlayerManager : MonoBehaviour
                 SendMovement();
                 dt = 0;
             }
-
-            
         }
     }
 

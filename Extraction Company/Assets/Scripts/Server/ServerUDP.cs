@@ -36,6 +36,8 @@ public class ServerUDP : MonoBehaviour
     bool deserializate;
     byte[] tempData;
 
+    public List<Transform> spawns;
+
     public struct UserUDP
     {
         public EndPoint Remote;
