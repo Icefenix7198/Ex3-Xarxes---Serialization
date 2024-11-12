@@ -33,6 +33,15 @@ public class PlayerManager : MonoBehaviour
         public string name;
     }
 
+    public struct PlayerToUpdate
+    {
+        public Vector3 actualPosition;
+        public Vector3 futurePosition;
+        public Quaternion actualRotation;
+        public Quaternion futureRotation;
+        public GameObject gameObject;
+    }
+
     public Player player;
     List<PlayerServer> playerList = new List<PlayerServer>();
 
@@ -41,6 +50,9 @@ public class PlayerManager : MonoBehaviour
     public float speed;
     Vector3 movement;
     float dt;
+
+    PlayerToUpdate moveUpdatePlayer = new PlayerToUpdate();
+    bool hasMoved = false;
 
     public Transform[] spawnPositions;
 
@@ -73,11 +85,16 @@ public class PlayerManager : MonoBehaviour
         {
             dt += Time.deltaTime;
             //MovePlayer();
-            if (dt > 0.0416f) //We only send the info some frames not constantly to reduce the server load
+            if (dt > 0.0418f) //We only send the info some frames not constantly to reduce the server load
             {
                 SendMovement();
                 dt = 0;
             }
+        }
+
+        if (hasMoved)
+        {
+            UpdatePositionAndRotation();
         }
     }
 
@@ -218,6 +235,26 @@ public class PlayerManager : MonoBehaviour
         }
     }
 
+    public void UpdatePositionAndRotation()
+    {
+        if (moveUpdatePlayer.gameObject.transform.position != moveUpdatePlayer.futurePosition)
+        {
+            moveUpdatePlayer.gameObject.transform.position = Vector3.Lerp(moveUpdatePlayer.gameObject.transform.position, moveUpdatePlayer.futurePosition, 100 * Time.deltaTime);
+            hasMoved = true;
+        }
+
+        if (moveUpdatePlayer.gameObject.transform.rotation != moveUpdatePlayer.futureRotation)
+        {
+            moveUpdatePlayer.gameObject.transform.rotation = Quaternion.Lerp(moveUpdatePlayer.gameObject.transform.rotation, moveUpdatePlayer.futureRotation, 100 * Time.deltaTime);
+            hasMoved = true;
+        }
+
+        if(moveUpdatePlayer.gameObject.transform.rotation != moveUpdatePlayer.futureRotation && moveUpdatePlayer.gameObject.transform.position != moveUpdatePlayer.futurePosition)
+        {
+            hasMoved = false;
+        }
+    }
+
     public void ClientMove(string ID, Vector3 moveTo, Quaternion rotation)
     {
         List<GameObject> clientList = new List<GameObject>();
@@ -230,8 +267,12 @@ public class PlayerManager : MonoBehaviour
 
             if(ID == idClient)
             {
-                child.gameObject.transform.position = moveTo;
-                child.gameObject.transform.rotation = rotation;
+                moveUpdatePlayer.gameObject = child.gameObject;
+                hasMoved = true;
+                moveUpdatePlayer.actualPosition = child.gameObject.transform.position;
+                moveUpdatePlayer.actualRotation = child.gameObject.transform.rotation;
+                moveUpdatePlayer.futurePosition = moveTo;
+                moveUpdatePlayer.futureRotation = rotation;
 
                 List<PlayerServer> tmpPlayers = new List<PlayerServer>(); 
 
