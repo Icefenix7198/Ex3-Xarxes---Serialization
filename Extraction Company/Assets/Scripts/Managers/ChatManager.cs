@@ -13,10 +13,8 @@ public class ChatManager : MonoBehaviour
     public TextMeshProUGUI chatText;
     public PassSceneManager passSceneManager;
 
-    public ServerTCP s_tcp;
     public ServerUDP s_udp;
 
-    public ClientTCP c_tcp;
     public ClientUDP c_udp;
 
     // Start is called before the first frame update

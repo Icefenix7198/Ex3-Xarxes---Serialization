@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using static PlayerManager;
+using static System.Net.Mime.MediaTypeNames;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -13,7 +14,6 @@ public class PlayerManager : MonoBehaviour
     public GameObject clientParent;
     public GameObject mainCam;
     
-    //Boton de crear player (me da TOC que se vea el boton cuando no puede funcionar)
     public GameObject button;
 
     public struct Player
@@ -78,6 +78,11 @@ public class PlayerManager : MonoBehaviour
                 SendMovement();
                 dt = 0;
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape)) 
+        {
+            UnityEngine.Application.Quit();
         }
     }
 
