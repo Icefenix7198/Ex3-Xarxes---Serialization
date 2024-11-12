@@ -296,7 +296,7 @@ public class Serialization : MonoBehaviour
 
                         PlayerServer pServer = new PlayerServer();
 
-                        int totalLength = 0;
+                        int totalLength = 0; //Binary length of all the things inside the server
 
                         for (int i = 0; i < lengthSize; i++)
                         {
@@ -335,7 +335,7 @@ public class Serialization : MonoBehaviour
                             playerManager.SpawnAllPlayers(pList);
                         }
 
-                        playerManager.NewPlayer(idTmp, lastName, pList.Count-1);
+                        playerManager.NewPlayer(idTmp, lastName, /*pList.Count-1*/ lengthSize-1);
 
                         //Length of the binary: Int (4) of TotalLength + sizeOfTheThings (he calculated during the process of reading)
                         binaryLength = 4 + totalLength;
