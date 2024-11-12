@@ -25,7 +25,7 @@ public class Serialization : MonoBehaviour
     public bool isS_udp;
     public string tmpNameClient;
 
-    byte[] bytes; //ERIC: Esto maybe seria mas correcto escrito como Data
+    byte[] bytes; //Messages serialized that are sent
     byte[] chainData; //WIP: All the bytes to send each update, where more than one serialized action is found, separated by a ";;"
 
     //Scripts
@@ -230,7 +230,7 @@ public class Serialization : MonoBehaviour
 
                             playerManager.NewPlayer(ID, playerName, numPlayer);
 
-                            binaryLength = ID.Length + playerName.Length + 4;
+                            binaryLength = playerName.Length + 4;
                             break;
                         }
                     case ActionType.MOVE_SERVER:
@@ -261,8 +261,8 @@ public class Serialization : MonoBehaviour
                                 serializeMovement(ID, playerMoved.transform.position, playerMoved.transform.rotation);
                             }
 
-                            //Size of the 3 floats together
-                            binaryLength = sizeof(float) * 3;
+                            //Size of the 3 floats together of movement + 4 floats of rotation
+                            binaryLength = sizeof(float) * 7;
                             break;
                         }
                     case ActionType.MOVE_CLIENT:
@@ -285,7 +285,7 @@ public class Serialization : MonoBehaviour
 
                             playerManager.ClientMove(ID, movement, rotaiton);
 
-                            //Size of the 3 floats together
+                            //Size of the 3 floats together of movement + 4 floats of rotation
                             binaryLength = sizeof(float) * 7;
                             break;
                         }
@@ -303,14 +303,14 @@ public class Serialization : MonoBehaviour
                             pServer.ID = reader.ReadString();
                             pServer.name = reader.ReadString();
 
-                            totalLength += pServer.ID.Length; //Length ID
+                            totalLength += pServer.ID.Length; //Length ID, as we dont assign ID and stays as "" it doesn't have a length in the final
 
                             float[] moveList1 = new float[3];
                             for (int a = 0; a < moveList1.Length; a++)
                             {
                                 moveList1[a] = reader.ReadSingle();
                             }
-                            totalLength += sizeof(float) * 3; //Length of the 
+                            totalLength += sizeof(float) * 3; //Length of the move vector
 
                             pServer.position = new Vector3(moveList1[0], moveList1[1], moveList1[2]);
 
@@ -319,7 +319,7 @@ public class Serialization : MonoBehaviour
                             {
                                 rotation[a] = reader.ReadSingle();
                             }
-                            totalLength += sizeof(float) * 4; //Length of the 
+                            totalLength += sizeof(float) * 4; //Length of the rotation quaternion
 
                             pServer.rotation = new Quaternion(rotation[0], rotation[1], rotation[2], rotation[3]);
 
@@ -337,8 +337,8 @@ public class Serialization : MonoBehaviour
 
                         playerManager.NewPlayer(idTmp, lastName, pList.Count-1);
 
-                        //Length of the binary: Int (4) + sizeOfTheThings (he calculated during the process of reading)
-                        binaryLength = 4 + lengthSize * totalLength;
+                        //Length of the binary: Int (4) of TotalLength + sizeOfTheThings (he calculated during the process of reading)
+                        binaryLength = 4 + totalLength;
                         break;
                     default:
                         break;
