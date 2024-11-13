@@ -40,6 +40,8 @@ public class PlayerManager : MonoBehaviour
         public Quaternion actualRotation;
         public Quaternion futureRotation;
         public GameObject gameObject;
+
+        public List<Vector3> positions;
     }
 
     public Player player;
@@ -58,6 +60,7 @@ public class PlayerManager : MonoBehaviour
 
     bool passedScene = false;
 
+    [System.Obsolete]
     private void Update()
     {
         if (serialization == null)
@@ -85,7 +88,7 @@ public class PlayerManager : MonoBehaviour
         {
             dt += Time.deltaTime;
             //MovePlayer();
-            if (dt > 0.0418f) //We only send the info some frames not constantly to reduce the server load
+            if (dt > 0.0418f)//  Random.RandomRange(0.0200f, 0.600f//We only send the info some frames not constantly to reduce the server load
             {
                 SendMovement();
                 dt = 0;
@@ -244,13 +247,13 @@ public class PlayerManager : MonoBehaviour
     {
         if (moveUpdatePlayer.gameObject.transform.position != moveUpdatePlayer.futurePosition)
         {
-            moveUpdatePlayer.gameObject.transform.position = Vector3.Lerp(moveUpdatePlayer.gameObject.transform.position, moveUpdatePlayer.futurePosition, 100 * Time.deltaTime);
+            moveUpdatePlayer.gameObject.transform.position = Vector3.Lerp(moveUpdatePlayer.gameObject.transform.position, moveUpdatePlayer.futurePosition, 300 * Time.deltaTime);
             hasMoved = true;
         }
 
         if (moveUpdatePlayer.gameObject.transform.rotation != moveUpdatePlayer.futureRotation)
         {
-            moveUpdatePlayer.gameObject.transform.rotation = Quaternion.Lerp(moveUpdatePlayer.gameObject.transform.rotation, moveUpdatePlayer.futureRotation, 100 * Time.deltaTime);
+            moveUpdatePlayer.gameObject.transform.rotation = Quaternion.Lerp(moveUpdatePlayer.gameObject.transform.rotation, moveUpdatePlayer.futureRotation, 300 * Time.deltaTime);
             hasMoved = true;
         }
 
