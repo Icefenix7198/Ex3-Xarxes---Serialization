@@ -48,10 +48,7 @@ public class PlayerManager : MonoBehaviour
     public Player player;
     List<PlayerServer> playerList = new List<PlayerServer>();
 
-    float movementHorizontal;
-    float movementVertical;
     public float speed;
-    Vector3 movement;
     float dt;
 
     float waitToUpdate = 0.0416f; //Times that waits until sending data and for lerp things
@@ -67,10 +64,6 @@ public class PlayerManager : MonoBehaviour
     [System.Obsolete]
 
     private void Start()
-    {
-        CreateNewPlayer();
-    }
-    private void Update()
     {
         if (serialization == null)
         {
@@ -88,11 +81,11 @@ public class PlayerManager : MonoBehaviour
 
         }
 
-        if (s_udp != null)
-        {
-            button.SetActive(false);
-        }
-
+        button.SetActive(false);
+        CreateNewPlayer();
+    }
+    private void Update()
+    {
         if(player.playerObj != null && c_udp != null) 
         {
             dt += Time.deltaTime;
