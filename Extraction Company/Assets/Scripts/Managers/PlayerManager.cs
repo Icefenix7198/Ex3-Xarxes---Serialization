@@ -88,7 +88,7 @@ public class PlayerManager : MonoBehaviour
         {
             dt += Time.deltaTime;
             //MovePlayer();
-            if (dt > 0.0418f)//  Random.RandomRange(0.0200f, 0.600f//We only send the info some frames not constantly to reduce the server load
+            if (dt > 0.1666f)//  Random.RandomRange(0.0200f, 0.600f//We only send the info some frames not constantly to reduce the server load
             {
                 SendMovement();
                 dt = 0;
