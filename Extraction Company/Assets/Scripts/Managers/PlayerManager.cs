@@ -56,7 +56,7 @@ public class PlayerManager : MonoBehaviour
 
     float waitToUpdate = 0.0416f; //Times that waits until sending data and for lerp things
     float dtInterpolate = 0;
-    public float smoothness = 1f;
+    public float smoothness = 0.001f;
 
     List<PlayerToUpdate> movedPlayers = new List<PlayerToUpdate>();
 
