@@ -62,11 +62,6 @@ public class PlayerManager : MonoBehaviour
     bool passedScene = false;
 
     [System.Obsolete]
-
-    private void Start()
-    {
-        //CreateNewPlayer();
-    }
     private void Update()
     {
         if (s_udp == null && c_udp == null)
@@ -94,8 +89,8 @@ public class PlayerManager : MonoBehaviour
         if(player.playerObj != null && c_udp != null) 
         {
             dt += Time.deltaTime;
-            //MovePlayer();
-            if (dt > waitToUpdate)//  Random.RandomRange(0.0200f, 0.600f//We only send the info some frames not constantly to reduce the server load
+
+            if (dt > waitToUpdate) //Random.RandomRange(0.0200f, 0.600f//We only send the info some frames not constantly to reduce the server load
             {
                 SendMovement();
                 dt = 0;
@@ -126,7 +121,6 @@ public class PlayerManager : MonoBehaviour
 
     public void NewPlayer(string playerId, string playerName = "Player",int playerNum = 4) //Player num is used for determining spawn positions for clients
     {
-        //Hacer versi�n para server! El tiene que crear un player, y mandar a dicho cliente que lo ha creado la lista entera de players para que les haga spawn
         if(c_udp != null)
         {
             if (player.playerObj == null) //The client doesn't have a player yet.
@@ -213,13 +207,10 @@ public class PlayerManager : MonoBehaviour
 
             serialization.SendAllPlayers(playerList);
         }
-
-         //UnityEngine.Debug.Log("CreatePlayer!");
     }
 
     public void CreateNewPlayer() //This is called by the button CREATE PLAYER.
     {
-        //while(player.playerObj == null) { }
         serialization.serializeCreatePlayer(c_udp.clientID, serialization.tmpNameClient, playerList.Count);
     }
 
@@ -322,15 +313,6 @@ public class PlayerManager : MonoBehaviour
                 movedPlayer.rotations.Enqueue(rotation);
 
                 bool exist = false;
-                PlayerToUpdate pastmoved = new PlayerToUpdate();
-
-                //foreach (var movedGameobject in movedPlayers)
-                //{
-                //    if (movedGameobject.gameObject == movedPlayer.gameObject)
-                //    {
-                //        pastmoved = movedGameobject;
-                //    }
-                //}
 
                 for(int i = 0; i < movedPlayers.Count; i++) 
                 {
@@ -358,7 +340,6 @@ public class PlayerManager : MonoBehaviour
                     {
                         pTmp.position = moveTo;
                         pTmp.rotation = rotation;
-                        //playerList.FindIndex(pServer => pServer.Equals(pTmp));
                     }
 
                     tmpPlayers.Add(pTmp);
@@ -371,7 +352,7 @@ public class PlayerManager : MonoBehaviour
 
     public GameObject FindPlayer(string ID)
     {
-        foreach (Transform child in clientParent.transform) //Cogemos todos los hijos del padre ClientList
+        foreach (Transform child in clientParent.transform) //We take all the childrens from the father ClientList
         {
             string idClient = child.gameObject.GetComponent<TextMeshProUGUI>().text;
 

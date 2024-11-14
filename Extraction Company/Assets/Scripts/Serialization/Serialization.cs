@@ -85,7 +85,6 @@ public class Serialization : MonoBehaviour
         writer.Write(id);
         writer.Write(name);
 
-        //UnityEngine.Debug.Log("Assign ID serialized!");
         bytes = stream.ToArray();
 
         Send(bytes, id);
@@ -102,7 +101,6 @@ public class Serialization : MonoBehaviour
         writer.Write(name);
         writer.Write(numPlayers);
 
-        //UnityEngine.Debug.Log("Create player serialized!");
         bytes = stream.ToArray();
 
         Send(bytes, id);
@@ -142,7 +140,6 @@ public class Serialization : MonoBehaviour
             lastID = a.ID;
         }
 
-        //UnityEngine.Debug.Log("Send all players serialized!");
         bytes = stream.ToArray();
 
         Send(bytes, lastID);
@@ -181,7 +178,6 @@ public class Serialization : MonoBehaviour
             writer.Write(r);
         }
 
-        //UnityEngine.Debug.Log("Movement was serialized!");
         bytes = stream.ToArray();
 
         Send(bytes, id);
@@ -252,11 +248,11 @@ public class Serialization : MonoBehaviour
 
                             Quaternion rotation = new Quaternion(rotList[0], rotList[1], rotList[2], rotList[3]);
 
-                            playerManager.ClientMove(ID, movement, rotation); //Movemos el player en el server.
+                            playerManager.ClientMove(ID, movement, rotation); //Move te player in the server
 
-                            GameObject playerMoved = playerManager.FindPlayer(ID); //Buscamos el player que se ha movido
+                            GameObject playerMoved = playerManager.FindPlayer(ID); //Search the player who has moved
 
-                            if (playerMoved != null) //revisar que el player sea distinto de null para saber que existe
+                            if (playerMoved != null) //Check is not null
                             {
                                 serializeMovement(ID, playerMoved.transform.position, playerMoved.transform.rotation);
                             }
@@ -335,7 +331,7 @@ public class Serialization : MonoBehaviour
                             playerManager.SpawnAllPlayers(pList);
                         }
 
-                        playerManager.NewPlayer(idTmp, lastName, /*pList.Count-1*/ lengthSize-1);
+                        playerManager.NewPlayer(idTmp, lastName, lengthSize-1);
 
                         //Length of the binary: Int (4) of TotalLength + sizeOfTheThings (he calculated during the process of reading)
                         binaryLength = 4 + totalLength;
@@ -349,7 +345,6 @@ public class Serialization : MonoBehaviour
             }
             catch
             {
-                //UnityEngine.Debug.Log("Data was corrupted during deserialization");
             }
         }
         catch
@@ -399,17 +394,11 @@ public class Serialization : MonoBehaviour
 
             try
             {
-                //ActionType action = (ActionType)reader.ReadInt32(); //We exctract the action to have next the ID and be able to read it.
                 ID = reader.ReadString();
             }
             catch
             {
-                //UnityEngine.Debug.LogWarning("Id couldn't be taken");
             }
-
-            //UnityEngine.Debug.Log("ID Taked! It was:" + ID);
-
-
         }
         catch
         {
@@ -435,11 +424,9 @@ public class Serialization : MonoBehaviour
             try
             {
                 action = (ActionType)reader.ReadInt32();
-                //UnityEngine.Debug.Log("Action Taked! It was: " + action);
             }
             catch
             {
-                //UnityEngine.Debug.LogWarning("Action could not be catched!");
             }
 
         }
@@ -454,12 +441,6 @@ public class Serialization : MonoBehaviour
     public byte[] AddToSerializeChain(byte[] chain , byte[] message) //Old byte array, new btye array to add after it.
     {
         byte[] separator = new byte[] { 2, 59, 59 }; //This is the equivalent of serializing ";;" as a string, its written in this way to make the process faster
-
-        //stream = new MemoryStream();
-        //BinaryWriter writer = new BinaryWriter(stream);
-        //writer.Write(";;");
-
-        //separator = stream.ToArray(); //A byte of ;; is [2][59][59]
 
         byte[] rv = new byte[chain.Length + message.Length + separator.Length]; //New byte with old chain + message + separators
 
