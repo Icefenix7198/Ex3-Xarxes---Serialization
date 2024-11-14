@@ -689,7 +689,7 @@ MonoBehaviour:
   clientParent: {fileID: 561941398}
   mainCam: {fileID: 1668333941}
   button: {fileID: 471366900}
-  speed: 10
+  speed: 5
   smoothness: 0.001
   spawnPositions:
   - {fileID: 1642776944}
@@ -1288,7 +1288,7 @@ Transform:
   m_GameObject: {fileID: 1668333941}
   serializedVersion: 2
   m_LocalRotation: {x: 0.11901772, y: -0, z: -0, w: 0.9928922}
-  m_LocalPosition: {x: 0, y: 6.2, z: -22.4}
+  m_LocalPosition: {x: -1.62, y: 10.17, z: -29.64}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
