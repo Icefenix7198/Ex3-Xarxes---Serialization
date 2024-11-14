@@ -54,6 +54,9 @@ public class PlayerManager : MonoBehaviour
     Vector3 movement;
     float dt;
 
+    float waitToUpdate = 0.1666f; //Times that waits until sending data and for lerp things
+    float dtInterpolate = 0;
+
     List<PlayerToUpdate> movedPlayers = new List<PlayerToUpdate>();
 
     public Transform[] spawnPositions;
@@ -88,7 +91,7 @@ public class PlayerManager : MonoBehaviour
         {
             dt += Time.deltaTime;
             //MovePlayer();
-            if (dt > 0.1666f)//  Random.RandomRange(0.0200f, 0.600f//We only send the info some frames not constantly to reduce the server load
+            if (dt > waitToUpdate)//  Random.RandomRange(0.0200f, 0.600f//We only send the info some frames not constantly to reduce the server load
             {
                 SendMovement();
                 dt = 0;
@@ -242,8 +245,13 @@ public class PlayerManager : MonoBehaviour
 
     public void UpdatePositionAndRotation()
     {
-        foreach(var movedPlayer in movedPlayers)
+        if(dtInterpolate > waitToUpdate)
         {
+            dtInterpolate = 0;
+        }
+
+        foreach(var movedPlayer in movedPlayers)
+        { 
             if(movedPlayers.Count > 0)
             {
                 if (movedPlayer.positions.Count > 0) 
@@ -251,7 +259,7 @@ public class PlayerManager : MonoBehaviour
                     if (movedPlayer.gameObject.transform.position != movedPlayer.positions.Peek())
                     {
                         Vector3 moveTo = movedPlayer.positions.Peek();
-                        movedPlayer.gameObject.transform.position = Vector3.Lerp(movedPlayer.gameObject.transform.position, moveTo, 300 * Time.deltaTime);
+                        movedPlayer.gameObject.transform.position = Vector3.Lerp(movedPlayer.gameObject.transform.position, moveTo, dtInterpolate / waitToUpdate);
                     }
                     else
                     {
@@ -268,7 +276,7 @@ public class PlayerManager : MonoBehaviour
                     if (movedPlayer.gameObject.transform.rotation != movedPlayer.rotations.Peek())
                     {
                         Quaternion rotationTo = movedPlayer.rotations.Peek();
-                        movedPlayer.gameObject.transform.rotation = Quaternion.Lerp(movedPlayer.gameObject.transform.rotation, rotationTo, 300 * Time.deltaTime);
+                        movedPlayer.gameObject.transform.rotation = Quaternion.Lerp(movedPlayer.gameObject.transform.rotation, rotationTo, dtInterpolate / waitToUpdate);
                     }
                     else
                     {
@@ -281,6 +289,8 @@ public class PlayerManager : MonoBehaviour
                 }
             }
         }
+
+        dtInterpolate += Time.deltaTime;
     }
 
     public void ClientMove(string ID, Vector3 moveTo, Quaternion rotation)
