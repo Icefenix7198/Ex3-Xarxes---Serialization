@@ -65,6 +65,11 @@ public class PlayerManager : MonoBehaviour
     bool passedScene = false;
 
     [System.Obsolete]
+
+    private void Start()
+    {
+        CreateNewPlayer();
+    }
     private void Update()
     {
         if (serialization == null)
