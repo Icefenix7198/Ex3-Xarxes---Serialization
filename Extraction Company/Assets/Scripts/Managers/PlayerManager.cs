@@ -65,6 +65,16 @@ public class PlayerManager : MonoBehaviour
 
     private void Start()
     {
+        //CreateNewPlayer();
+    }
+    private void Update()
+    {
+        if (s_udp == null && c_udp == null)
+        {
+            s_udp = GameObject.Find("UDP_Manager").GetComponent<ServerUDP>();
+
+        }
+
         if (serialization == null)
         {
             serialization = GameObject.Find("UDP_Manager").GetComponent<Serialization>();
@@ -73,19 +83,14 @@ public class PlayerManager : MonoBehaviour
         if (c_udp == null && s_udp == null)
         {
             c_udp = GameObject.Find("UDP_Manager").GetComponent<ClientUDP>();
+            CreateNewPlayer();
         }
 
-        if (s_udp == null && c_udp == null)
+        if (s_udp != null)
         {
-            s_udp = GameObject.Find("UDP_Manager").GetComponent<ServerUDP>();
-
+            button.SetActive(false);
         }
 
-        button.SetActive(false);
-        CreateNewPlayer();
-    }
-    private void Update()
-    {
         if(player.playerObj != null && c_udp != null) 
         {
             dt += Time.deltaTime;
