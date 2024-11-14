@@ -690,6 +690,7 @@ MonoBehaviour:
   mainCam: {fileID: 1668333941}
   button: {fileID: 471366900}
   speed: 10
+  smoothness: 0.001
   spawnPositions:
   - {fileID: 1642776944}
   - {fileID: 284415075}
