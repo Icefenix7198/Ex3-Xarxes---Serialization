@@ -296,6 +296,7 @@ public class PlayerManager : MonoBehaviour
             if(ID == idClient)
             {
                 PlayerToUpdate movedPlayer = new PlayerToUpdate();
+
                 movedPlayer.gameObject = child.gameObject;
                 movedPlayer.actualPosition = child.gameObject.transform.position;
                 movedPlayer.actualRotation = child.gameObject.transform.rotation;
@@ -305,22 +306,29 @@ public class PlayerManager : MonoBehaviour
                 movedPlayer.rotations.Enqueue(rotation);
 
                 bool exist = false;
+                PlayerToUpdate pastmoved = new PlayerToUpdate();
 
-                foreach (var movedGameobject in movedPlayers)
+                //foreach (var movedGameobject in movedPlayers)
+                //{
+                //    if (movedGameobject.gameObject == movedPlayer.gameObject)
+                //    {
+                //        pastmoved = movedGameobject;
+                //    }
+                //}
+
+                for(int i = 0; i < movedPlayers.Count; i++) 
                 {
-                    if (movedGameobject.gameObject == movedPlayer.gameObject)
+                    if(movedPlayers[i].gameObject == movedPlayer.gameObject) 
                     {
+                        movedPlayers[i] = movedPlayer;
                         exist = true;
+
                     }
                 }
 
                 if (!exist)
                 {
                     movedPlayers.Add(movedPlayer);
-                }
-                else
-                {
-                    movedPlayers.FindIndex(movedPlayers => movedPlayers.Equals(movedPlayer));
                 }
 
                 List<PlayerServer> tmpPlayers = new List<PlayerServer>(); 
