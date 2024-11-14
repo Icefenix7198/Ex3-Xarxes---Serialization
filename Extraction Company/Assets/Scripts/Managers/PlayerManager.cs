@@ -284,7 +284,7 @@ public class PlayerManager : MonoBehaviour
                     if (movedPlayer.gameObject.transform.rotation != movedPlayer.rotations.Peek())
                     {
                         Quaternion rotationTo = movedPlayer.rotations.Peek();
-                        movedPlayer.gameObject.transform.rotation = Quaternion.Lerp(movedPlayer.gameObject.transform.rotation, rotationTo, dtInterpolate / 0.5f);
+                        movedPlayer.gameObject.transform.rotation = Quaternion.Lerp(movedPlayer.gameObject.transform.rotation, rotationTo, dtInterpolate / 0.2f);
                     }
                     else
                     {
