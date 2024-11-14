@@ -41,7 +41,8 @@ public class PlayerManager : MonoBehaviour
         public Quaternion futureRotation;
         public GameObject gameObject;
 
-        public List<Vector3> positions;
+        public Queue<Vector3> positions;
+        public Queue<Quaternion> rotations;
     }
 
     public Player player;
@@ -53,8 +54,7 @@ public class PlayerManager : MonoBehaviour
     Vector3 movement;
     float dt;
 
-    PlayerToUpdate moveUpdatePlayer = new PlayerToUpdate();
-    bool hasMoved = false;
+    List<PlayerToUpdate> movedPlayers = new List<PlayerToUpdate>();
 
     public Transform[] spawnPositions;
 
@@ -94,16 +94,13 @@ public class PlayerManager : MonoBehaviour
                 dt = 0;
             }
         }
-
-        if (hasMoved)
-        {
-            UpdatePositionAndRotation();
-        }
         
         if (Input.GetKeyDown(KeyCode.Escape)) 
         {
             UnityEngine.Application.Quit();
         }
+
+        UpdatePositionAndRotation();
     }
 
     private void SendMovement()
@@ -245,21 +242,44 @@ public class PlayerManager : MonoBehaviour
 
     public void UpdatePositionAndRotation()
     {
-        if (moveUpdatePlayer.gameObject.transform.position != moveUpdatePlayer.futurePosition)
+        foreach(var movedPlayer in movedPlayers)
         {
-            moveUpdatePlayer.gameObject.transform.position = Vector3.Lerp(moveUpdatePlayer.gameObject.transform.position, moveUpdatePlayer.futurePosition, 300 * Time.deltaTime);
-            hasMoved = true;
-        }
+            if(movedPlayers.Count > 0)
+            {
+                if (movedPlayer.positions.Count > 0) 
+                {
+                    if (movedPlayer.gameObject.transform.position != movedPlayer.positions.Peek())
+                    {
+                        Vector3 moveTo = movedPlayer.positions.Peek();
+                        movedPlayer.gameObject.transform.position = Vector3.Lerp(movedPlayer.gameObject.transform.position, moveTo, 300 * Time.deltaTime);
+                    }
+                    else
+                    {
+                        if (movedPlayers.Count > 0)
+                        {
+                            movedPlayer.positions.Dequeue();
+                            movedPlayers.FindIndex(movedPlayers => movedPlayers.Equals(movedPlayer));
+                        }
+                    }
+                }
 
-        if (moveUpdatePlayer.gameObject.transform.rotation != moveUpdatePlayer.futureRotation)
-        {
-            moveUpdatePlayer.gameObject.transform.rotation = Quaternion.Lerp(moveUpdatePlayer.gameObject.transform.rotation, moveUpdatePlayer.futureRotation, 300 * Time.deltaTime);
-            hasMoved = true;
-        }
-
-        if(moveUpdatePlayer.gameObject.transform.rotation != moveUpdatePlayer.futureRotation && moveUpdatePlayer.gameObject.transform.position != moveUpdatePlayer.futurePosition)
-        {
-            hasMoved = false;
+                if (movedPlayer.rotations.Count > 0)
+                {
+                    if (movedPlayer.gameObject.transform.rotation != movedPlayer.rotations.Peek())
+                    {
+                        Quaternion rotationTo = movedPlayer.rotations.Peek();
+                        movedPlayer.gameObject.transform.rotation = Quaternion.Lerp(movedPlayer.gameObject.transform.rotation, rotationTo, 300 * Time.deltaTime);
+                    }
+                    else
+                    {
+                        if (movedPlayers.Count > 0)
+                        {
+                            movedPlayer.rotations.Dequeue();
+                            movedPlayers.FindIndex(movedPlayers => movedPlayers.Equals(movedPlayer));
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -275,12 +295,33 @@ public class PlayerManager : MonoBehaviour
 
             if(ID == idClient)
             {
-                moveUpdatePlayer.gameObject = child.gameObject;
-                hasMoved = true;
-                moveUpdatePlayer.actualPosition = child.gameObject.transform.position;
-                moveUpdatePlayer.actualRotation = child.gameObject.transform.rotation;
-                moveUpdatePlayer.futurePosition = moveTo;
-                moveUpdatePlayer.futureRotation = rotation;
+                PlayerToUpdate movedPlayer = new PlayerToUpdate();
+                movedPlayer.gameObject = child.gameObject;
+                movedPlayer.actualPosition = child.gameObject.transform.position;
+                movedPlayer.actualRotation = child.gameObject.transform.rotation;
+                movedPlayer.positions = new Queue<Vector3>();
+                movedPlayer.rotations = new Queue<Quaternion>();
+                movedPlayer.positions.Enqueue(moveTo);
+                movedPlayer.rotations.Enqueue(rotation);
+
+                bool exist = false;
+
+                foreach (var movedGameobject in movedPlayers)
+                {
+                    if (movedGameobject.gameObject == movedPlayer.gameObject)
+                    {
+                        exist = true;
+                    }
+                }
+
+                if (!exist)
+                {
+                    movedPlayers.Add(movedPlayer);
+                }
+                else
+                {
+                    movedPlayers.FindIndex(movedPlayers => movedPlayers.Equals(movedPlayer));
+                }
 
                 List<PlayerServer> tmpPlayers = new List<PlayerServer>(); 
 
