@@ -56,6 +56,7 @@ public class PlayerManager : MonoBehaviour
 
     float waitToUpdate = 0.0416f; //Times that waits until sending data and for lerp things
     float dtInterpolate = 0;
+    public float smoothness = 1f;
 
     List<PlayerToUpdate> movedPlayers = new List<PlayerToUpdate>();
 
@@ -250,6 +251,8 @@ public class PlayerManager : MonoBehaviour
             dtInterpolate = 0;
         }
 
+        Vector3 vel = new Vector3();
+
         foreach(var movedPlayer in movedPlayers)
         { 
             if(movedPlayers.Count > 0)
@@ -259,7 +262,7 @@ public class PlayerManager : MonoBehaviour
                     if (movedPlayer.gameObject.transform.position != movedPlayer.positions.Peek())
                     {
                         Vector3 moveTo = movedPlayer.positions.Peek();
-                        movedPlayer.gameObject.transform.position = Vector3.Lerp(movedPlayer.gameObject.transform.position, moveTo, dtInterpolate / 1);
+                        movedPlayer.gameObject.transform.position = Vector3.SmoothDamp(movedPlayer.gameObject.transform.position, moveTo, ref vel, smoothness);
                     }
                     else
                     {
