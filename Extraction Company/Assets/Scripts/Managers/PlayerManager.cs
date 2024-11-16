@@ -257,7 +257,7 @@ public class PlayerManager : MonoBehaviour
                     {
                         Vector3 moveTo = movedPlayer.positions.Peek();
                         //movedPlayer.gameObject.transform.position = Vector3.SmoothDamp(movedPlayer.gameObject.transform.position, moveTo, ref vel, smoothness);
-                        movedPlayer.gameObject.transform.position = Vector3.Lerp(movedPlayer.gameObject.transform.position, moveTo, dtInterpolate / 0.1f);
+                        movedPlayer.gameObject.transform.position = Vector3.Lerp(movedPlayer.gameObject.transform.position, moveTo, dtInterpolate / 0.2f);
                     }
                     else
                     {
