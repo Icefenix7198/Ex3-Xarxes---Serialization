@@ -325,13 +325,16 @@ public class Serialization : MonoBehaviour
                         string idTmp = pServer.ID;
                         string lastName = pServer.name;
 
-                        if (playerManager.player.playerObj == null && pList.Count > 1)
+                        if (!playerManager.button.active)
                         {
-                            pList.RemoveAt(lengthSize - 1);
-                            playerManager.SpawnAllPlayers(pList);
-                        }
+                            if (playerManager.player.playerObj == null && pList.Count > 1)
+                            {
+                                pList.RemoveAt(lengthSize - 1);
+                                playerManager.SpawnAllPlayers(pList);
+                            }
 
-                        playerManager.NewPlayer(idTmp, lastName, lengthSize-1);
+                            playerManager.NewPlayer(idTmp, lastName, lengthSize - 1);
+                        }
 
                         //Length of the binary: Int (4) of TotalLength + sizeOfTheThings (he calculated during the process of reading)
                         binaryLength = 4 + totalLength;
