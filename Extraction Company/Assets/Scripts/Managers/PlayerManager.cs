@@ -110,7 +110,7 @@ public class PlayerManager : MonoBehaviour
         {
             if (player.playerObj != null)
             {
-                if (Mathf.Abs(player.playerRb.velocity.magnitude) > 0)
+                if (Mathf.Abs(player.playerRb.velocity.magnitude) > 0.05 || Input.GetAxisRaw("Mouse X") != 0)
                 {
                     serialization.serializeMovement(player.ID, player.playerObj.transform.position, player.playerObj.transform.rotation);
                 }

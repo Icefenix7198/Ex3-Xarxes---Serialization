@@ -29,10 +29,6 @@ public class PlayerMovement : MonoBehaviour
     float playerHeight;
     public bool isGrounded;
 
-    //[Header("__________________________UI__________________________")]
-    //[Space(10)]
-    //public TextMeshProUGUI speedText;
-
     [Header("________________________ASSIGN________________________")]
     [Space(10)]
     public Transform orientation;

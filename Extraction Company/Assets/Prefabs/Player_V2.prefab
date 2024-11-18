@@ -73,7 +73,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 119
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -119,7 +119,7 @@ GameObject:
   - component: {fileID: 3811968528934650133}
   - component: {fileID: 3042406420434660063}
   - component: {fileID: 2498869252617351153}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Orientation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -283,6 +283,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6953025022104793281, guid: bf1bb9bb2383e0847a0917ee02b18826, type: 3}
+      propertyPath: m_Interpolate
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6953025022104793281, guid: bf1bb9bb2383e0847a0917ee02b18826, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7817803779965202348, guid: bf1bb9bb2383e0847a0917ee02b18826, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0.0000009407158
@@ -348,14 +356,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 0.5
   runMultiplier: 2
-  jumpForce: 8
+  jumpForce: 0
   jumpCooldown: 0.2
   airMultiplier: 0.4
   jumpKey: 32
   run: 304
   gdmask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
   isGrounded: 0
   orientation: {fileID: 3811968528934650133}
 --- !u!224 &4115734487428201158 stripped
