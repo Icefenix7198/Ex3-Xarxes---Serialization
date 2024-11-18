@@ -66,23 +66,6 @@ public class PlayerMovement : MonoBehaviour
 
         ReadInputs();
         SpeedController();
-        
-        //Mostrar la velocidad del player basica, NO SALTO
-        //if(horizontalMovement != 0 || verticalMovement != 0) //Arreglar que al girar camara no pille la velocidad
-        //{
-        //    if (playerRb.velocity.magnitude < speed - 0.1)
-        //    {
-        //        speedText.text = playerRb.velocity.magnitude.ToString();
-        //    }
-        //    else
-        //    {
-        //        speedText.text = speed.ToString();
-        //    }
-        //}
-        //else
-        //{
-        //    speedText.text = "0";
-        //}
     }
 
     private void MovePlayer()

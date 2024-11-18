@@ -78,7 +78,6 @@ public class PlayerManager : MonoBehaviour
         if (c_udp == null && s_udp == null)
         {
             c_udp = GameObject.Find("UDP_Manager").GetComponent<ClientUDP>();
-            CreateNewPlayer();
         }
 
         if (s_udp != null)
