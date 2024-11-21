@@ -30,17 +30,21 @@ public class WanderState : State
         //If conditions are met choose a new searchNodeObjective
         if (
             targetSearchNode == null
-            || wanderPrecisionArea <= Vector3.Distance(this.gameObject.transform.position, targetSearchNode.transform.position)
+            || wanderPrecisionArea >= Vector3.Distance(this.gameObject.transform.position, targetSearchNode.transform.position)
             || dtForChange <= dt
             ) 
-        { 
+        {
+            if( targetSearchNode != null ) { targetSearchNode.GetComponent<Renderer>().material.color = Color.blue; }
             targetSearchNode = ChooseNextNode();
-            dtForChange = 0.0F;
+            targetSearchNode.GetComponent<Renderer>().material.color = Color.yellow; //Highligth target node
+            Debug.Log("Target Changed to:" + targetSearchNode.transform.name + " at:" + targetSearchNode.transform.position + " with distance:" + Vector3.Distance(this.gameObject.transform.position, targetSearchNode.transform.position));
+            dt = 0.0F;
         }
 
         //Move towards the objective.
+        agent.SetDestination(targetSearchNode.transform.position);
 
-        if (true) 
+        if (false) 
         {
             return chaseState;
         }
@@ -56,13 +60,15 @@ public class WanderState : State
     {
         //In case we didn't assign it or it wasn't saved although it was an instance
         if(listNodes == null) { listNodes = GameObject.FindWithTag("IA wander positions"); }
+        if(checkedPositons == null) { checkedPositons = new Queue<GameObject>(); }
 
         if (targetSearchNode != null) 
         {
             //If we reached the maximun amout of stored search nodes dequeue the first
             if(checkedPositons.Count > maxSizeQueue) 
             {
-                checkedPositons.Dequeue();
+                
+                checkedPositons.Dequeue().GetComponent<Renderer>().material.color = new Color(0.05614354f, 0.1132075f, 0f);
             }
 
             //Add the last searched node to not take it into account
@@ -88,14 +94,18 @@ public class WanderState : State
             if (Vector3.Distance(this.gameObject.transform.position, listNodes.transform.GetChild(i).position) <= searchNodeAreaSelection) 
             {
                 indexToRandomChooseFrom.Add(i);
+
+                if(Vector3.Distance(this.gameObject.transform.position, listNodes.transform.GetChild(i).position) >= searchNodeAreaSelection / 2) { indexToRandomChooseFrom.Add(i); }
+                if (Vector3.Distance(this.gameObject.transform.position, listNodes.transform.GetChild(i).position) >= searchNodeAreaSelection / 1.25f) { indexToRandomChooseFrom.Add(i); }
             }
+            //else { Debug.Log("Distance to " + listNodes.transform.GetChild(i).name + "was: " + Vector3.Distance(this.gameObject.transform.position, listNodes.transform.GetChild(i).position)); }
         }
 
         int choosenIndex = Random.Range(0, indexToRandomChooseFrom.Count);
 
 
-        return listNodes.transform.GetChild(choosenIndex).gameObject;
+        return listNodes.transform.GetChild(indexToRandomChooseFrom[choosenIndex]).gameObject;
     }
-
+    
     
 }

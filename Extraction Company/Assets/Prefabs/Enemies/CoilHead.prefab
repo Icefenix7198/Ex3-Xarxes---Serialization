@@ -89,7 +89,7 @@ GameObject:
   - component: {fileID: 1412184427440793767}
   - component: {fileID: 6960458260878180371}
   m_Layer: 0
-  m_Name: Idle State
+  m_Name: Wander State
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -123,12 +123,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerDetectionArea: 12
-  wanderPrecisionArea: 6
-  searchNodeAreaSelection: 8
+  wanderPrecisionArea: 8
+  searchNodeAreaSelection: 30
   dt: 0
-  dtForChange: 5
+  dtForChange: 9
   listNodes: {fileID: 0}
-  maxSizeQueue: 20
+  maxSizeQueue: 40
+  agent: {fileID: 363740880174490972}
   chaseState: {fileID: 420909925338662150}
 --- !u!1 &6495644142803221846
 GameObject:
@@ -139,6 +140,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 405104941968656289}
+  - component: {fileID: 363740880174490972}
+  - component: {fileID: 8963429492181228961}
   m_Layer: 0
   m_Name: CoilHead
   m_TagString: Untagged
@@ -163,6 +166,41 @@ Transform:
   - {fileID: 4276570283956973219}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!195 &363740880174490972
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6495644142803221846}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 6
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!114 &8963429492181228961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6495644142803221846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c644335a5377104cac02c01a9c31076, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentState: {fileID: 6960458260878180371}
 --- !u!1 &6513319409693821381
 GameObject:
   m_ObjectHideFlags: 0
