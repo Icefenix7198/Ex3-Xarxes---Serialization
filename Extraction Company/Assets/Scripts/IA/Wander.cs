@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -13,6 +14,7 @@ public class WanderState : State
     public float dtForChange;
     GameObject targetSearchNode;
     public GameObject listNodes;
+    public GameObject playersList;
 
     //Last checked 
     public Queue<GameObject> checkedPositons;
@@ -26,6 +28,7 @@ public class WanderState : State
     public override State RunCurrentState()
     {
         dt += Time.deltaTime;
+        GameObject tempGO = targetSearchNode;
 
         //If conditions are met choose a new searchNodeObjective
         if (
@@ -42,9 +45,13 @@ public class WanderState : State
         }
 
         //Move towards the objective.
-        agent.SetDestination(targetSearchNode.transform.position);
+        if(tempGO != targetSearchNode ) 
+        {
+            agent.SetDestination(targetSearchNode.transform.position);
+        }
+        
 
-        if (false) 
+        if (CheckPlayersNear()) 
         {
             return chaseState;
         }
@@ -104,8 +111,20 @@ public class WanderState : State
         int choosenIndex = Random.Range(0, indexToRandomChooseFrom.Count);
 
 
-        return listNodes.transform.GetChild(indexToRandomChooseFrom[choosenIndex]).gameObject;
+        return (indexToRandomChooseFrom.Count > 0) ? listNodes.transform.GetChild(indexToRandomChooseFrom[choosenIndex]).gameObject : checkedPositons.Dequeue();
     }
     
+    bool CheckPlayersNear() 
+    {
+        bool ret = false;
+
+        if (playersList.transform.childCount == 0) { return ret; }
+        for (int i = 0;playersList.transform.childCount > i; i++) 
+        {
+            if (Vector3.Distance(playersList.transform.GetChild(i).position, this.gameObject.transform.position) <= playerDetectionArea) { ret = true; break; }
+        }
+
+        return ret;
+    }
     
 }
