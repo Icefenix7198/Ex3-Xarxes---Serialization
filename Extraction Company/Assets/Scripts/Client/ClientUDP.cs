@@ -80,7 +80,7 @@ public class ClientUDP : MonoBehaviour
 
         if (deserializate)
         {
-            serialization.Deserialize(tempData);
+            serialization.DeseralizeLongChain(tempData); //TEST:This doesn't break anything
             deserializate = false;
         }
     }

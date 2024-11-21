@@ -91,7 +91,7 @@ public class ServerUDP : MonoBehaviour
 
         if (deserializate)
         {
-            serialization.Deserialize(tempData);
+            serialization.DeseralizeLongChain(tempData);
             deserializate = false;
         }
     }
@@ -172,6 +172,7 @@ public class ServerUDP : MonoBehaviour
                 }
                 else
                 {
+                    //Maybe this is the only place were I need to 
                     if (scoketsUser.NetID != ID) //This is to send everyone excluding the original sender (example the movement action)
                     {
                         scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
@@ -187,6 +188,13 @@ public class ServerUDP : MonoBehaviour
                 }
             }
         }
+    }
+
+    byte[] ManageData()
+    {
+        byte[] longChangeForOthers = { };
+
+        return longChangeForOthers;
     }
 
     private void OnApplicationQuit()
