@@ -67,7 +67,6 @@ public class PlayerManager : MonoBehaviour
         if (s_udp == null && c_udp == null)
         {
             s_udp = GameObject.Find("UDP_Manager").GetComponent<ServerUDP>();
-
         }
 
         if (serialization == null)
