@@ -36,9 +36,12 @@ public class ItemGenerator : MonoBehaviour
 
     private void Start()
     {
-        if (!serialization.isS_udp)
+        if(serialization != null)
         {
-            this.GetComponent<ItemGenerator>().enabled = false;
+            if (!serialization.isS_udp)
+            {
+                this.GetComponent<ItemGenerator>().enabled = false;
+            }
         }
     }
 
