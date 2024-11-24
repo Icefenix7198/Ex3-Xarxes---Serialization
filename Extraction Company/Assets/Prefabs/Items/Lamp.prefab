@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &330817942781182255
+--- !u!1 &1641791678875577679
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,48 +8,48 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1386252393453133402}
-  - component: {fileID: 3895609781471413923}
-  - component: {fileID: 3190190997640848339}
-  - component: {fileID: 1562072299501557106}
-  - component: {fileID: 5044854266701020445}
+  - component: {fileID: 8186477893249964709}
+  - component: {fileID: 8385324893501201153}
+  - component: {fileID: 2548805624123788874}
+  - component: {fileID: 974708301639004434}
+  - component: {fileID: 4243012117672341833}
   m_Layer: 0
-  m_Name: Rare
-  m_TagString: Untagged
+  m_Name: Lamp
+  m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1386252393453133402
+--- !u!4 &8186477893249964709
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 330817942781182255}
+  m_GameObject: {fileID: 1641791678875577679}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0.70399624, y: 0.06625154, z: 0.06625154, w: 0.7039963}
+  m_LocalPosition: {x: 0.46475494, y: 0.087, z: -0.41514587}
+  m_LocalScale: {x: 35.62866, y: 35.628662, z: 35.628666}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &3895609781471413923
+--- !u!33 &8385324893501201153
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 330817942781182255}
-  m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &3190190997640848339
+  m_GameObject: {fileID: 1641791678875577679}
+  m_Mesh: {fileID: 6385488633210859743, guid: 8212b70c0ff64d04fad6bc43c6bcf664, type: 3}
+--- !u!23 &2548805624123788874
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 330817942781182255}
+  m_GameObject: {fileID: 1641791678875577679}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -63,7 +63,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 16ee1b0f0f33fcf4b8b70af13e174a97, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -85,13 +85,13 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!135 &1562072299501557106
-SphereCollider:
+--- !u!65 &974708301639004434
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 330817942781182255}
+  m_GameObject: {fileID: 1641791678875577679}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -104,17 +104,18 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5044854266701020445
+  m_Size: {x: 0.025536839, y: 0.025447108, z: 0.030915713}
+  m_Center: {x: 5.6425958e-11, y: -0.000000407459, z: 0.0154578565}
+--- !u!114 &4243012117672341833
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 330817942781182255}
+  m_GameObject: {fileID: 1641791678875577679}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e361c3b9b18c70e4e87202b194513d89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ItemType: 1

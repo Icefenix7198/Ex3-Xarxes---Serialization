@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
+using Unity.VisualScripting;
 using UnityEngine;
+using static ItemGenerator;
 using static PlayerManager;
 
 public class Serialization : MonoBehaviour
@@ -13,6 +15,7 @@ public class Serialization : MonoBehaviour
         MOVE_CLIENT,//Move all players positions
         ID_NAME,
         SPAWN_PLAYERS, //Create player in scene for other clients
+        SPAWN_ITEMS,
         NONE
     }
 
@@ -30,6 +33,7 @@ public class Serialization : MonoBehaviour
 
     //Scripts
     PlayerManager playerManager;
+    ItemGenerator itemManager;
 
     private void Start()
     {
@@ -185,6 +189,34 @@ public class Serialization : MonoBehaviour
         return id;
     }
 
+    public void SendItems(List<itemObj> items)
+    {
+        ActionType type = ActionType.SPAWN_ITEMS;
+
+        stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+
+        writer.Write((int)type);
+
+        writer.Write(items.Count);
+
+        foreach (var item in items)
+        {
+            writer.Write(item.objType);
+
+            float[] pos = { item.pos.x, item.pos.y, item.pos.z };
+
+            for (int i = 0; i < 3; i++)
+            {
+                writer.Write(pos[i]);
+            }
+        }
+
+        bytes = stream.ToArray();
+
+        Send(bytes, "-2");
+    }
+
     public int Deserialize(byte[] message)
     {
         try
@@ -225,6 +257,8 @@ public class Serialization : MonoBehaviour
                             }
 
                             playerManager.NewPlayer(ID, playerName, numPlayer);
+
+                            SendItems(itemManager.allItems);
 
                             binaryLength = playerName.Length + 4;
                             break;
@@ -339,6 +373,37 @@ public class Serialization : MonoBehaviour
                         //Length of the binary: Int (4) of TotalLength + sizeOfTheThings (he calculated during the process of reading)
                         binaryLength = 4 + totalLength;
                         break;
+                    case ActionType.SPAWN_ITEMS:
+                        {
+                            List<itemObj> items = new List<itemObj>();
+
+                            int length = reader.ReadInt32();
+
+                            for (int i = 0; i < length; i++)
+                            {
+                                int objType = reader.ReadInt32();
+
+                                float[] pos = new float[3];
+                                for (int b = 0; b < pos.Length; b++)
+                                {
+                                    pos[b] = reader.ReadSingle();
+                                }
+
+                                Vector3 movement = new Vector3(pos[0], pos[1], pos[2]);
+
+                                itemObj item = new itemObj();
+                                item.pos = movement;
+                                item.objType = objType;
+
+                                items.Add(item);
+                            }
+
+                            itemManager.SpawnItems(items);
+
+                            //Size of the 3 floats together of movement + 4 floats of rotation
+                            binaryLength = sizeof(float) * 7;
+                            break;
+                        }
                     default:
                         break;
                 }

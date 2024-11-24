@@ -6,6 +6,7 @@ using static ItemGenerator;
 public class InventoyManager : MonoBehaviour
 {
     List<itemObj> items;
+    public int maxInventory = 4;
 
     // Start is called before the first frame update
     void Start()
@@ -13,21 +14,15 @@ public class InventoyManager : MonoBehaviour
         items = new List<itemObj>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerStay(Collider other)
     {
-        
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if(other.tag == "Item")
+        if(other.tag == "Item" && Input.GetKeyDown(KeyCode.E))
         {
             itemObj tmpItem = new itemObj();
             tmpItem.obj = other.gameObject;
             tmpItem.type = other.GetComponent<Item>().item.type;
 
-            if(items.Count < 4)
+            if(items.Count < maxInventory)
             {
                 items.Add(tmpItem);
                 Destroy(other.gameObject);

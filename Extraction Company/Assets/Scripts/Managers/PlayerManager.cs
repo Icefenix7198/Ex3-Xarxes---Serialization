@@ -134,6 +134,7 @@ public class PlayerManager : MonoBehaviour
                 player.playerRb.freezeRotation = true;
 
                 player.playerObj.GetComponent<PlayerMovement>().enabled = true;
+                player.playerObj.GetComponent<InventoyManager>().enabled = true;
 
                 player.textID = player.playerObj.GetComponent<TextMeshProUGUI>();
                 player.textID.text = playerId;

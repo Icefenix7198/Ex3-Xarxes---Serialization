@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &9207903493467400702
+--- !u!1 &7885809811426446608
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,48 +8,48 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3893033778994420741}
-  - component: {fileID: 3470618375420341988}
-  - component: {fileID: 4176479878312729181}
-  - component: {fileID: 2758311536285814744}
-  - component: {fileID: 1643517978298443660}
+  - component: {fileID: 1320209825658349003}
+  - component: {fileID: 1942209123437885227}
+  - component: {fileID: 5928314180280060712}
+  - component: {fileID: 3142586356849196017}
+  - component: {fileID: 8776780168933336228}
   m_Layer: 0
-  m_Name: Commune
-  m_TagString: Untagged
+  m_Name: Engine
+  m_TagString: Item
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3893033778994420741
+--- !u!4 &1320209825658349003
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9207903493467400702}
+  m_GameObject: {fileID: 7885809811426446608}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalRotation: {x: -0.40555674, y: 0.60171187, z: -0.48383212, w: 0.4892576}
+  m_LocalPosition: {x: -0.5197486, y: 0.987, z: -0.2485443}
+  m_LocalScale: {x: 1.2069573, y: 1.2069573, z: 1.2069573}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &3470618375420341988
+--- !u!33 &1942209123437885227
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9207903493467400702}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &4176479878312729181
+  m_GameObject: {fileID: 7885809811426446608}
+  m_Mesh: {fileID: -3146492637294683859, guid: 8212b70c0ff64d04fad6bc43c6bcf664, type: 3}
+--- !u!23 &5928314180280060712
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9207903493467400702}
+  m_GameObject: {fileID: 7885809811426446608}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -63,7 +63,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: efdbc4b756ecbd648be16d97c81c83c4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -85,13 +85,13 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &2758311536285814744
+--- !u!65 &3142586356849196017
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9207903493467400702}
+  m_GameObject: {fileID: 7885809811426446608}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -104,17 +104,18 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1643517978298443660
+  m_Size: {x: 1.2255739, y: 1.2255728, z: 1.7243727}
+  m_Center: {x: 0.0006203095, y: 0.00367466, z: 0.073781125}
+--- !u!114 &8776780168933336228
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9207903493467400702}
+  m_GameObject: {fileID: 7885809811426446608}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e361c3b9b18c70e4e87202b194513d89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ItemType: 3

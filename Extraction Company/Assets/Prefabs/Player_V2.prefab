@@ -384,11 +384,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 860668492621021069}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 725a644bf81d8c848acb3e2f1f6cae1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxInventory: 4
 --- !u!224 &4115734487428201158 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3155227739179128013, guid: bf1bb9bb2383e0847a0917ee02b18826, type: 3}
