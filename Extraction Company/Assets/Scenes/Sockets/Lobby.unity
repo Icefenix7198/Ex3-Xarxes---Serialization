@@ -388,6 +388,8 @@ MonoBehaviour:
   - {fileID: 272360054}
   - {fileID: 469207091}
   parentItems: {fileID: 419041714}
+  playerManager: {fileID: 1051025202}
+  action: 1
 --- !u!4 &287644534
 Transform:
   m_ObjectHideFlags: 0

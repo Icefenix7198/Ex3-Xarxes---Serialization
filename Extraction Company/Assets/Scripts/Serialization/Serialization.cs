@@ -16,6 +16,7 @@ public class Serialization : MonoBehaviour
         ID_NAME,
         SPAWN_PLAYERS, //Create player in scene for other clients
         SPAWN_ITEMS,
+        REQUEST_ITEMS,
         NONE
     }
 
@@ -64,6 +65,16 @@ public class Serialization : MonoBehaviour
                     playerManager = tmp.GetComponent<PlayerManager>();
                 }
             }
+
+            if (itemManager == null && c_udp.passSceneManager.isConnected)
+            {
+                GameObject tmp = GameObject.Find("ItemsManager");
+
+                if (tmp != null)
+                {
+                    itemManager = GameObject.Find("ItemsManager").GetComponent<ItemGenerator>();
+                }
+            }
         }
 
         if (isS_udp)
@@ -75,6 +86,16 @@ public class Serialization : MonoBehaviour
                 if (tmp != null)
                 {
                     playerManager = GameObject.Find("PlayerSpawner").GetComponent<PlayerManager>();
+                }
+            }
+
+            if (itemManager == null && s_udp.passScene.isConnected)
+            {
+                GameObject tmp = GameObject.Find("ItemsManager");
+
+                if (tmp != null)
+                {
+                    itemManager = GameObject.Find("ItemsManager").GetComponent<ItemGenerator>();
                 }
             }
         }
@@ -189,7 +210,7 @@ public class Serialization : MonoBehaviour
         return id;
     }
 
-    public void SendItems(List<itemObj> items)
+    public void SendItems(List<itemObj> items, string ID)
     {
         ActionType type = ActionType.SPAWN_ITEMS;
 
@@ -214,7 +235,7 @@ public class Serialization : MonoBehaviour
 
         bytes = stream.ToArray();
 
-        Send(bytes, "-2");
+        Send(bytes, ID);
     }
 
     public int Deserialize(byte[] message)
@@ -257,8 +278,6 @@ public class Serialization : MonoBehaviour
                             }
 
                             playerManager.NewPlayer(ID, playerName, numPlayer);
-
-                            SendItems(itemManager.allItems);
 
                             binaryLength = playerName.Length + 4;
                             break;
@@ -404,7 +423,14 @@ public class Serialization : MonoBehaviour
                             binaryLength = sizeof(float) * 7;
                             break;
                         }
-                    default:
+                    case ActionType.REQUEST_ITEMS:
+                        {
+                            ID = reader.ReadString();
+
+                            SendItems(itemManager.allItems, ID);
+                            break;
+                        }
+                            default:
                         break;
                 }
 
@@ -539,5 +565,19 @@ public class Serialization : MonoBehaviour
                 break; //Maybe an idea here is instead of a break activate a protocol to ignore the unsucesful chain and seek the next message to deserialize.
             }
         }
+    }
+
+    public void RequestItems(string ID)
+    {
+        ActionType type = ActionType.REQUEST_ITEMS;
+
+        stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+        writer.Write((int)type);
+        writer.Write(ID);
+
+        bytes = stream.ToArray();
+
+        Send(bytes, "-2");
     }
 }

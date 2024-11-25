@@ -35,6 +35,8 @@ public class ServerUDP : MonoBehaviour
 
     bool deserializate;
     byte[] tempData;
+    
+    byte[] tempDataRequest;
 
     public List<Transform> spawns;
 
@@ -138,8 +140,15 @@ public class ServerUDP : MonoBehaviour
                 }
             }
 
-            Thread newConnection = new Thread(() => Send(ogData, u.NetID));
-            newConnection.Start();
+            if (action == ActionType.REQUEST_ITEMS)
+            {
+                serialization.Deserialize(data);
+            }
+            else
+            {
+                Thread newConnection = new Thread(() => Send(ogData, u.NetID));
+                newConnection.Start();
+            }
         }
     }
 
@@ -166,6 +175,13 @@ public class ServerUDP : MonoBehaviour
                 else if (action == ActionType.ID_NAME)
                 {
                     if (scoketsUser.NetID == ID)
+                    {
+                        scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
+                    }
+                }
+                else if (action == ActionType.SPAWN_ITEMS)
+                {
+                    if (scoketsUser.NetID == ID) //This is to send everyone excluding the original sender (example the movement action)
                     {
                         scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
                     }

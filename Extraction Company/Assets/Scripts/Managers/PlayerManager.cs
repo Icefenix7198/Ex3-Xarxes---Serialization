@@ -150,6 +150,8 @@ public class PlayerManager : MonoBehaviour
                     mainCam.SetActive(false);
                 }
 
+                serialization.RequestItems(playerId);
+
                 passedScene = true;
             }
             else //If the client already has a player spawns the new player in its position to be able to see it.
