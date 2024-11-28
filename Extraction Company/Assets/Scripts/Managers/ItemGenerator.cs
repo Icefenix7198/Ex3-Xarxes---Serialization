@@ -20,12 +20,20 @@ public class ItemGenerator : MonoBehaviour
         public GameObject obj;
         public int objType;
         public Vector3 pos;
+        public string ID;
+    }
+
+    public struct itemGameObj
+    {
+        public GameObject obj;
+        public string ID;
     }
 
     public int ObjectQuantity = 5;
 
     [HideInInspector]
     public List<itemObj> allItems;
+    public List<itemGameObj> allItemsGameobjects;
 
     public List<GameObject> allObjects;
     public List<Transform> spawnPoints;
@@ -43,11 +51,13 @@ public class ItemGenerator : MonoBehaviour
             if(playerManager.s_udp != null)
             {
                 allItems = new List<itemObj>();
+                allItemsGameobjects = new List<itemGameObj>();
 
                 for (int i = 0; i < ObjectQuantity; i++)
                 {
                     GameObject tmpObj;
                     itemObj tmpItem = new itemObj();
+                    itemGameObj tmpGameObj = new itemGameObj();
 
                     //itemType type = (itemType)Random.Range(0, (int)itemType.NONE);
                     //tmpItem.type = type;
@@ -66,6 +76,11 @@ public class ItemGenerator : MonoBehaviour
                     tmpItem.obj = tmpObj;
                     tmpItem.objType = randomObject;
                     tmpItem.pos = tmpObj.transform.position;
+                    tmpItem.ID = System.Guid.NewGuid().ToString();
+
+                    tmpGameObj.ID = tmpItem.ID;
+                    tmpGameObj.obj = tmpObj;
+                    allItemsGameobjects.Add(tmpGameObj);
 
                     tmpItem.type = tmpObj.GetComponent<Item>().ItemType;
                     tmpObj.GetComponent<Item>().item = tmpItem;
@@ -85,8 +100,26 @@ public class ItemGenerator : MonoBehaviour
             GameObject tmpObj;
             tmpObj = Instantiate(allObjects[item.objType], parentItems.transform);
             tmpObj.transform.position = item.pos;
+            tmpObj.GetComponent<Item>().item = item;
         }
 
         allItems = items;
+    }
+
+    public void DestroyItem(string itemID, string idPlayer = "-1")
+    {
+        itemObj itemToDestroy = new itemObj();
+
+        foreach (var item in allItems)
+        {
+            if (item.ID == itemID)
+            {
+                playerManager.serialization.SendDestroyItem(item, idPlayer);
+                Destroy(item.obj);
+                itemToDestroy = item;
+            }
+        }
+
+        allItems.Remove(itemToDestroy);
     }
 }

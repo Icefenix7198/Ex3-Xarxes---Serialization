@@ -140,7 +140,7 @@ public class ServerUDP : MonoBehaviour
                 }
             }
 
-            if (action == ActionType.REQUEST_ITEMS)
+            if (action == ActionType.REQUEST_ITEMS || action == ActionType.DESTROY_ITEM)
             {
                 serialization.Deserialize(data);
             }

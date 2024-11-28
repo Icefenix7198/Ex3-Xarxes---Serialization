@@ -17,7 +17,14 @@ public class Serialization : MonoBehaviour
         SPAWN_PLAYERS, //Create player in scene for other clients
         SPAWN_ITEMS,
         REQUEST_ITEMS,
+        DESTROY_ITEM,
         NONE
+    }
+
+    public struct ItemToDestroy
+    {
+        public string item;
+        public string playerID;
     }
 
     static MemoryStream stream;
@@ -35,6 +42,9 @@ public class Serialization : MonoBehaviour
     //Scripts
     PlayerManager playerManager;
     ItemGenerator itemManager;
+
+    ItemToDestroy itemToDestroy;
+    bool itemDestroy = false;
 
     private void Start()
     {
@@ -98,6 +108,12 @@ public class Serialization : MonoBehaviour
                     itemManager = GameObject.Find("ItemsManager").GetComponent<ItemGenerator>();
                 }
             }
+        }
+
+        if (itemDestroy)
+        {
+            itemManager.DestroyItem(itemToDestroy.item, itemToDestroy.playerID);
+            itemDestroy = false;
         }
     }
     public void serializeIDandName(string id, string name)
@@ -223,6 +239,7 @@ public class Serialization : MonoBehaviour
 
         foreach (var item in items)
         {
+            writer.Write(item.ID);
             writer.Write(item.objType);
 
             float[] pos = { item.pos.x, item.pos.y, item.pos.z };
@@ -232,6 +249,23 @@ public class Serialization : MonoBehaviour
                 writer.Write(pos[i]);
             }
         }
+
+        bytes = stream.ToArray();
+
+        Send(bytes, ID);
+    } 
+    
+    public void SendDestroyItem(itemObj item, string ID)
+    {
+        ActionType type = ActionType.DESTROY_ITEM;
+
+        stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+
+        writer.Write((int)type);
+        writer.Write(ID);
+
+        writer.Write(item.ID);
 
         bytes = stream.ToArray();
 
@@ -400,6 +434,7 @@ public class Serialization : MonoBehaviour
 
                             for (int i = 0; i < length; i++)
                             {
+                                string id = reader.ReadString();
                                 int objType = reader.ReadInt32();
 
                                 float[] pos = new float[3];
@@ -413,6 +448,7 @@ public class Serialization : MonoBehaviour
                                 itemObj item = new itemObj();
                                 item.pos = movement;
                                 item.objType = objType;
+                                item.ID = id;
 
                                 items.Add(item);
                             }
@@ -430,7 +466,17 @@ public class Serialization : MonoBehaviour
                             SendItems(itemManager.allItems, ID);
                             break;
                         }
-                            default:
+                    case ActionType.DESTROY_ITEM:
+                        {
+                            ID = reader.ReadString();
+                            string itemID = reader.ReadString();
+
+                            itemToDestroy.item = itemID;
+                            itemToDestroy.playerID = ID;
+                            itemDestroy = true;
+                            break;
+                        }
+                    default:
                         break;
                 }
 
