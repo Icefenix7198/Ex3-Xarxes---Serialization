@@ -15,6 +15,7 @@ public class Serialization : MonoBehaviour
         MOVE_CLIENT,//Move all players positions
         ID_NAME,
         SPAWN_PLAYERS, //Create player in scene for other clients
+        CREATE_MONSTER,
         SPAWN_ITEMS,
         REQUEST_ITEMS,
         DESTROY_ITEM,
@@ -217,6 +218,29 @@ public class Serialization : MonoBehaviour
         foreach (var r in rot)
         {
             writer.Write(r);
+        }
+
+        bytes = stream.ToArray();
+
+        Send(bytes, id);
+
+        return id;
+    }
+
+    public string serializeCreateMonster(string id, Vector2 position, int monsterType = 0) 
+    {
+        ActionType type = ActionType.CREATE_MONSTER;
+
+        stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+        writer.Write((int)type);
+        writer.Write(id);
+        writer.Write(monsterType);
+
+        float[] move = { position.x, position.y }; //Y is always the same based on monster type so we don't send the bytes.
+        foreach (var i in move)
+        {
+            writer.Write(i);
         }
 
         bytes = stream.ToArray();

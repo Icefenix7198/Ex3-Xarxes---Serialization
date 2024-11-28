@@ -1,13 +1,70 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class CoilHeadChase : State
 {
+    //Targeting and detection
+    [Header("Target Player")]
+    [SerializeField] GameObject playerList;
+    [SerializeField]GameObject target;
+    public float detectionArea; //Should be higher than area to change from wander to this state
+
+    //Time change state
+    [Header ("Time for Change to Wander")] 
+    [SerializeField] float currentSuspicionTime = 0.0f;
+    public float timeForChange;
+    public State wander;
+
+    //AI navigation
+    [Header("Monster control")]
+    [SerializeField] NavMeshAgent agent;
 
     public override State RunCurrentState()
     {
-        return this;
+        //Choose target
+        if (target == null)
+        {
+            float distanceToBeat = detectionArea;
+            for (int i = 0; playerList.transform.childCount > i; i++)
+            {
+                float playerDistance = Vector3.Distance(this.gameObject.transform.position, playerList.transform.GetChild(i).position);
+                if (playerDistance < distanceToBeat) 
+                {
+                    distanceToBeat = playerDistance;
+                    target = playerList.transform.GetChild(i).gameObject;
+                }
+            }
+
+            currentSuspicionTime += Time.deltaTime;
+        }
+        else 
+        {
+            agent.SetDestination(target.transform.position);
+
+            //Lose target
+            if (Vector3.Distance(this.gameObject.transform.position, target.transform.position) > detectionArea * 1.5f)
+            {
+                target = null;
+            }
+
+            timeForChange = 0.0f;
+        }
+
+        
+
+        if (currentSuspicionTime > timeForChange) 
+        {
+            timeForChange = 0.0f;
+            return wander;
+        }
+        else 
+        {
+            return this;
+        }
+
+        
     }
 
     // Update is called once per frame

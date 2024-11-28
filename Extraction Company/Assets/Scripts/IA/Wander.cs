@@ -7,24 +7,29 @@ using UnityEngine.AI;
 public class WanderState : State
 {
     //Data for changing
+    [Header("Searching Area")]
     public float playerDetectionArea; //If inside this area change to chase mode
     public float wanderPrecisionArea; //If we arribe to this distance to the selected search node change search node 
     public float searchNodeAreaSelection; //If we arribe to this distance to the selected search node change search node
-    [SerializeField] float dt;
-    public float dtForChange;
+
     GameObject targetSearchNode;
     public GameObject listNodes;
     public GameObject playersList;
-
+    
     //Last checked 
     public Queue<GameObject> checkedPositons;
     public int maxSizeQueue; //Once we cheked enogh positions we start eliminating them from the queue
+    
+    [Header("Patiance")]
+    [SerializeField] float dt;
+    public float dtForChange;
 
     //AI navigation
+    [Header("Monster control")]
     [SerializeField] NavMeshAgent agent;
 
     //State to change when 
-    public ChaseState chaseState;
+    public State chaseState;
     public override State RunCurrentState()
     {
         dt += Time.deltaTime;
