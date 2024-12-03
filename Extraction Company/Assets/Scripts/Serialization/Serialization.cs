@@ -265,6 +265,7 @@ public class Serialization : MonoBehaviour
         {
             writer.Write(item.ID);
             writer.Write(item.objType);
+            writer.Write((int)item.type);
 
             float[] pos = { item.pos.x, item.pos.y, item.pos.z };
 
@@ -464,6 +465,7 @@ public class Serialization : MonoBehaviour
                             {
                                 string id = reader.ReadString();
                                 int objType = reader.ReadInt32();
+                                int Type = reader.ReadInt32();
 
                                 float[] pos = new float[3];
                                 for (int b = 0; b < pos.Length; b++)
@@ -476,6 +478,7 @@ public class Serialization : MonoBehaviour
                                 itemObj item = new itemObj();
                                 item.pos = movement;
                                 item.objType = objType;
+                                item.type = (itemType)Type;
                                 item.ID = id;
 
                                 items.Add(item);

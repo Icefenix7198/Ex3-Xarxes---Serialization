@@ -62,13 +62,13 @@ public class ItemGenerator : MonoBehaviour
                     //itemType type = (itemType)Random.Range(0, (int)itemType.NONE);
                     //tmpItem.type = type;
 
-                    int randomObject = UnityEngine.Random.Range(0, allObjects.Count - 1);
+                    int randomObject = UnityEngine.Random.Range(0, allObjects.Count);
 
                     tmpObj = Instantiate(allObjects[randomObject], parentItems.transform);
 
                     if (spawnPoints.Count > 0)
                     {
-                        int spawnPoint = UnityEngine.Random.Range(0, spawnPoints.Count - 1);
+                        int spawnPoint = UnityEngine.Random.Range(0, spawnPoints.Count);
                         tmpObj.transform.position = spawnPoints[spawnPoint].position;
                         spawnPoints.RemoveAt(spawnPoint);
                     }
@@ -102,7 +102,9 @@ public class ItemGenerator : MonoBehaviour
             GameObject tmpObj;
             tmpObj = Instantiate(allObjects[item.objType], parentItems.transform);
             tmpObj.transform.position = item.pos;
-            tmpObj.GetComponent<Item>().item = item;
+            tmpObj.GetComponent<Item>().item.ID = item.ID;
+            tmpObj.GetComponent<Item>().item.type = item.type;
+
             tmpObj.GetComponent<Item>().item.obj = tmpObj;
             tmpsItems.Add(tmpObj.GetComponent<Item>().item);
         }
