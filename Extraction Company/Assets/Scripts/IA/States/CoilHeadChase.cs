@@ -7,7 +7,7 @@ public class CoilHeadChase : State
 {
     //Targeting and detection
     [Header("Target Player")]
-    [SerializeField] GameObject playerList;
+    [SerializeField] GameObject playersList;
     [SerializeField]GameObject target;
     public float detectionArea; //Should be higher than area to change from wander to this state
 
@@ -21,19 +21,24 @@ public class CoilHeadChase : State
     [Header("Monster control")]
     [SerializeField] NavMeshAgent agent;
 
+    public void Start() 
+    {
+        playersList = GameObject.Find("Players");
+    }
+
     public override State RunCurrentState()
     {
         //Choose target
         if (target == null)
         {
             float distanceToBeat = detectionArea;
-            for (int i = 0; playerList.transform.childCount > i; i++)
+            for (int i = 0; playersList.transform.childCount > i; i++)
             {
-                float playerDistance = Vector3.Distance(this.gameObject.transform.position, playerList.transform.GetChild(i).position);
+                float playerDistance = Vector3.Distance(this.gameObject.transform.position, playersList.transform.GetChild(i).position);
                 if (playerDistance < distanceToBeat) 
                 {
                     distanceToBeat = playerDistance;
-                    target = playerList.transform.GetChild(i).gameObject;
+                    target = playersList.transform.GetChild(i).gameObject;
                 }
             }
 

@@ -46,7 +46,7 @@ public class PlayerManager : MonoBehaviour
     }
 
     public Player player;
-    List<PlayerServer> playerList = new List<PlayerServer>();
+    public List<PlayerServer> playerList = new List<PlayerServer>(); //Temporalmente publica
 
     public float speed;
     float dt;

@@ -450,6 +450,10 @@ public class Serialization : MonoBehaviour
                         //Length of the binary: Int (4) of TotalLength + sizeOfTheThings (he calculated during the process of reading)
                         binaryLength = 4 + totalLength;
                         break;
+                    case ActionType.CREATE_MONSTER:
+
+
+                            break;
                     case ActionType.SPAWN_ITEMS:
                         {
                             List<itemObj> items = new List<itemObj>();

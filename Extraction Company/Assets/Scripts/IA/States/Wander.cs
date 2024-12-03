@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
@@ -30,6 +31,13 @@ public class WanderState : State
 
     //State to change when 
     public State chaseState;
+
+    public void Start() 
+    {
+        targetSearchNode = GameObject.Find("IA nodes");
+        playersList = GameObject.Find("Players");
+    }
+
     public override State RunCurrentState()
     {
         dt += Time.deltaTime;

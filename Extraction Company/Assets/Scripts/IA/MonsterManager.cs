@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using UnityEngine;
 
 public class MonsterManager : MonoBehaviour
@@ -9,16 +11,24 @@ public class MonsterManager : MonoBehaviour
     public ServerUDP s_udp;
     public Serialization serialization;
     public GameObject clientParent;
+    public PlayerManager playerManager;
 
-    [Header("Server things")]
+    [Header("Monster things")]
     public List<GameObject> monsterList;
     float dt = 0.0f;
     [SerializeField] float timeToSpawn;
+    [SerializeField] GameObject listSpawns;
+    [SerializeField] GameObject currentMonsters;
+    bool[] limitedSpawns;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        limitedSpawns = new bool[monsterList.Count];
+        for (int i = 0; i < limitedSpawns.Length; i++) 
+        {
+            limitedSpawns[i] = false;
+        }
     }
 
     // Update is called once per frame
@@ -47,13 +57,45 @@ public class MonsterManager : MonoBehaviour
 
             if(dt >= timeToSpawn) 
             {
+                int rand = UnityEngine.Random.Range(0, monsterList.Count);
+                if (limitedSpawns[rand] == false) 
+                {
+                    SpawnEnemy(rand,Vector2.zero);
+                    dt = 0.0f;
+                    limitedSpawns[rand] = true;
+                }
+                
                 
             }
         }
     }
 
-    void SpawnEnemy() 
+    void SpawnEnemy(int monsterIndex,Vector2 pos) 
     {
     
+        GameObject m = Instantiate(monsterList[monsterIndex], currentMonsters.transform.position, Quaternion.identity);
+
+        if (s_udp != null)
+        {
+            int randSpawnPos = UnityEngine.Random.Range(0, listSpawns.transform.childCount);
+
+            m.transform.position = listSpawns.transform.GetChild(randSpawnPos).transform.position;
+
+            for (int i = 0; i < playerManager.playerList.Count; i++)
+            {
+                Vector2 p = new Vector2(m.transform.position.x, m.transform.position.z); 
+                serialization.serializeCreateMonster(playerManager.playerList[i].ID, p, monsterIndex);
+            }
+
+            //gameObject.transform
+
+        }
+        else if(c_udp != null)
+        {
+            m.transform.position = new Vector3(pos.x, 0, pos.y);
+
+            //Deactivate component monster
+        }
+
     }
 }
