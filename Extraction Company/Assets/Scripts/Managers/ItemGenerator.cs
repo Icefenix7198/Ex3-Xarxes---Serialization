@@ -95,15 +95,19 @@ public class ItemGenerator : MonoBehaviour
 
     public void SpawnItems(List<itemObj> items)
     {
+        List<itemObj> tmpsItems = new List<itemObj>();
+
         foreach (itemObj item in items)
         {
             GameObject tmpObj;
             tmpObj = Instantiate(allObjects[item.objType], parentItems.transform);
             tmpObj.transform.position = item.pos;
             tmpObj.GetComponent<Item>().item = item;
+            tmpObj.GetComponent<Item>().item.obj = tmpObj;
+            tmpsItems.Add(tmpObj.GetComponent<Item>().item);
         }
 
-        allItems = items;
+        allItems = tmpsItems;
     }
 
     public void DestroyItem(string itemID, string idPlayer = "-1")
@@ -114,7 +118,11 @@ public class ItemGenerator : MonoBehaviour
         {
             if (item.ID == itemID)
             {
-                playerManager.serialization.SendDestroyItem(item, idPlayer);
+                if(playerManager.s_udp != null)
+                {
+                    playerManager.serialization.SendDestroyItem(item, idPlayer);
+                }
+
                 Destroy(item.obj);
                 itemToDestroy = item;
             }
