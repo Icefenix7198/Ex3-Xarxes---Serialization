@@ -40,6 +40,8 @@ public class PlayerMovement : MonoBehaviour
 
     Rigidbody playerRb;
 
+    public Animator animator;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -62,6 +64,24 @@ public class PlayerMovement : MonoBehaviour
 
         ReadInputs();
         SpeedController();
+
+        if(playerRb.velocity.magnitude >  0)
+        {
+            animator.SetFloat("Speed", playerRb.velocity.magnitude);
+
+            if (Input.GetKey(KeyCode.LeftShift))
+            {
+                animator.SetBool("Run", true);
+            }
+            else
+            {
+                animator.SetBool("Run", false);
+            }
+        }
+        else
+        {
+            animator.SetBool("Run", false);
+        }
     }
 
     private void MovePlayer()
