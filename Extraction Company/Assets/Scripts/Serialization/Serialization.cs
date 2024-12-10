@@ -626,6 +626,35 @@ public class Serialization : MonoBehaviour
         return ID; //If return -2 ID == error taking ID
     }
 
+    public string ExtractName(byte[] message)
+    {
+        string ID = "-2";
+        string name = "Default";
+
+        try
+        {
+            stream = new MemoryStream();
+            stream.Write(message, 0, message.Length);
+            BinaryReader reader = new BinaryReader(stream);
+            stream.Seek(sizeof(int), SeekOrigin.Begin);
+
+            try
+            {
+                ID = reader.ReadString();
+                name = reader.ReadString();
+            }
+            catch
+            {
+            }
+        }
+        catch
+        {
+
+        }
+
+        return name; //If return -2 ID == error taking ID
+    }
+
     //Takes bytes of data and extracts the first bits of information to return the first action type of the string.
     public ActionType ExtractAction(byte[] message)
     {

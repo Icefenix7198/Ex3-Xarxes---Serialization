@@ -44,6 +44,7 @@ public class ServerUDP : MonoBehaviour
     {
         public EndPoint Remote;
         public Socket socket;
+        public string name;
 
         public string NetID;
     }
@@ -135,6 +136,10 @@ public class ServerUDP : MonoBehaviour
             {
                 if (!userSocketsList.Contains(u) && id != "-2" && action == ActionType.ID_NAME)
                 {
+                    string name;
+                    name = serialization.ExtractName(data);
+                    u.name = name;
+
                     clientsIdList.Add(u.NetID);
                     userSocketsList.Add(u);
                 }
