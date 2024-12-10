@@ -269,13 +269,33 @@ public class PlayerManager : MonoBehaviour
         Vector3 vel = new Vector3();
 
         foreach(var movedPlayer in movedPlayers)
-        { 
-            if(movedPlayers.Count > 0)
+        {
+            Rigidbody rbPlayer = movedPlayer.gameObject.GetComponent<Rigidbody>();
+            PlayerMovement pMovement = movedPlayer.gameObject.GetComponent<PlayerMovement>();
+
+            if (movedPlayers.Count > 0)
             {
                 if (movedPlayer.positions.Count > 0) 
                 {
                     if (movedPlayer.gameObject.transform.position != movedPlayer.positions.Peek())
                     {
+                        float dist = Mathf.Abs((movedPlayer.gameObject.transform.position - movedPlayer.positions.Peek()).magnitude);
+
+                        if (dist > 0.1f && dist < 0.7f)
+                        {
+                            pMovement.animator.SetFloat("Speed", 0.2f);
+                            pMovement.animator.SetBool("Run", false);
+                        }
+                        else if(dist > 0.7f)
+                        {
+                            pMovement.animator.SetBool("Run", true);
+                        }
+                        else
+                        {
+                            pMovement.animator.SetFloat("Speed", 0f);
+                            pMovement.animator.SetBool("Run", false);
+                        }
+
                         Vector3 moveTo = movedPlayer.positions.Peek();
                         //movedPlayer.gameObject.transform.position = Vector3.SmoothDamp(movedPlayer.gameObject.transform.position, moveTo, ref vel, smoothness);
                         movedPlayer.gameObject.transform.position = Vector3.Lerp(movedPlayer.gameObject.transform.position, moveTo, dtInterpolate / 0.2f);
