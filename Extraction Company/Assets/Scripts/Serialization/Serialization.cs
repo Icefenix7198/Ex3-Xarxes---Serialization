@@ -19,6 +19,7 @@ public class Serialization : MonoBehaviour
         SPAWN_ITEMS,
         REQUEST_ITEMS,
         DESTROY_ITEM,
+        EXTRACTION_TO_SERVER,
         NONE
     }
 
@@ -43,6 +44,7 @@ public class Serialization : MonoBehaviour
     //Scripts
     PlayerManager playerManager;
     ItemGenerator itemManager;
+    ExtractionManager extractionManager;
 
     ItemToDestroy itemToDestroy;
     bool itemDestroy = false;
@@ -86,6 +88,16 @@ public class Serialization : MonoBehaviour
                     itemManager = GameObject.Find("ItemsManager").GetComponent<ItemGenerator>();
                 }
             }
+
+            if (extractionManager == null && c_udp.passSceneManager.isConnected)
+            {
+                GameObject tmp = GameObject.Find("ExtractionManager");
+
+                if (tmp != null)
+                {
+                    extractionManager = GameObject.Find("ExtractionManager").GetComponent<ExtractionManager>();
+                }
+            }
         }
 
         if (isS_udp)
@@ -107,6 +119,16 @@ public class Serialization : MonoBehaviour
                 if (tmp != null)
                 {
                     itemManager = GameObject.Find("ItemsManager").GetComponent<ItemGenerator>();
+                }
+            }
+
+            if (extractionManager == null && s_udp.passScene.isConnected)
+            {
+                GameObject tmp = GameObject.Find("ExtractionManager");
+
+                if (tmp != null)
+                {
+                    extractionManager = GameObject.Find("ExtractionManager").GetComponent<ExtractionManager>();
                 }
             }
         }
@@ -291,6 +313,23 @@ public class Serialization : MonoBehaviour
         writer.Write(ID);
 
         writer.Write(item.ID);
+
+        bytes = stream.ToArray();
+
+        Send(bytes, ID);
+    }
+
+    public void SendExtraction(int extraction, string ID)
+    {
+        ActionType type = ActionType.EXTRACTION_TO_SERVER;
+
+        stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+
+        writer.Write((int)type);
+        writer.Write(ID);
+
+        writer.Write(extraction);
 
         bytes = stream.ToArray();
 
@@ -505,6 +544,14 @@ public class Serialization : MonoBehaviour
                             itemToDestroy.item = itemID;
                             itemToDestroy.playerID = ID;
                             itemDestroy = true;
+                            break;
+                        }
+                    case ActionType.EXTRACTION_TO_SERVER:
+                        {
+                            ID = reader.ReadString();
+                            int extraction = reader.ReadInt32();
+
+                            extractionManager.SaveExtraction(ID, extraction);
                             break;
                         }
                     default:

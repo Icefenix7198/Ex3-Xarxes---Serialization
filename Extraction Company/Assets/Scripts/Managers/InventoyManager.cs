@@ -81,6 +81,13 @@ public class InventoyManager : MonoBehaviour
             int quantity = int.Parse(textMoneyCarring.text) + int.Parse(textMoneySaved.text);
             textMoneySaved.text = quantity.ToString();
             textMoneyCarring.text = "0";
+
+            SendExtraction();
         }
+    }
+
+    void SendExtraction()
+    {
+        serialization.SendExtraction(int.Parse(textMoneySaved.text), playerManager.player.ID);
     }
 }
