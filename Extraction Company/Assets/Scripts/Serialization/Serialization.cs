@@ -20,6 +20,7 @@ public class Serialization : MonoBehaviour
         REQUEST_ITEMS,
         DESTROY_ITEM,
         EXTRACTION_TO_SERVER,
+        EXTRACTION_TO_CLIENT,
         NONE
     }
 
@@ -335,6 +336,34 @@ public class Serialization : MonoBehaviour
 
         Send(bytes, ID);
     }
+    
+    public void SendExtraction(List<string> names, List<int> extractions)
+    {
+        ActionType type = ActionType.EXTRACTION_TO_CLIENT;
+
+        stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+
+        writer.Write((int)type);
+
+        writer.Write(names.Count);
+
+        foreach (string name in names)
+        {
+            writer.Write(name);
+        }
+
+        writer.Write(extractions.Count);
+
+        foreach (int extraction in extractions)
+        {
+            writer.Write(extraction);
+        }
+
+        bytes = stream.ToArray();
+
+        Send(bytes, "-2");
+    }
 
     public int Deserialize(byte[] message)
     {
@@ -554,6 +583,28 @@ public class Serialization : MonoBehaviour
                             extractionManager.SaveExtraction(ID, extraction);
                             break;
                         }
+                    case ActionType.EXTRACTION_TO_CLIENT:
+                        {
+                            List<string> names = new List<string>();
+                            List<int> extractions = new List<int>();
+
+                            int nameCount = reader.ReadInt32();
+                            for(int i = 0; i < nameCount; i++)
+                            {
+                                names.Add(reader.ReadString());
+                            }
+
+                            int extractionCount = reader.ReadInt32();
+                            for (int i = 0; i < extractionCount; i++)
+                            {
+                                extractions.Add(reader.ReadInt32());
+                            }
+
+                            extractionManager.player_Names = names;
+                            extractionManager.player_Numbers = extractions;
+
+                            break;
+                        }
                     default:
                         break;
                 }
@@ -561,7 +612,7 @@ public class Serialization : MonoBehaviour
                 //We return the length of an int (Action), the ID length (as each character is 1 byte) and the specefic size of each parameters
                 return 4 + ID.Length + binaryLength;
             }
-            catch
+             catch
             {
             }
         }

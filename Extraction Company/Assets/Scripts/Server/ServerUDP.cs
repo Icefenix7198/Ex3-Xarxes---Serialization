@@ -29,7 +29,9 @@ public class ServerUDP : MonoBehaviour
 
     public List<UserUDP> userSocketsList;
     public TMP_InputField insertNameServer;
-    Serialization serialization;
+
+    [SerializeField]
+    public Serialization serialization;
 
     List<string> clientsIdList;
 

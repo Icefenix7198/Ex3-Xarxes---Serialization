@@ -27,8 +27,8 @@ public class InventoyManager : MonoBehaviour
     {
         serialization = GameObject.Find("UDP_Manager").GetComponent<Serialization>();
         playerManager = GameObject.Find("PlayerSpawner").GetComponent<PlayerManager>();
-        textMoneyCarring = GameObject.Find("MoneyCarring").GetComponent<TMP_Text>();
-        textMoneySaved = GameObject.Find("MoneySaved").GetComponent<TMP_Text>();
+        textMoneyCarring = GameObject.Find("MoneyCarring_Number").GetComponent<TMP_Text>();
+        textMoneySaved = GameObject.Find("MoneySaved_Number").GetComponent<TMP_Text>();
 
         textMoneyCarring.text = "0";
         textMoneySaved.text = "0";
