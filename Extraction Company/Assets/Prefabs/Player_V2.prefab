@@ -293,7 +293,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6953025022104793281, guid: bf1bb9bb2383e0847a0917ee02b18826, type: 3}
       propertyPath: m_CollisionDetection
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7817803779965202348, guid: bf1bb9bb2383e0847a0917ee02b18826, type: 3}
       propertyPath: m_LocalPosition.z
@@ -390,6 +390,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxInventory: 4
+  priceCommon: 10
+  priceRare: 30
+  priceEpic: 50
+  priceLegendary: 100
+  textMoneyCarring: {fileID: 0}
+  textMoneySaved: {fileID: 0}
 --- !u!224 &4115734487428201158 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3155227739179128013, guid: bf1bb9bb2383e0847a0917ee02b18826, type: 3}

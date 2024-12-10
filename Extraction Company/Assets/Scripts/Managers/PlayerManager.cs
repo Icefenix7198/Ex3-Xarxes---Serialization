@@ -4,6 +4,8 @@ using TMPro;
 using UnityEngine;
 using static PlayerManager;
 using static System.Net.Mime.MediaTypeNames;
+using TMPro;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -11,6 +13,7 @@ public class PlayerManager : MonoBehaviour
     public ClientUDP c_udp;
     public ServerUDP s_udp;
     public Serialization serialization;
+    public ExtractionManager extractionManager;
     public GameObject clientParent;
     public GameObject mainCam;
     
@@ -60,6 +63,9 @@ public class PlayerManager : MonoBehaviour
     public Transform[] spawnPositions;
 
     bool passedScene = false;
+
+    public List<TMP_Text> player_Names_UI;
+    int playerCountName = 1;
 
     [System.Obsolete]
     private void Update()
@@ -141,7 +147,8 @@ public class PlayerManager : MonoBehaviour
 
                 Transform child = player.playerObj.transform.GetChild(0);
                 child.gameObject.GetComponent<TextMeshPro>().text = playerName;
-                
+                player_Names_UI[0].text = playerName;
+
                 Transform cam = player.playerObj.transform.GetChild(1);
                 cam.gameObject.SetActive(true);
 
@@ -171,12 +178,14 @@ public class PlayerManager : MonoBehaviour
 
                 Transform child = pTemp.playerObj.transform.GetChild(0);
                 child.gameObject.GetComponent<TextMeshPro>().text = playerName;
+                player_Names_UI[playerCountName].text = playerName;
 
                 PlayerServer pServer = new PlayerServer();
                 pServer.ID = pTemp.ID;
                 pServer.position = pTemp.playerObj.transform.position;
 
                 playerList.Add(pServer);
+                playerCountName++;
             }
         }
 
@@ -198,6 +207,11 @@ public class PlayerManager : MonoBehaviour
 
             Transform child = player.playerObj.transform.GetChild(0);
             child.gameObject.GetComponent<TextMeshPro>().text = playerName;
+            player_Names_UI[playerCountName - 1].text = playerName;
+            extractionManager.extractions_ofPlayers.Add(playerId, 0);
+            extractionManager.extractions.Add(playerName, 0);
+            extractionManager.player_Names.Add(playerName);
+            extractionManager.player_Numbers.Add(0);
 
             PlayerServer pServer = new PlayerServer();
             pServer.ID = playerId;
@@ -207,6 +221,7 @@ public class PlayerManager : MonoBehaviour
             playerList.Add(pServer);
 
             serialization.SendAllPlayers(playerList);
+            playerCountName++;
         }
     }
 
@@ -217,6 +232,8 @@ public class PlayerManager : MonoBehaviour
 
     public void SpawnAllPlayers(List<PlayerServer> pList)
     {
+        int nameCount = 1;
+
         foreach (var pServer in pList) 
         {
             GameObject tmpPlayer = Instantiate(playerPref, clientParent.transform);
@@ -236,6 +253,9 @@ public class PlayerManager : MonoBehaviour
 
             Transform child = _player.playerObj.transform.GetChild(0);
             child.gameObject.GetComponent<TextMeshPro>().text = pServer.name;
+            player_Names_UI[nameCount].text = pServer.name;
+
+            nameCount++;
         }
     }
 

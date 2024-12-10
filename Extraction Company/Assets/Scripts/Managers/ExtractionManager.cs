@@ -5,8 +5,11 @@ using TMPro;
 
 public class ExtractionManager : MonoBehaviour
 {
-    Dictionary<string, int> extractions_ofPlayers;
-    Dictionary<string, int> extractions;
+    [SerializeField]
+    public Dictionary<string, int> extractions_ofPlayers;
+
+    [SerializeField]
+    public Dictionary<string, int> extractions;
 
     [SerializeField]
     public List<string> player_Names;

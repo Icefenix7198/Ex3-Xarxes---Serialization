@@ -2054,6 +2054,7 @@ MonoBehaviour:
   c_udp: {fileID: 0}
   s_udp: {fileID: 0}
   serialization: {fileID: 0}
+  extractionManager: {fileID: 594127768}
   clientParent: {fileID: 561941398}
   mainCam: {fileID: 1668333941}
   button: {fileID: 471366900}
@@ -2064,6 +2065,11 @@ MonoBehaviour:
   - {fileID: 284415075}
   - {fileID: 258991266}
   - {fileID: 2054694125}
+  player_Names_UI:
+  - {fileID: 2109576838}
+  - {fileID: 1955264851}
+  - {fileID: 490742470}
+  - {fileID: 1678438646}
 --- !u!1 &1154450230
 GameObject:
   m_ObjectHideFlags: 0
