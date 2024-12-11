@@ -21,6 +21,7 @@ public class InventoyManager : MonoBehaviour
 
     public TMP_Text textMoneyCarring;
     public TMP_Text textMoneySaved;
+    public TMP_Text textItems;
 
     // Start is called before the first frame update
     void Start()
@@ -29,9 +30,11 @@ public class InventoyManager : MonoBehaviour
         playerManager = GameObject.Find("PlayerSpawner").GetComponent<PlayerManager>();
         textMoneyCarring = GameObject.Find("MoneyCarring_Number").GetComponent<TMP_Text>();
         textMoneySaved = GameObject.Find("MoneySaved_Number").GetComponent<TMP_Text>();
+        textItems = GameObject.Find("ItemsCarrying_Number").GetComponent<TMP_Text>();
 
         textMoneyCarring.text = "0";
         textMoneySaved.text = "0";
+        textItems.text = "0";
 
         items = new List<itemObj>();
     }
@@ -49,6 +52,7 @@ public class InventoyManager : MonoBehaviour
 
             if (items.Count < maxInventory)
             {
+                textItems.text = (int.Parse(textItems.text) + 1).ToString();
                 items.Add(tmpItem);
                 serialization.SendDestroyItem(tmpItem, playerManager.player.ID);
                 Destroy(other.gameObject);
@@ -81,6 +85,7 @@ public class InventoyManager : MonoBehaviour
             int quantity = int.Parse(textMoneyCarring.text) + int.Parse(textMoneySaved.text);
             textMoneySaved.text = quantity.ToString();
             textMoneyCarring.text = "0";
+            textItems.text = "0";
 
             SendExtraction();
         }
