@@ -104,7 +104,17 @@ public class Serialization : MonoBehaviour
 
             if (monsterManager == null && c_udp.passSceneManager.isConnected)
             {
-                monsterManager = (MonsterManager)FindObjectOfType(typeof(MonsterManager));
+                //monsterManager = (MonsterManager)FindObjectOfType(typeof(MonsterManager));
+
+                if (monsterManager == null && c_udp.passSceneManager.isConnected)
+                {
+                    GameObject tmp = GameObject.Find("MonsterManager");
+
+                    if (tmp != null)
+                    {
+                        monsterManager = GameObject.Find("MonsterManager").GetComponent<MonsterManager>();
+                    }
+                }
             }
         }
 
@@ -137,6 +147,21 @@ public class Serialization : MonoBehaviour
                 if (tmp != null)
                 {
                     extractionManager = GameObject.Find("ExtractionManager").GetComponent<ExtractionManager>();
+                }
+            }
+
+            if (monsterManager == null && s_udp.passScene.isConnected)
+            {
+                //monsterManager = (MonsterManager)FindObjectOfType(typeof(MonsterManager));
+
+                if (monsterManager == null && c_udp.passSceneManager.isConnected)
+                {
+                    GameObject tmp = GameObject.Find("MonsterManager");
+
+                    if (tmp != null)
+                    {
+                        monsterManager = GameObject.Find("MonsterManager").GetComponent<MonsterManager>();
+                    }
                 }
             }
         }
@@ -861,6 +886,6 @@ public class Serialization : MonoBehaviour
 
         bytes = stream.ToArray();
 
-        Send(bytes, "-2");
+        Send(bytes, "-2"); //This message is send only from clients to the server
     }
 }

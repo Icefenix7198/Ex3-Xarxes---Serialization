@@ -134,9 +134,9 @@ public class ServerUDP : MonoBehaviour
 
             ActionType action = serialization.ExtractAction(ogData1);
 
-            lock (userSocketsList)
+            lock (userSocketsList) //ID -2 means that the message is not send to any player and is for the server.
             {
-                if (!userSocketsList.Contains(u) && id != "-2" && action == ActionType.ID_NAME)
+                if (!userSocketsList.Contains(u) && id != "-2" && action == ActionType.ID_NAME) //Check if player already exist, if type ID = -2 and if it set name
                 {
                     string name;
                     name = serialization.ExtractName(data);
