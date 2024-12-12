@@ -47,6 +47,7 @@ public class Serialization : MonoBehaviour
     PlayerManager playerManager;
     ItemGenerator itemManager;
     ExtractionManager extractionManager;
+    MonsterManager monsterManager;
 
     ItemToDestroy itemToDestroy;
     bool itemDestroy = false;
@@ -99,6 +100,11 @@ public class Serialization : MonoBehaviour
                 {
                     extractionManager = GameObject.Find("ExtractionManager").GetComponent<ExtractionManager>();
                 }
+            }
+
+            if (monsterManager == null && c_udp.passSceneManager.isConnected)
+            {
+                monsterManager = (MonsterManager)FindObjectOfType(typeof(MonsterManager));
             }
         }
 
@@ -272,6 +278,34 @@ public class Serialization : MonoBehaviour
         Send(bytes, id);
 
         return id;
+    }
+
+    public void SendMonsters(List<GameObject> listMonsters, string ID)
+    {
+        ActionType type = ActionType.CREATE_MONSTER;
+
+        stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+
+        writer.Write((int)type);
+
+        writer.Write(listMonsters.Count);
+
+        foreach (GameObject mon in monsterManager.GetExistingMonsterList())
+        {
+            writer.Write(monsterManager.GetMonsterID(mon));
+
+            float[] pos = { mon.transform.position.x, mon.transform.position.z };
+
+            for (int i = 0; i < 2; i++)
+            {
+                writer.Write(pos[i]);
+            }
+        }
+
+        bytes = stream.ToArray();
+
+        Send(bytes, ID);
     }
 
     public void SendItems(List<itemObj> items, string ID)
@@ -466,64 +500,94 @@ public class Serialization : MonoBehaviour
                             binaryLength = sizeof(float) * 7;
                             break;
                         }
-                    case ActionType.SPAWN_PLAYERS: 
-                        int lengthSize = reader.ReadInt32();
-
-                        List<PlayerServer> pList = new List<PlayerServer>();
-
-                        PlayerServer pServer = new PlayerServer();
-
-                        int totalLength = 0; //Binary length of all the things inside the server
-
-                        for (int i = 0; i < lengthSize; i++)
+                    case ActionType.SPAWN_PLAYERS:
                         {
-                            pServer.ID = reader.ReadString();
-                            pServer.name = reader.ReadString();
+                            int lengthSize = reader.ReadInt32();
 
-                            totalLength += pServer.ID.Length; //Length ID, as we dont assign ID and stays as "" it doesn't have a length in the final
+                            List<PlayerServer> pList = new List<PlayerServer>();
 
-                            float[] moveList1 = new float[3];
-                            for (int a = 0; a < moveList1.Length; a++)
+                            PlayerServer pServer = new PlayerServer();
+
+                            int totalLength = 0; //Binary length of all the things inside the server
+
+                            for (int i = 0; i < lengthSize; i++)
                             {
-                                moveList1[a] = reader.ReadSingle();
+                                pServer.ID = reader.ReadString();
+                                pServer.name = reader.ReadString();
+
+                                totalLength += pServer.ID.Length; //Length ID, as we dont assign ID and stays as "" it doesn't have a length in the final
+
+                                float[] moveList1 = new float[3];
+                                for (int a = 0; a < moveList1.Length; a++)
+                                {
+                                    moveList1[a] = reader.ReadSingle();
+                                }
+                                totalLength += sizeof(float) * 3; //Length of the move vector
+
+                                pServer.position = new Vector3(moveList1[0], moveList1[1], moveList1[2]);
+
+                                float[] rotation = new float[4];
+                                for (int a = 0; a < rotation.Length; a++)
+                                {
+                                    rotation[a] = reader.ReadSingle();
+                                }
+                                totalLength += sizeof(float) * 4; //Length of the rotation quaternion
+
+                                pServer.rotation = new Quaternion(rotation[0], rotation[1], rotation[2], rotation[3]);
+
+                                pList.Add(pServer);
                             }
-                            totalLength += sizeof(float) * 3; //Length of the move vector
 
-                            pServer.position = new Vector3(moveList1[0], moveList1[1], moveList1[2]);
+                            string idTmp = pServer.ID;
+                            string lastName = pServer.name;
 
-                            float[] rotation = new float[4];
-                            for (int a = 0; a < rotation.Length; a++)
+                            if (!playerManager.button.active)
                             {
-                                rotation[a] = reader.ReadSingle();
-                            }
-                            totalLength += sizeof(float) * 4; //Length of the rotation quaternion
+                                if (playerManager.player.playerObj == null && pList.Count > 1)
+                                {
+                                    pList.RemoveAt(lengthSize - 1);
+                                    playerManager.SpawnAllPlayers(pList);
+                                }
 
-                            pServer.rotation = new Quaternion(rotation[0], rotation[1], rotation[2], rotation[3]);
-
-                            pList.Add(pServer);
-                        }
-
-                        string idTmp = pServer.ID;
-                        string lastName = pServer.name;
-
-                        if (!playerManager.button.active)
-                        {
-                            if (playerManager.player.playerObj == null && pList.Count > 1)
-                            {
-                                pList.RemoveAt(lengthSize - 1);
-                                playerManager.SpawnAllPlayers(pList);
+                                playerManager.NewPlayer(idTmp, lastName, lengthSize - 1);
                             }
 
-                            playerManager.NewPlayer(idTmp, lastName, lengthSize - 1);
-                        }
-
-                        //Length of the binary: Int (4) of TotalLength + sizeOfTheThings (he calculated during the process of reading)
-                        binaryLength = 4 + totalLength;
-                        break;
-                    case ActionType.CREATE_MONSTER:
-
-
+                            //Length of the binary: Int (4) of TotalLength + sizeOfTheThings (he calculated during the process of reading)
+                            binaryLength = 4 + totalLength;
                             break;
+                        }
+                    case ActionType.CREATE_MONSTER:
+                        {
+                            int length = reader.ReadInt32();
+
+                            for (int i = 0; i < length; i++)
+                            {
+                                int typeMonster = reader.ReadInt32();
+
+                                float[] pos = new float[2];
+                                for (int b = 0; b < pos.Length; b++)
+                                {
+                                    pos[b] = reader.ReadSingle();
+                                }
+
+                                Vector2 monPosition = new Vector2(pos[0], pos[1]);
+
+                                monsterManager.SpawnEnemy(typeMonster, monPosition);
+
+                            }
+
+                            //Size of the 3 floats together of movement + 4 floats of rotation
+                            binaryLength = sizeof(float) * 7;
+                            break;
+                        }
+
+                    case ActionType.REQUEST_MONSTERS: //For when the player spaws after the game already started
+                        {
+                            ID = reader.ReadString();
+
+                            SendMonsters(monsterManager.GetExistingMonsterList(), ID);
+                            break;
+                        }                        
                     case ActionType.SPAWN_ITEMS:
                         {
                             List<itemObj> items = new List<itemObj>();

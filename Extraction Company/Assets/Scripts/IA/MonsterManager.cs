@@ -14,10 +14,10 @@ public class MonsterManager : MonoBehaviour
     public PlayerManager playerManager;
 
     [Header("Monster things")]
-    public List<GameObject> monsterList;
+    public List<GameObject> monsterList; //posible monsters to spawn
     float dt = 0.0f;
     [SerializeField] float timeToSpawn;
-    [SerializeField] GameObject listSpawns;
+    [SerializeField] GameObject listPositionsSpawns;
     [SerializeField] GameObject currentMonsters;
     bool[] limitedSpawns;
 
@@ -71,32 +71,56 @@ public class MonsterManager : MonoBehaviour
         }
     }
 
-    void SpawnEnemy(int monsterIndex,Vector2 pos) 
+    public void SpawnEnemy(int monsterIndex, Vector2 pos)
     {
-    
+
         GameObject m = Instantiate(monsterList[monsterIndex], currentMonsters.transform.position, Quaternion.identity);
 
         if (s_udp != null)
         {
-            int randSpawnPos = UnityEngine.Random.Range(0, listSpawns.transform.childCount);
+            int randSpawnPos = UnityEngine.Random.Range(0, listPositionsSpawns.transform.childCount);
 
-            m.transform.position = listSpawns.transform.GetChild(randSpawnPos).transform.position;
+            m.transform.position = listPositionsSpawns.transform.GetChild(randSpawnPos).transform.position;
 
             for (int i = 0; i < playerManager.playerList.Count; i++)
             {
-                Vector2 p = new Vector2(m.transform.position.x, m.transform.position.z); 
+                Vector2 p = new Vector2(m.transform.position.x, m.transform.position.z);
                 serialization.serializeCreateMonster(playerManager.playerList[i].ID, p, monsterIndex);
             }
 
             //gameObject.transform
 
         }
-        else if(c_udp != null)
+        else if (c_udp != null)
         {
             m.transform.position = new Vector3(pos.x, 0, pos.y);
 
             //Deactivate component monster
         }
 
+    }
+
+    public List<GameObject> GetExistingMonsterList() 
+    {
+        List<GameObject> ret = new List<GameObject>();
+
+        foreach(Transform child in currentMonsters.transform) //Por cada children en la lista de monstruos spawneados añadirlo a la lista
+        {
+            ret.Add(child.gameObject);
+        }
+
+        return ret;
+    }
+
+    public int GetMonsterID(GameObject monster) 
+    {
+        int ret = -1;
+
+        for (int i = 0; monsterList.Count > i; i++) 
+        {
+            
+        }
+
+        return ret;
     }
 }
