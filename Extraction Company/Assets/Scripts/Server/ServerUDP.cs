@@ -147,8 +147,9 @@ public class ServerUDP : MonoBehaviour
                 }
             }
 
-            if (action == ActionType.REQUEST_ITEMS || action == ActionType.DESTROY_ITEM ||action == ActionType.EXTRACTION_TO_SERVER || action == ActionType.REQUEST_MONSTERS)
+            if (action == ActionType.REQUEST_ITEMS || action == ActionType.DESTROY_ITEM ||action == ActionType.EXTRACTION_TO_SERVER || action == ActionType.REQUEST_MONSTERS) //This is for messages that only need info from the server as an awnser, and not send it to other people
             {
+                Debug.Log("TEMPORAL! Entro en el if de serverUDP");
                 serialization.Deserialize(data);
             }
             else
@@ -170,25 +171,18 @@ public class ServerUDP : MonoBehaviour
                 ActionType action = serialization.ExtractAction(data);
 
 
-                if (action == ActionType.SPAWN_PLAYERS)
+                if (action == ActionType.SPAWN_PLAYERS) //This case is send to EVERYONE, for specific things.
                 {
                     scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
                 }
-                else if (action == ActionType.CREATE_PLAYER || action == ActionType.MOVE_SERVER)
+                else if (action == ActionType.CREATE_PLAYER || action == ActionType.MOVE_SERVER) //This is very specific for creating the player due to the server needing to also save the data
                 {
                     deserializate = true;
                     tempData = ogData;
                 }
-                else if (action == ActionType.ID_NAME)
+                else if (action == ActionType.ID_NAME || action == ActionType.SPAWN_ITEMS || action == ActionType.CREATE_MONSTER) //This is only to send to the client with the ID
                 {
                     if (scoketsUser.NetID == ID)
-                    {
-                        scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
-                    }
-                }
-                else if (action == ActionType.SPAWN_ITEMS)
-                {
-                    if (scoketsUser.NetID == ID) //This is to send everyone excluding the original sender (example the movement action)
                     {
                         scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
                     }

@@ -19,15 +19,18 @@ public class MonsterManager : MonoBehaviour
     [SerializeField] float timeToSpawn;
     [SerializeField] GameObject listPositionsSpawns;
     [SerializeField] GameObject currentMonsters;
-    bool[] limitedSpawns;
+    public int[] limitedSpawns;
 
     // Start is called before the first frame update
     void Start()
     {
-        limitedSpawns = new bool[monsterList.Count];
-        for (int i = 0; i < limitedSpawns.Length; i++) 
+        if (limitedSpawns == null)
         {
-            limitedSpawns[i] = false;
+            limitedSpawns = new int[monsterList.Count];
+            for (int i = 0; i < limitedSpawns.Length; i++)
+            {
+                limitedSpawns[i] = 1;
+            }
         }
     }
 
@@ -58,12 +61,12 @@ public class MonsterManager : MonoBehaviour
             if(dt >= timeToSpawn) 
             {
                 int rand = UnityEngine.Random.Range(0, monsterList.Count);
-                if (limitedSpawns[rand] == false) 
+                if (limitedSpawns[rand] > 0) 
                 {
                     dt = 0.0f;
-                    limitedSpawns[rand] = true;
+                    limitedSpawns[rand] = limitedSpawns[rand] - 1;
 
-                    SpawnEnemy(rand,Vector2.zero);
+                    SpawnEnemy(rand,Vector2.zero,true);
                 }
                 
                 
@@ -71,12 +74,17 @@ public class MonsterManager : MonoBehaviour
         }
     }
 
-    public void SpawnEnemy(int monsterIndex, Vector2 pos)
+    public void SpawnEnemy(int monsterIndex, Vector2 pos, bool spawnSound = false)
     {
 
         GameObject m = Instantiate(monsterList[monsterIndex], currentMonsters.transform.position, Quaternion.identity);
 
-        if (s_udp != null)
+        if(spawnSound ) 
+        {
+            //Play Sound
+        }
+
+        if (s_udp != null) //If you are server 
         {
             int randSpawnPos = UnityEngine.Random.Range(0, listPositionsSpawns.transform.childCount);
 
@@ -96,6 +104,7 @@ public class MonsterManager : MonoBehaviour
             m.transform.position = new Vector3(pos.x, 0, pos.y);
 
             //Deactivate component monster
+            m.GetComponent<IAGeneral>().enabled = false;
         }
 
     }
@@ -118,7 +127,10 @@ public class MonsterManager : MonoBehaviour
 
         for (int i = 0; monsterList.Count > i; i++) 
         {
-            
+            if (monsterList[i].gameObject == monster) 
+            {
+                ret = i; break;
+            }
         }
 
         return ret;

@@ -957,12 +957,13 @@ MonoBehaviour:
   s_udp: {fileID: 0}
   serialization: {fileID: 0}
   clientParent: {fileID: 0}
-  playerManager: {fileID: 0}
+  playerManager: {fileID: 1051025202}
   monsterList:
   - {fileID: 6495644142803221846, guid: 3db019dd6b4b432488511882a80f07d6, type: 3}
-  timeToSpawn: 3
-  listSpawns: {fileID: 1957095991}
+  timeToSpawn: 11
+  listPositionsSpawns: {fileID: 1957095991}
   currentMonsters: {fileID: 954936773}
+  limitedSpawns: 03000000
 --- !u!4 &272247649
 Transform:
   m_ObjectHideFlags: 0
