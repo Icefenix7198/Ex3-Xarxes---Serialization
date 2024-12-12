@@ -159,6 +159,8 @@ public class PlayerManager : MonoBehaviour
 
                 serialization.RequestItems(playerId);
 
+                serialization.RequestMonsters(playerId);
+
                 passedScene = true;
             }
             else //If the client already has a player spawns the new player in its position to be able to see it.

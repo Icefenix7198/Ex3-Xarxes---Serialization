@@ -60,9 +60,10 @@ public class MonsterManager : MonoBehaviour
                 int rand = UnityEngine.Random.Range(0, monsterList.Count);
                 if (limitedSpawns[rand] == false) 
                 {
-                    SpawnEnemy(rand,Vector2.zero);
                     dt = 0.0f;
                     limitedSpawns[rand] = true;
+
+                    SpawnEnemy(rand,Vector2.zero);
                 }
                 
                 

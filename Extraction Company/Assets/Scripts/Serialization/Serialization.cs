@@ -16,6 +16,7 @@ public class Serialization : MonoBehaviour
         ID_NAME,
         SPAWN_PLAYERS, //Create player in scene for other clients
         CREATE_MONSTER,
+        REQUEST_MONSTERS,
         SPAWN_ITEMS,
         REQUEST_ITEMS,
         DESTROY_ITEM,
@@ -774,6 +775,20 @@ public class Serialization : MonoBehaviour
     public void RequestItems(string ID)
     {
         ActionType type = ActionType.REQUEST_ITEMS;
+
+        stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+        writer.Write((int)type);
+        writer.Write(ID);
+
+        bytes = stream.ToArray();
+
+        Send(bytes, "-2");
+    }
+
+    public void RequestMonsters(string ID)
+    {
+        ActionType type = ActionType.REQUEST_MONSTERS;
 
         stream = new MemoryStream();
         BinaryWriter writer = new BinaryWriter(stream);
