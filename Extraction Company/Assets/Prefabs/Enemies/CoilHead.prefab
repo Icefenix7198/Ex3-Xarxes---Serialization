@@ -125,13 +125,13 @@ MonoBehaviour:
   playerDetectionArea: 12
   wanderPrecisionArea: 8
   searchNodeAreaSelection: 30
-  dt: 0
-  dtForChange: 9
   listNodes: {fileID: 0}
   playersList: {fileID: 0}
   maxSizeQueue: 40
+  dt: 0
+  dtForChange: 9
   agent: {fileID: 363740880174490972}
-  chaseState: {fileID: 0}
+  chaseState: {fileID: 7889184206752520309}
 --- !u!1 &6495644142803221846
 GameObject:
   m_ObjectHideFlags: 0
@@ -246,10 +246,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ad147839441d7643ae8d5b4520cab1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerList: {fileID: 0}
+  playersList: {fileID: 0}
   target: {fileID: 0}
   detectionArea: 0
   currentSuspicionTime: 0
+  timeForChange: 0
+  wander: {fileID: 0}
+  agent: {fileID: 0}
 --- !u!1001 &3130154361098627018
 PrefabInstance:
   m_ObjectHideFlags: 0

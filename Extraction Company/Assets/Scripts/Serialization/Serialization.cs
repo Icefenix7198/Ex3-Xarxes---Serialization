@@ -104,7 +104,17 @@ public class Serialization : MonoBehaviour
 
             if (monsterManager == null && c_udp.passSceneManager.isConnected)
             {
-                monsterManager = (MonsterManager)FindObjectOfType(typeof(MonsterManager));
+                //monsterManager = (MonsterManager)FindObjectOfType(typeof(MonsterManager));
+
+                if (monsterManager == null && c_udp.passSceneManager.isConnected)
+                {
+                    GameObject tmp = GameObject.Find("MonsterManager");
+
+                    if (tmp != null)
+                    {
+                        monsterManager = GameObject.Find("MonsterManager").GetComponent<MonsterManager>();
+                    }
+                }
             }
         }
 
@@ -137,6 +147,16 @@ public class Serialization : MonoBehaviour
                 if (tmp != null)
                 {
                     extractionManager = GameObject.Find("ExtractionManager").GetComponent<ExtractionManager>();
+                }
+            }
+
+            if (monsterManager == null && s_udp.passScene.isConnected)
+            {
+                GameObject tmp = GameObject.Find("MonsterManager");
+
+                if (tmp != null)
+                {
+                    monsterManager = GameObject.Find("MonsterManager").GetComponent<MonsterManager>();
                 }
             }
         }
@@ -257,23 +277,27 @@ public class Serialization : MonoBehaviour
         return id;
     }
 
-    public string serializeCreateMonster(string id, Vector2 position, int monsterType = 0) 
+    public string serializeCreateMonster(string id, Vector2 position, int monsterType = 0)
     {
         ActionType type = ActionType.CREATE_MONSTER;
 
         stream = new MemoryStream();
         BinaryWriter writer = new BinaryWriter(stream);
+
         writer.Write((int)type);
-        writer.Write(id);
+
+        writer.Write(1);
+
+
         writer.Write(monsterType);
 
-        float[] move = { position.x, position.y }; //Y is always the same based on monster type so we don't send the bytes.
-        foreach (var i in move)
+        float[] pos = { position.x, position.y };
+
+        for (int i = 0; i < 2; i++)
         {
-            writer.Write(i);
+            writer.Write(pos[i]);
         }
 
-        bytes = stream.ToArray();
 
         Send(bytes, id);
 
@@ -560,6 +584,8 @@ public class Serialization : MonoBehaviour
                         {
                             int length = reader.ReadInt32();
 
+                            Debug.Log("TEMPORAL! Entro a create monster, size was: " + length);
+
                             for (int i = 0; i < length; i++)
                             {
                                 int typeMonster = reader.ReadInt32();
@@ -585,6 +611,7 @@ public class Serialization : MonoBehaviour
                         {
                             ID = reader.ReadString();
 
+                            Debug.Log("TEMPORAL! Entro en deserialize RequestMonsters, list size was:" + monsterManager.GetExistingMonsterList() + " and id is: " + ID);
                             SendMonsters(monsterManager.GetExistingMonsterList(), ID);
                             break;
                         }                        
@@ -852,6 +879,8 @@ public class Serialization : MonoBehaviour
 
     public void RequestMonsters(string ID)
     {
+        Debug.Log("TEMPORAL: Se llego a la request, ID fue:" + ID);
+
         ActionType type = ActionType.REQUEST_MONSTERS;
 
         stream = new MemoryStream();
@@ -861,6 +890,6 @@ public class Serialization : MonoBehaviour
 
         bytes = stream.ToArray();
 
-        Send(bytes, "-2");
+        Send(bytes, "-2"); //This message is send only from clients to the server
     }
 }
