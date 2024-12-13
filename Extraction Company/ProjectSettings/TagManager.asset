@@ -7,6 +7,9 @@ TagManager:
   - IA wander positions
   - Item
   - Extraction
+  - GroupA
+  - GroupB
+  - GroupC
   layers:
   - Default
   - TransparentFX
