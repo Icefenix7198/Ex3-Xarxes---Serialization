@@ -961,7 +961,7 @@ MonoBehaviour:
   monsterList:
   - {fileID: 6495644142803221846, guid: 3db019dd6b4b432488511882a80f07d6, type: 3}
   timeToSpawn: 3
-  listSpawns: {fileID: 1957095991}
+  listPositionsSpawns: {fileID: 0}
   currentMonsters: {fileID: 954936773}
 --- !u!4 &272247649
 Transform:
@@ -1036,7 +1036,7 @@ Transform:
   m_GameObject: {fileID: 284415074}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.367, z: 78.53}
+  m_LocalPosition: {x: 0, y: 1.367, z: 12.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -7264,7 +7264,7 @@ Transform:
   m_GameObject: {fileID: 1642776943}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -77.25, y: 1.367, z: 0}
+  m_LocalPosition: {x: -12.7, y: 1.367, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

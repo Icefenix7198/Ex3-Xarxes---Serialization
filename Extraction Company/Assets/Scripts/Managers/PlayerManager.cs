@@ -283,19 +283,14 @@ public class PlayerManager : MonoBehaviour
                     {
                         float dist = Mathf.Abs((movedPlayer.gameObject.transform.position - movedPlayer.positions.Peek()).magnitude);
 
-                        if (dist > 0.1f && dist < 0.7f)
+                        if (dist <= 0.22f)
                         {
                             pMovement.animator.SetFloat("Speed", 0.2f);
                             pMovement.animator.SetBool("Run", false);
                         }
-                        else if(dist > 0.7f)
+                        else if(dist > 0.22f)
                         {
                             pMovement.animator.SetBool("Run", true);
-                        }
-                        else
-                        {
-                            pMovement.animator.SetFloat("Speed", 0f);
-                            pMovement.animator.SetBool("Run", false);
                         }
 
                         Vector3 moveTo = movedPlayer.positions.Peek();
@@ -310,6 +305,11 @@ public class PlayerManager : MonoBehaviour
                             movedPlayers.FindIndex(movedPlayers => movedPlayers.Equals(movedPlayer));
                         }
                     }
+                }
+                else
+                { 
+                    pMovement.animator.SetFloat("Speed", 0f);
+                    pMovement.animator.SetBool("Run", false);
                 }
 
                 if (movedPlayer.rotations.Count > 0)
