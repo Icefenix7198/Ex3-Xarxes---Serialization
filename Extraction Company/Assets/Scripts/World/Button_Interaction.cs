@@ -39,13 +39,14 @@ public class Button_Interaction : MonoBehaviour
                     rend.material.SetColor("_Color", Color.red);
                     rend.material.SetColor("_EmissionColor", Color.red);
                     buttonA = false;
-
                 }
                 else if (buttonA == false)
                 {
                     rend.material.SetColor("_Color", Color.green);
                     rend.material.SetColor("_EmissionColor", Color.green);
                     buttonA = true;
+                    buttonB = false;
+                    buttonC = false;
                 }
             }
 
@@ -63,6 +64,8 @@ public class Button_Interaction : MonoBehaviour
                     rend.material.SetColor("_Color", Color.green);
                     rend.material.SetColor("_EmissionColor", Color.green);
                     buttonB = true;
+                    buttonA = false;
+                    buttonC = false;
                 }
             }
 
@@ -80,6 +83,8 @@ public class Button_Interaction : MonoBehaviour
                     rend.material.SetColor("_Color", Color.green);
                     rend.material.SetColor("_EmissionColor", Color.green);
                     buttonC = true;
+                    buttonA = false;
+                    buttonB = false;
                 }
             }
 
@@ -90,31 +95,15 @@ public class Button_Interaction : MonoBehaviour
                     animator[i].SetBool("Button", buttonA); 
                 }
 
-                else
-                {
-                    animator[i].SetBool("Button", !buttonA); 
-                }
-
                 if (animator[i].CompareTag("GroupB"))
                 {
                     animator[i].SetBool("Button", buttonB);
-                }
-
-                else
-                {
-                    animator[i].SetBool("Button", !buttonB);
                 }
 
                 if (animator[i].CompareTag("GroupC"))
                 {
                     animator[i].SetBool("Button", buttonC);
                 }
-
-                else
-                {
-                    animator[i].SetBool("Button", !buttonC);
-                }
-
             }
         }
     }
