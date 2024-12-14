@@ -46,6 +46,8 @@ public class PlayerManager : MonoBehaviour
 
         public Queue<Vector3> positions;
         public Queue<Quaternion> rotations;
+
+        public bool run;
     }
 
     public Player player;
@@ -117,7 +119,14 @@ public class PlayerManager : MonoBehaviour
             {
                 if (Mathf.Abs(player.playerRb.velocity.magnitude) > 0.05 || Input.GetAxisRaw("Mouse X") != 0)
                 {
-                    serialization.serializeMovement(player.ID, player.playerObj.transform.position, player.playerObj.transform.rotation);
+                    bool run = false;
+
+                    if (Input.GetKey(KeyCode.LeftShift))
+                    {
+                        run = true;
+                    }
+
+                    serialization.serializeMovement(player.ID, player.playerObj.transform.position, player.playerObj.transform.rotation, run);
                 }
             }
         }
@@ -159,7 +168,7 @@ public class PlayerManager : MonoBehaviour
 
                 serialization.RequestItems(playerId);
 
-                serialization.RequestMonsters(playerId); //ERIC: WIP, tengo que ver porque se rompe
+                //serialization.RequestMonsters(playerId); //ERIC: WIP, tengo que ver porque se rompe
 
                 passedScene = true;
             }
@@ -283,14 +292,14 @@ public class PlayerManager : MonoBehaviour
                     {
                         float dist = Mathf.Abs((movedPlayer.gameObject.transform.position - movedPlayer.positions.Peek()).magnitude);
 
-                        if (dist <= 0.22f)
+                        if (movedPlayer.run)
+                        {
+                            pMovement.animator.SetBool("Run", true);
+                        }
+                        else if (dist > 0.05f)
                         {
                             pMovement.animator.SetFloat("Speed", 0.2f);
                             pMovement.animator.SetBool("Run", false);
-                        }
-                        else if(dist > 0.22f)
-                        {
-                            pMovement.animator.SetBool("Run", true);
                         }
 
                         Vector3 moveTo = movedPlayer.positions.Peek();
@@ -334,7 +343,7 @@ public class PlayerManager : MonoBehaviour
         dtInterpolate += Time.deltaTime;
     }
 
-    public void ClientMove(string ID, Vector3 moveTo, Quaternion rotation)
+    public void ClientMove(string ID, Vector3 moveTo, Quaternion rotation, bool run)
     {
         List<GameObject> clientList = new List<GameObject>();
 
@@ -355,6 +364,7 @@ public class PlayerManager : MonoBehaviour
                 movedPlayer.rotations = new Queue<Quaternion>();
                 movedPlayer.positions.Enqueue(moveTo);
                 movedPlayer.rotations.Enqueue(rotation);
+                movedPlayer.run = run;
 
                 bool exist = false;
 

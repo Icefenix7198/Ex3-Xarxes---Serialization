@@ -102,20 +102,20 @@ public class Serialization : MonoBehaviour
                 }
             }
 
-            if (monsterManager == null && c_udp.passSceneManager.isConnected)
-            {
-                //monsterManager = (MonsterManager)FindObjectOfType(typeof(MonsterManager));
+            //if (monsterManager == null && c_udp.passSceneManager.isConnected)
+            //{
+            //    //monsterManager = (MonsterManager)FindObjectOfType(typeof(MonsterManager));
 
-                if (monsterManager == null && c_udp.passSceneManager.isConnected)
-                {
-                    GameObject tmp = GameObject.Find("MonsterManager");
+            //    if (monsterManager == null && c_udp.passSceneManager.isConnected)
+            //    {
+            //        GameObject tmp = GameObject.Find("MonsterManager");
 
-                    if (tmp != null)
-                    {
-                        monsterManager = GameObject.Find("MonsterManager").GetComponent<MonsterManager>();
-                    }
-                }
-            }
+            //        if (tmp != null)
+            //        {
+            //            monsterManager = GameObject.Find("MonsterManager").GetComponent<MonsterManager>();
+            //        }
+            //    }
+            //}
         }
 
         if (isS_udp)
@@ -237,7 +237,7 @@ public class Serialization : MonoBehaviour
         Send(bytes, lastID);
     }
 
-    public string serializeMovement(string ID, Vector3 movement, Quaternion rotation)
+    public string serializeMovement(string ID, Vector3 movement, Quaternion rotation, bool run)
     {
         string id = ID;
         ActionType type = ActionType.NONE;
@@ -269,6 +269,8 @@ public class Serialization : MonoBehaviour
         {
             writer.Write(r);
         }
+
+        writer.Write(run);
 
         bytes = stream.ToArray();
 
@@ -487,13 +489,16 @@ public class Serialization : MonoBehaviour
 
                             Quaternion rotation = new Quaternion(rotList[0], rotList[1], rotList[2], rotList[3]);
 
-                            playerManager.ClientMove(ID, movement, rotation); //Move te player in the server
+                            bool run = reader.ReadBoolean();
+
+                            playerManager.ClientMove(ID, movement, rotation, run); //Move te player in the server
 
                             GameObject playerMoved = playerManager.FindPlayer(ID); //Search the player who has moved
 
                             if (playerMoved != null) //Check is not null
                             {
-                                serializeMovement(ID, playerMoved.transform.position, playerMoved.transform.rotation);
+
+                                serializeMovement(ID, playerMoved.transform.position, playerMoved.transform.rotation, run);
                             }
 
                             //Size of the 3 floats together of movement + 4 floats of rotation
@@ -518,7 +523,9 @@ public class Serialization : MonoBehaviour
                             }
                             Quaternion rotaiton = new Quaternion(rotateList[0], rotateList[1], rotateList[2], rotateList[3]);
 
-                            playerManager.ClientMove(ID, movement, rotaiton);
+                            bool run = reader.ReadBoolean();
+
+                            playerManager.ClientMove(ID, movement, rotaiton, run);
 
                             //Size of the 3 floats together of movement + 4 floats of rotation
                             binaryLength = sizeof(float) * 7;
