@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class Door_Manager : MonoBehaviour
 {
+    public List<Animator> animator;
+
+    public bool buttonA;
+    public bool buttonB;
+    public bool buttonC;
+
     // Start is called before the first frame update
     void Start()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        buttonA = false;
+        buttonB = false;
+        buttonC = false;
     }
 }
