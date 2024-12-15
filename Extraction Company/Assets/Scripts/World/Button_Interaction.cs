@@ -5,11 +5,57 @@ using UnityEngine;
 public class Button_Interaction : MonoBehaviour
 {
     Door_Manager doorManager;
-
+    Renderer rend; 
     // Start is called before the first frame update
     void Start()
     {
         doorManager = GameObject.Find("DoorManager").GetComponent<Door_Manager>();
+        rend = GetComponent<Renderer>();
+
+        if (this.CompareTag("GroupA"))
+        {
+            if (doorManager.buttonA == false)
+            {
+                rend.material.SetColor("_Color", Color.red);
+                rend.material.SetColor("_EmissionColor", Color.red);
+            }
+            
+            else
+            {
+                rend.material.SetColor("_Color", Color.green);
+                rend.material.SetColor("_EmissionColor", Color.green);
+            }
+        }
+
+        if (this.CompareTag("GroupB"))
+        {
+            if (doorManager.buttonB == false)
+            {
+                rend.material.SetColor("_Color", Color.red);
+                rend.material.SetColor("_EmissionColor", Color.red);
+            }
+
+            else
+            {
+                rend.material.SetColor("_Color", Color.green);
+                rend.material.SetColor("_EmissionColor", Color.green);
+            }
+        }
+
+        if (this.CompareTag("GroupC"))
+        {
+            if (doorManager.buttonC == false)
+            {
+                rend.material.SetColor("_Color", Color.red);
+                rend.material.SetColor("_EmissionColor", Color.red);
+            }
+
+            else
+            {
+                rend.material.SetColor("_Color", Color.green);
+                rend.material.SetColor("_EmissionColor", Color.green);
+            }
+        }
     }
 
     // Update is called once per frame
@@ -20,8 +66,6 @@ public class Button_Interaction : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        Renderer rend = GetComponent<Renderer>();
-
         if (Input.GetKeyDown(KeyCode.E))
         {
             if(this.CompareTag("GroupA"))
@@ -80,8 +124,27 @@ public class Button_Interaction : MonoBehaviour
                 }
             }
 
+            if (this.CompareTag("GroupA") && doorManager.buttonA == false)
+            {
+                rend.material.SetColor("_Color", Color.red);
+                rend.material.SetColor("_EmissionColor", Color.red);
+            }
 
-            for (int i = 0; i < doorManager.animator.Count; i++) {
+            if (this.CompareTag("GroupB") && doorManager.buttonB == false)
+            {
+                rend.material.SetColor("_Color", Color.red);
+                rend.material.SetColor("_EmissionColor", Color.red);
+            }
+
+            if (this.CompareTag("GroupC") && doorManager.buttonC == false)
+            {
+                rend.material.SetColor("_Color", Color.red);
+                rend.material.SetColor("_EmissionColor", Color.red);
+            }
+        }
+
+
+        for (int i = 0; i < doorManager.animator.Count; i++) {
 
                 if (doorManager.animator[i].CompareTag("GroupA")) {
                     doorManager.animator[i].SetBool("Button", doorManager.buttonA); 
