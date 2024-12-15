@@ -22,6 +22,7 @@ public class Serialization : MonoBehaviour
         DESTROY_ITEM,
         EXTRACTION_TO_SERVER,
         EXTRACTION_TO_CLIENT,
+        MAX_PLAYERS,
         NONE
     }
 
@@ -48,6 +49,8 @@ public class Serialization : MonoBehaviour
     ItemGenerator itemManager;
     ExtractionManager extractionManager;
     MonsterManager monsterManager;
+
+    public GameObject maxPlayers;
 
     ItemToDestroy itemToDestroy;
     bool itemDestroy = false;
@@ -425,6 +428,20 @@ public class Serialization : MonoBehaviour
 
         Send(bytes, "-2");
     }
+    
+    public void MaxPlayers(string ID)
+    {
+        ActionType type = ActionType.MAX_PLAYERS;
+
+        stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+
+        writer.Write((int)type);
+
+        bytes = stream.ToArray();
+
+        Send(bytes, ID);
+    }
 
     public int Deserialize(byte[] message)
     {
@@ -704,6 +721,11 @@ public class Serialization : MonoBehaviour
 
                             break;
                         }
+                    case ActionType.MAX_PLAYERS:
+                        {
+                            MaxPlayers();
+                            break;
+                        }
                     default:
                         break;
                 }
@@ -898,5 +920,13 @@ public class Serialization : MonoBehaviour
         bytes = stream.ToArray();
 
         Send(bytes, "-2"); //This message is send only from clients to the server
+    }
+
+    public void MaxPlayers()
+    {
+        if(maxPlayers != null)
+        {
+            maxPlayers.gameObject.SetActive(true);
+        }
     }
 }
