@@ -179,14 +179,13 @@ public class ServerUDP : MonoBehaviour
 
                 ActionType action = serialization.ExtractAction(data);
 
-
                 if (action == ActionType.SPAWN_PLAYERS) //This case is send to EVERYONE, for specific things.
                 {
                     scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
                 }
                 else if (action == ActionType.CREATE_PLAYER || action == ActionType.MOVE_SERVER) //This is very specific for creating the player due to the server needing to also save the data
                 {
-                    if(userSocketsList.Count < 4)
+                    if(userSocketsList.Count <= 4)
                     {
                         deserializate = true;
                         tempData = ogData;

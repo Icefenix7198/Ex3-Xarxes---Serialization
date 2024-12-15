@@ -125,13 +125,17 @@ public class ClientUDP : MonoBehaviour
                 //If there is no message to recive do nothing instead of break
             }
 
+            ActionType action = ActionType.NONE;
+
             if (recv != 0)
             {
                 deserializate = true;
                 tempData = data;
+
+               action = serialization.ExtractAction(data);
             }
 
-            if (recv != 0 && passSceneManager.firstConnection)
+            if (recv != 0 && passSceneManager.firstConnection && action != ActionType.MAX_PLAYERS)
             {
                 passSceneManager.connected = true;
                 passSceneManager.client = true;
