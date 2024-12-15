@@ -5,7 +5,7 @@ using UnityEngine;
 public class Button_Interaction : MonoBehaviour
 {
     Door_Manager doorManager;
-    Renderer rend; 
+    Renderer rend;
     // Start is called before the first frame update
     void Start()
     {
@@ -19,7 +19,7 @@ public class Button_Interaction : MonoBehaviour
                 rend.material.SetColor("_Color", Color.red);
                 rend.material.SetColor("_EmissionColor", Color.red);
             }
-            
+
             else
             {
                 rend.material.SetColor("_Color", Color.green);
@@ -61,14 +61,30 @@ public class Button_Interaction : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (this.CompareTag("GroupA") && doorManager.buttonA == false)
+        {
+            rend.material.SetColor("_Color", Color.red);
+            rend.material.SetColor("_EmissionColor", Color.red);
+        }
+
+        if (this.CompareTag("GroupB") && doorManager.buttonB == false)
+        {
+            rend.material.SetColor("_Color", Color.red);
+            rend.material.SetColor("_EmissionColor", Color.red);
+        }
+
+        if (this.CompareTag("GroupC") && doorManager.buttonC == false)
+        {
+            rend.material.SetColor("_Color", Color.red);
+            rend.material.SetColor("_EmissionColor", Color.red);
+        }
     }
 
     private void OnTriggerStay(Collider other)
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
-            if(this.CompareTag("GroupA"))
+            if (this.CompareTag("GroupA"))
             {
                 if (doorManager.buttonA == true)
                 {
@@ -123,43 +139,27 @@ public class Button_Interaction : MonoBehaviour
                     doorManager.buttonB = false;
                 }
             }
-
-            if (this.CompareTag("GroupA") && doorManager.buttonA == false)
-            {
-                rend.material.SetColor("_Color", Color.red);
-                rend.material.SetColor("_EmissionColor", Color.red);
-            }
-
-            if (this.CompareTag("GroupB") && doorManager.buttonB == false)
-            {
-                rend.material.SetColor("_Color", Color.red);
-                rend.material.SetColor("_EmissionColor", Color.red);
-            }
-
-            if (this.CompareTag("GroupC") && doorManager.buttonC == false)
-            {
-                rend.material.SetColor("_Color", Color.red);
-                rend.material.SetColor("_EmissionColor", Color.red);
-            }
         }
 
 
-        for (int i = 0; i < doorManager.animator.Count; i++) {
+        for (int i = 0; i < doorManager.animator.Count; i++)
+        {
 
-                if (doorManager.animator[i].CompareTag("GroupA")) {
-                    doorManager.animator[i].SetBool("Button", doorManager.buttonA); 
-                }
-
-                if (doorManager.animator[i].CompareTag("GroupB"))
-                {
-                    doorManager.animator[i].SetBool("Button", doorManager.buttonB);
-                }
-
-                if (doorManager.animator[i].CompareTag("GroupC"))
-                {
-                    doorManager.animator[i].SetBool("Button", doorManager.buttonC);
-                }
+            if (doorManager.animator[i].CompareTag("GroupA"))
+            {
+                doorManager.animator[i].SetBool("Button", doorManager.buttonA);
             }
+
+            if (doorManager.animator[i].CompareTag("GroupB"))
+            {
+                doorManager.animator[i].SetBool("Button", doorManager.buttonB);
+            }
+
+            if (doorManager.animator[i].CompareTag("GroupC"))
+            {
+                doorManager.animator[i].SetBool("Button", doorManager.buttonC);
+            }
+
         }
     }
 }
