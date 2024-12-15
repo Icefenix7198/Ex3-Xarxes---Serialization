@@ -136,6 +136,7 @@ public class ServerUDP : MonoBehaviour
 
             lock (userSocketsList) //ID -2 means that the message is not send to any player and is for the server.
             {
+
                 if (!userSocketsList.Contains(u) && id != "-2" && action == ActionType.ID_NAME) //Check if player already exist, if type ID = -2 and if it set name
                 {
                     string name;
@@ -144,6 +145,14 @@ public class ServerUDP : MonoBehaviour
 
                     clientsIdList.Add(u.NetID);
                     userSocketsList.Add(u);
+
+                    if (userSocketsList.Count > 4)
+                    {
+                        serialization.MaxPlayers(u.NetID);
+
+                        clientsIdList.Remove(u.NetID);
+                        userSocketsList.Remove(u);
+                    }
                 }
             }
 
@@ -177,10 +186,13 @@ public class ServerUDP : MonoBehaviour
                 }
                 else if (action == ActionType.CREATE_PLAYER || action == ActionType.MOVE_SERVER) //This is very specific for creating the player due to the server needing to also save the data
                 {
-                    deserializate = true;
-                    tempData = ogData;
+                    if(userSocketsList.Count < 4)
+                    {
+                        deserializate = true;
+                        tempData = ogData;
+                    }
                 }
-                else if (action == ActionType.ID_NAME || action == ActionType.SPAWN_ITEMS || action == ActionType.CREATE_MONSTER) //This is only to send to the client with the ID
+                else if (action == ActionType.ID_NAME || action == ActionType.SPAWN_ITEMS || action == ActionType.CREATE_MONSTER || action == ActionType.MAX_PLAYERS) //This is only to send to the client with the ID
                 {
                     if (scoketsUser.NetID == ID)
                     {
