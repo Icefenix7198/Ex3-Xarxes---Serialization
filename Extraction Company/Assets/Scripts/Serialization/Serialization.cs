@@ -52,7 +52,7 @@ public class Serialization : MonoBehaviour
     ItemGenerator itemManager;
     ExtractionManager extractionManager;
     MonsterManager monsterManager;
-    Button_Interaction buttonInteraction; 
+    Door_Manager buttonInteraction; 
 
     public GameObject maxPlayers;
 
@@ -106,6 +106,16 @@ public class Serialization : MonoBehaviour
                 if (tmp != null)
                 {
                     extractionManager = GameObject.Find("ExtractionManager").GetComponent<ExtractionManager>();
+                }
+            }
+
+            if (buttonInteraction == null && c_udp.passSceneManager.isConnected)
+            {
+                GameObject tmp = GameObject.Find("DoorManager");
+
+                if (tmp != null)
+                {
+                    buttonInteraction = GameObject.Find("DoorManager").GetComponent<Door_Manager>();
                 }
             }
 
@@ -167,13 +177,13 @@ public class Serialization : MonoBehaviour
                 }
             }
 
-            if (buttonInteraction == null && c_udp.passSceneManager.isConnected)
+            if (buttonInteraction == null && s_udp.passScene.isConnected)
             {
                 GameObject tmp = GameObject.Find("DoorManager");
 
                 if (tmp != null)
                 {
-                    buttonInteraction = GameObject.Find("DoorManager").GetComponent<ExtractionManager>();
+                    buttonInteraction = GameObject.Find("DoorManager").GetComponent<Door_Manager>();
                 }
             }
 
@@ -490,6 +500,21 @@ public class Serialization : MonoBehaviour
         Send(bytes, ID);
     }
 
+    public void SendDoors(string door)
+    {
+        ActionType type = ActionType.DOORS;
+
+        stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+
+        writer.Write((int)type);
+        writer.Write(door);
+
+        bytes = stream.ToArray();
+
+        Send(bytes, "-2");
+    }
+
     public int Deserialize(byte[] message)
     {
         try
@@ -775,12 +800,9 @@ public class Serialization : MonoBehaviour
                         }
                     case ActionType.DOORS:
                         {
-                            //bool groupA = reader.ReadBoolean();
-                            //bool groupB = reader.ReadBoolean();
-                            //bool groupC = reader.ReadBoolean();
-
-                            //buttonInteraction.buttonA 
-
+                            string door = reader.ReadString();
+                            buttonInteraction.DoorOpen(door);
+                            break;
                         }
                     case ActionType.WIN:
                         {

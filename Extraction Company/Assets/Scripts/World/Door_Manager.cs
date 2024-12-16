@@ -17,4 +17,9 @@ public class Door_Manager : MonoBehaviour
         buttonB = false;
         buttonC = false;
     }
+
+    public void DoorOpen(string door)
+    {
+
+    }
 }
