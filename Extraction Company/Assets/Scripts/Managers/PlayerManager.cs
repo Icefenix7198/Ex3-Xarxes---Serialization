@@ -452,7 +452,8 @@ public class PlayerManager : MonoBehaviour
 
             if (ID == idClient)
             {
-                child.gameObject.SetActive(false);
+                PlayerMovement clientPlayer = child.GetComponent<PlayerMovement>();
+                clientPlayer.animator.SetBool("Death", true);
             }
         }
     }
