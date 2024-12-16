@@ -10,6 +10,7 @@ public class InventoyManager : MonoBehaviour
     public int maxInventory = 4;
     Serialization serialization;
     PlayerManager playerManager;
+    ExtractionManager extractionManager;
 
     public int priceCommon = 10;
     public int priceRare = 30;
@@ -23,11 +24,14 @@ public class InventoyManager : MonoBehaviour
     public TMP_Text textMoneySaved;
     public TMP_Text textItems;
 
+    bool sendWin;
+
     // Start is called before the first frame update
     void Start()
     {
         serialization = GameObject.Find("UDP_Manager").GetComponent<Serialization>();
         playerManager = GameObject.Find("PlayerSpawner").GetComponent<PlayerManager>();
+        extractionManager = GameObject.Find("ExtractionManager").GetComponent<ExtractionManager>();
         textMoneyCarring = GameObject.Find("MoneyCarring_Number").GetComponent<TMP_Text>();
         textMoneySaved = GameObject.Find("MoneySaved_Number").GetComponent<TMP_Text>();
         textItems = GameObject.Find("ItemsCarrying_Number").GetComponent<TMP_Text>();
@@ -37,6 +41,23 @@ public class InventoyManager : MonoBehaviour
         textItems.text = "0";
 
         items = new List<itemObj>();
+
+        sendWin = false;
+    }
+
+    private void Update()
+    {
+        if(totalMoneySaved >= 250 && !sendWin)
+        {
+            serialization.WinCondition(playerManager.player.name, playerManager.player.ID);
+
+            extractionManager.winnerPlayer.GetComponent<TMP_Text>().text = playerManager.player.name;
+            extractionManager.winText.GetComponent<TMP_Text>().color = Color.green;
+            extractionManager.winnerPlayer.SetActive(true);
+            extractionManager.winText.SetActive(true);
+
+            sendWin = true;
+        }
     }
 
     private void OnTriggerStay(Collider other)
@@ -84,6 +105,7 @@ public class InventoyManager : MonoBehaviour
             items.Clear();
             int quantity = int.Parse(textMoneyCarring.text) + int.Parse(textMoneySaved.text);
             textMoneySaved.text = quantity.ToString();
+            totalMoneySaved = quantity;
             textMoneyCarring.text = "0";
             textItems.text = "0";
 

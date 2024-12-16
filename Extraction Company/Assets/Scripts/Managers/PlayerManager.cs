@@ -157,6 +157,7 @@ public class PlayerManager : MonoBehaviour
                 Transform child = player.playerObj.transform.GetChild(0);
                 child.gameObject.GetComponent<TextMeshPro>().text = playerName;
                 player_Names_UI[0].text = playerName;
+                player.name = playerName;
 
                 Transform cam = player.playerObj.transform.GetChild(1);
                 cam.gameObject.SetActive(true);

@@ -24,6 +24,9 @@ public class ExtractionManager : MonoBehaviour
 
     int playerCount = 0;
 
+    public GameObject winText;
+    public GameObject winnerPlayer;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -37,12 +40,14 @@ public class ExtractionManager : MonoBehaviour
         {
             server = GameObject.Find("UDP_Manager").GetComponent<ServerUDP>();
         }
+        winnerPlayer.SetActive(false);
+        winText.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(player_Names.Count > 0)
+        if (player_Names.Count > 0)
         {
             for (int i = 0; i < player_Names.Count; i++)
             {
@@ -108,5 +113,12 @@ public class ExtractionManager : MonoBehaviour
         }
 
         server.serialization.SendExtraction(player_Names, player_Numbers);
+    }
+    public void Losse(string name)
+    {
+        winnerPlayer.GetComponent<TMP_Text>().text = name;
+        winText.GetComponent<TMP_Text>().color = Color.red;
+        winnerPlayer.SetActive(true);
+        winText.SetActive(true);
     }
 }

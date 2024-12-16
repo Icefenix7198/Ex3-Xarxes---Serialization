@@ -23,6 +23,7 @@ public class Serialization : MonoBehaviour
         EXTRACTION_TO_SERVER,
         EXTRACTION_TO_CLIENT,
         MAX_PLAYERS,
+        WIN,
         NONE
     }
 
@@ -443,6 +444,23 @@ public class Serialization : MonoBehaviour
         Send(bytes, ID);
     }
 
+    public void WinCondition(string name, string ID)
+    {
+        ActionType type = ActionType.WIN;
+
+        stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+
+        writer.Write((int)type);
+        writer.Write(ID);
+
+        writer.Write(name);
+
+        bytes = stream.ToArray();
+
+        Send(bytes, ID);
+    }
+
     public int Deserialize(byte[] message)
     {
         try
@@ -724,6 +742,15 @@ public class Serialization : MonoBehaviour
                     case ActionType.MAX_PLAYERS:
                         {
                             MaxPlayers();
+                            break;
+                        }
+                    case ActionType.WIN:
+                        {
+
+                            ID = reader.ReadString();
+                            string name = reader.ReadString();
+
+                            extractionManager.Losse(name);
                             break;
                         }
                     default:
