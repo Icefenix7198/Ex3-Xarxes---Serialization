@@ -24,6 +24,7 @@ public class Serialization : MonoBehaviour
         EXTRACTION_TO_CLIENT,
         MAX_PLAYERS,
         WIN,
+        DEATH,
         NONE
     }
 
@@ -459,6 +460,21 @@ public class Serialization : MonoBehaviour
         bytes = stream.ToArray();
 
         Send(bytes, ID);
+    } 
+    
+    public void SendDeathPlayer(string ID)
+    {
+        ActionType type = ActionType.DEATH;
+
+        stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+
+        writer.Write((int)type);
+        writer.Write(ID);
+
+        bytes = stream.ToArray();
+
+        Send(bytes, ID);
     }
 
     public int Deserialize(byte[] message)
@@ -746,11 +762,17 @@ public class Serialization : MonoBehaviour
                         }
                     case ActionType.WIN:
                         {
-
                             ID = reader.ReadString();
                             string name = reader.ReadString();
 
                             extractionManager.Losse(name);
+                            break;
+                        }
+                    case ActionType.DEATH:
+                        {
+                            ID = reader.ReadString();
+
+                            playerManager.ClientDeath(ID);
                             break;
                         }
                     default:

@@ -16,6 +16,7 @@ public class PlayerManager : MonoBehaviour
     public ExtractionManager extractionManager;
     public GameObject clientParent;
     public GameObject mainCam;
+    public GameObject playerCam;
     
     public GameObject button;
 
@@ -108,7 +109,18 @@ public class PlayerManager : MonoBehaviour
             UnityEngine.Application.Quit();
         }
 
-        UpdatePositionAndRotation();
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            Death();
+        }
+
+        if (player.playerObj != null)
+        {
+            if (player.playerObj.active == true)
+            {
+                UpdatePositionAndRotation();
+            }
+        }
     }
 
     private void SendMovement()
@@ -160,6 +172,7 @@ public class PlayerManager : MonoBehaviour
                 player.name = playerName;
 
                 Transform cam = player.playerObj.transform.GetChild(1);
+                playerCam = cam.gameObject;
                 cam.gameObject.SetActive(true);
 
                 if (mainCam != null)
@@ -418,5 +431,29 @@ public class PlayerManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    public void Death()
+    {
+        mainCam.SetActive(true);
+        playerCam.SetActive(false);
+
+        player.playerObj.SetActive(false);
+        player.playerObj.GetComponent<PlayerMovement>().enabled = false;
+
+        serialization.SendDeathPlayer(player.ID);
+    }
+
+    public void ClientDeath(string ID)
+    {
+        foreach (Transform child in clientParent.transform)
+        {
+            string idClient = child.gameObject.GetComponent<TextMeshProUGUI>().text;
+
+            if (ID == idClient)
+            {
+                child.gameObject.SetActive(false);
+            }
+        }
     }
 }
