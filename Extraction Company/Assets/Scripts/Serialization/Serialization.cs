@@ -23,6 +23,7 @@ public class Serialization : MonoBehaviour
         EXTRACTION_TO_SERVER,
         EXTRACTION_TO_CLIENT,
         MAX_PLAYERS,
+        DOORS,
         WIN,
         DEATH,
         NONE
@@ -51,6 +52,7 @@ public class Serialization : MonoBehaviour
     ItemGenerator itemManager;
     ExtractionManager extractionManager;
     MonsterManager monsterManager;
+    Button_Interaction buttonInteraction; 
 
     public GameObject maxPlayers;
 
@@ -164,6 +166,17 @@ public class Serialization : MonoBehaviour
                     monsterManager = GameObject.Find("MonsterManager").GetComponent<MonsterManager>();
                 }
             }
+
+            if (buttonInteraction == null && c_udp.passSceneManager.isConnected)
+            {
+                GameObject tmp = GameObject.Find("DoorManager");
+
+                if (tmp != null)
+                {
+                    buttonInteraction = GameObject.Find("DoorManager").GetComponent<ExtractionManager>();
+                }
+            }
+
         }
 
         if (itemDestroy)
@@ -759,6 +772,15 @@ public class Serialization : MonoBehaviour
                         {
                             MaxPlayers();
                             break;
+                        }
+                    case ActionType.DOORS:
+                        {
+                            //bool groupA = reader.ReadBoolean();
+                            //bool groupB = reader.ReadBoolean();
+                            //bool groupC = reader.ReadBoolean();
+
+                            //buttonInteraction.buttonA 
+
                         }
                     case ActionType.WIN:
                         {
