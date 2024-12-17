@@ -481,6 +481,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7804783d2453fa641bb822f9fa7e51c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  explosion: {fileID: 8300000, guid: 6c23c882b8ed71f479df3537f765f1c8, type: 3}
 --- !u!224 &4115734487428201158 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3155227739179128013, guid: bf1bb9bb2383e0847a0917ee02b18826, type: 3}
