@@ -201,6 +201,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c644335a5377104cac02c01a9c31076, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerManager: {fileID: 0}
+  agent: {fileID: 363740880174490972}
+  myMonsterType: 0
   currentState: {fileID: 6960458260878180371}
 --- !u!1 &6513319409693821381
 GameObject:
@@ -248,11 +251,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playersList: {fileID: 0}
   target: {fileID: 0}
-  detectionArea: 0
+  detectionArea: 20
   currentSuspicionTime: 0
-  timeForChange: 0
-  wander: {fileID: 0}
-  agent: {fileID: 0}
+  timeForChange: 15
+  wander: {fileID: 6960458260878180371}
+  agent: {fileID: 363740880174490972}
 --- !u!1001 &3130154361098627018
 PrefabInstance:
   m_ObjectHideFlags: 0

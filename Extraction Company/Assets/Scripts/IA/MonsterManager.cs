@@ -72,6 +72,8 @@ public class MonsterManager : MonoBehaviour
                     SpawnEnemy(rand,Vector2.zero,true);
                 }
             }
+
+            
         }
     }
 
@@ -135,7 +137,7 @@ public class MonsterManager : MonoBehaviour
 
         for (int i = 0; monsterList.Count > i; i++) 
         {
-            if (monsterList[i].gameObject == monster) 
+            if (monsterList[i].gameObject.GetComponent<IAGeneral>().myMonsterType == monster.GetComponent<IAGeneral>().myMonsterType) 
             {
                 ret = i; break;
             }

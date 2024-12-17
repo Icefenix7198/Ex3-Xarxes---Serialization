@@ -54,14 +54,14 @@ public class CoilHeadChase : State
                 target = null;
             }
 
-            timeForChange = 0.0f;
+            currentSuspicionTime = 0.0f;
         }
 
         
 
         if (currentSuspicionTime > timeForChange) 
         {
-            timeForChange = 0.0f;
+            currentSuspicionTime = 0.0f;
             return wander;
         }
         else 

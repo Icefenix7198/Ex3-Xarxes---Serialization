@@ -52,7 +52,7 @@ public class WanderState : State
         {
             if( targetSearchNode != null && targetSearchNode.GetComponent<Renderer>() != null) { targetSearchNode.GetComponent<Renderer>().material.color = Color.blue; }
             targetSearchNode = ChooseNextNode();
-            targetSearchNode.GetComponent<Renderer>().material.color = Color.yellow; //Highligth target node
+            if (targetSearchNode.GetComponent<Renderer>() != null) { targetSearchNode.GetComponent<Renderer>().material.color = Color.yellow; } //Highligth target node
             //Debug.Log("Target Changed to:" + targetSearchNode.transform.name + " at:" + targetSearchNode.transform.position + " with distance:" + Vector3.Distance(this.gameObject.transform.position, targetSearchNode.transform.position));
             dt = 0.0F;
         }
