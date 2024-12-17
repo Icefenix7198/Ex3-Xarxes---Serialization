@@ -168,8 +168,8 @@ public class PlayerManager : MonoBehaviour
 
                 Transform child = player.playerObj.transform.GetChild(0);
                 child.gameObject.GetComponent<TextMeshPro>().text = playerName;
-                player_Names_UI[0].text = playerNum.ToString() + "- " +playerName;
-                player.name = playerNum.ToString() + "_" + playerName;
+                player_Names_UI[0].text = /*playerNum.ToString() + "- " +*/playerName;
+                player.name = /*playerNum.ToString() + "_" +*/ playerName;
 
                 Transform cam = player.playerObj.transform.GetChild(1);
                 playerCam = cam.gameObject;
