@@ -129,7 +129,7 @@ public class PlayerManager : MonoBehaviour
         {
             if (player.playerObj != null)
             {
-                if (Mathf.Abs(player.playerRb.velocity.magnitude) > 0.05 || Input.GetAxisRaw("Mouse X") != 0)
+                if (Mathf.Abs(player.playerRb.velocity.magnitude) > 0.15 || Input.GetAxisRaw("Mouse X") != 0)
                 {
                     bool run = false;
 

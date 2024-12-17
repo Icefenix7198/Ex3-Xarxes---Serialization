@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Data.Common;
 using System.IO;
 using System.Net.Sockets;
 using Unity.VisualScripting;
@@ -500,7 +501,7 @@ public class Serialization : MonoBehaviour
         Send(bytes, ID);
     }
 
-    public void SendDoors(string door)
+    public void SendDoors(string door, string ID = "-2")
     {
         ActionType type = ActionType.DOORS;
 
@@ -508,11 +509,12 @@ public class Serialization : MonoBehaviour
         BinaryWriter writer = new BinaryWriter(stream);
 
         writer.Write((int)type);
+        writer.Write(ID);
         writer.Write(door);
 
         bytes = stream.ToArray();
 
-        Send(bytes, "-2");
+        Send(bytes, ID);
     }
 
     public int Deserialize(byte[] message)
@@ -800,8 +802,16 @@ public class Serialization : MonoBehaviour
                         }
                     case ActionType.DOORS:
                         {
+                            ID = reader.ReadString();
                             string door = reader.ReadString();
+
+                            if (isS_udp)
+                            {
+                                SendDoors(door, ID);
+                            }
+
                             buttonInteraction.DoorOpen(door);
+
                             break;
                         }
                     case ActionType.WIN:

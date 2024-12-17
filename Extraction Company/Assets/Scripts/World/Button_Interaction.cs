@@ -6,11 +6,31 @@ public class Button_Interaction : MonoBehaviour
 {
     Door_Manager doorManager;
     Renderer rend;
+
+    [SerializeField]
+    public Serialization serialization;
+    PlayerManager playerManager;
+
     // Start is called before the first frame update
     void Start()
     {
         doorManager = GameObject.Find("DoorManager").GetComponent<Door_Manager>();
         rend = GetComponent<Renderer>();
+
+        if (serialization == null)
+        {
+            serialization = GameObject.Find("UDP_Manager").GetComponent<Serialization>();
+        }
+
+        if (playerManager == null)
+        {
+            GameObject tmp = GameObject.Find("PlayerSpawner");
+
+            if (tmp != null)
+            {
+                playerManager = tmp.GetComponent<PlayerManager>();
+            }
+        }
 
         if (this.CompareTag("GroupA"))
         {
@@ -78,12 +98,32 @@ public class Button_Interaction : MonoBehaviour
             rend.material.SetColor("_Color", Color.red);
             rend.material.SetColor("_EmissionColor", Color.red);
         }
+
+        if (this.CompareTag("GroupA") && doorManager.buttonA == true)
+        {
+            rend.material.SetColor("_Color", Color.green);
+            rend.material.SetColor("_EmissionColor", Color.green);
+        }
+
+        if (this.CompareTag("GroupB") && doorManager.buttonB == true)
+        {
+            rend.material.SetColor("_Color", Color.green);
+            rend.material.SetColor("_EmissionColor", Color.green);
+        }
+
+        if (this.CompareTag("GroupC") && doorManager.buttonC == true)
+        {
+            rend.material.SetColor("_Color", Color.green);
+            rend.material.SetColor("_EmissionColor", Color.green);
+        }
     }
 
     private void OnTriggerStay(Collider other)
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
+            string door = "";
+
             if (this.CompareTag("GroupA"))
             {
                 if (doorManager.buttonA == true)
@@ -100,6 +140,8 @@ public class Button_Interaction : MonoBehaviour
                     doorManager.buttonB = false;
                     doorManager.buttonC = false;
                 }
+
+                door = "A";
             }
 
             if (this.CompareTag("GroupB"))
@@ -119,6 +161,8 @@ public class Button_Interaction : MonoBehaviour
                     doorManager.buttonA = false;
                     doorManager.buttonC = false;
                 }
+
+                door = "B";
             }
 
             if (this.CompareTag("GroupC"))
@@ -138,28 +182,13 @@ public class Button_Interaction : MonoBehaviour
                     doorManager.buttonA = false;
                     doorManager.buttonB = false;
                 }
+
+                door = "C";
             }
+
+            serialization.SendDoors(door, playerManager.player.ID);
         }
 
-
-        for (int i = 0; i < doorManager.animator.Count; i++)
-        {
-
-            if (doorManager.animator[i].CompareTag("GroupA"))
-            {
-                doorManager.animator[i].SetBool("Button", doorManager.buttonA);
-            }
-
-            if (doorManager.animator[i].CompareTag("GroupB"))
-            {
-                doorManager.animator[i].SetBool("Button", doorManager.buttonB);
-            }
-
-            if (doorManager.animator[i].CompareTag("GroupC"))
-            {
-                doorManager.animator[i].SetBool("Button", doorManager.buttonC);
-            }
-
-        }
+        doorManager.ExecuteDoors();
     }
 }
