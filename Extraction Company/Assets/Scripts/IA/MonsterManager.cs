@@ -71,14 +71,17 @@ public class MonsterManager : MonoBehaviour
 
                     SpawnEnemy(rand,Vector2.zero,true);
                 }
-                
-                
             }
         }
     }
 
     public void SpawnEnemy(int monsterIndex, Vector2 pos, bool spawnSound = false)
     {
+        
+        if(monsterIndex == -1) 
+        {
+            monsterIndex = 0;
+        }
 
         GameObject m = Instantiate(monsterList[monsterIndex], currentMonsters.transform.position, Quaternion.identity);
         currentMonstersList.Add(m);
@@ -111,7 +114,7 @@ public class MonsterManager : MonoBehaviour
             //Deactivate component monster
             m.GetComponent<IAGeneral>().enabled = false;
         }
-
+        m.transform.parent = currentMonsters.transform;
     }
 
     public List<GameObject> GetExistingMonsterList() 

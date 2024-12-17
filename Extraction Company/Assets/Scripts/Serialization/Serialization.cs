@@ -120,20 +120,16 @@ public class Serialization : MonoBehaviour
                 }
             }
 
-            //if (monsterManager == null && c_udp.passSceneManager.isConnected)
-            //{
-            //    //monsterManager = (MonsterManager)FindObjectOfType(typeof(MonsterManager));
+            if (monsterManager == null && c_udp.passSceneManager.isConnected)
+            {
+                GameObject tmp = GameObject.Find("MonsterManager");
 
-            //    if (monsterManager == null && c_udp.passSceneManager.isConnected)
-            //    {
-            //        GameObject tmp = GameObject.Find("MonsterManager");
+                if (tmp != null)
+                {
+                    monsterManager = GameObject.Find("MonsterManager").GetComponent<MonsterManager>();
+                }
+            }
 
-            //        if (tmp != null)
-            //        {
-            //            monsterManager = GameObject.Find("MonsterManager").GetComponent<MonsterManager>();
-            //        }
-            //    }
-            //}
         }
 
         if (isS_udp)
@@ -337,30 +333,33 @@ public class Serialization : MonoBehaviour
 
     public void SendMonsters(List<GameObject> listMonsters, string ID)
     {
-        ActionType type = ActionType.CREATE_MONSTER;
-
-        stream = new MemoryStream();
-        BinaryWriter writer = new BinaryWriter(stream);
-
-        writer.Write((int)type);
-
-        writer.Write(listMonsters.Count);
-
-        foreach (GameObject mon in monsterManager.GetExistingMonsterList())
+        if (listMonsters.Count > 0) 
         {
-            writer.Write(monsterManager.GetMonsterID(mon));
+            ActionType type = ActionType.CREATE_MONSTER;
 
-            float[] pos = { mon.transform.position.x, mon.transform.position.z };
+            stream = new MemoryStream();
+            BinaryWriter writer = new BinaryWriter(stream);
 
-            for (int i = 0; i < 2; i++)
+            writer.Write((int)type);
+
+            writer.Write(listMonsters.Count);
+
+            foreach (GameObject mon in monsterManager.GetExistingMonsterList())
             {
-                writer.Write(pos[i]);
+                writer.Write(monsterManager.GetMonsterID(mon));
+
+                float[] pos = { mon.transform.position.x, mon.transform.position.z };
+
+                for (int i = 0; i < 2; i++)
+                {
+                    writer.Write(pos[i]);
+                }
             }
-        }
 
-        bytes = stream.ToArray();
+            bytes = stream.ToArray();
 
-        Send(bytes, ID);
+            Send(bytes, ID);
+        }        
     }
 
     public void SendItems(List<itemObj> items, string ID)
@@ -709,7 +708,7 @@ public class Serialization : MonoBehaviour
                         {
                             ID = reader.ReadString();
 
-                            Debug.Log("TEMPORAL! Entro en deserialize RequestMonsters, list size was:" + monsterManager.GetExistingMonsterList() + " and id is: " + ID);
+                            //Debug.Log("TEMPORAL! Entro en deserialize RequestMonsters, list size was:" + monsterManager.GetExistingMonsterList() + " and id is: " + ID);
                             SendMonsters(monsterManager.GetExistingMonsterList(), ID);
                             break;
                         }                        
