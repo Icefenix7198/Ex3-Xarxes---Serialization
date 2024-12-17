@@ -40,6 +40,7 @@ public class ExtractionManager : MonoBehaviour
         {
             server = GameObject.Find("UDP_Manager").GetComponent<ServerUDP>();
         }
+
         winnerPlayer.SetActive(false);
         winText.SetActive(false);
     }
