@@ -8,6 +8,12 @@ public class MineManager : MonoBehaviour
     PlayerManager playerManager;
     PlayerMovement playerMovement;
 
+    AudioSource playerAudioSource;
+    public AudioClip explosion;
+
+    GameObject mine;
+    float dt = 0;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -23,6 +29,9 @@ public class MineManager : MonoBehaviour
             {
                 playerManager.Death();
             }
+
+            playerAudioSource = other.GetComponent<AudioSource>();
+            playerAudioSource.PlayOneShot(explosion);
 
             Destroy(other.gameObject);
         }
