@@ -415,6 +415,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1812185600079139206, guid: bf1bb9bb2383e0847a0917ee02b18826, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4928468320917818458}
+    - targetCorrespondingSourceObject: {fileID: 1812185600079139206, guid: bf1bb9bb2383e0847a0917ee02b18826, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5468910117669495886}
   m_SourcePrefab: {fileID: 100100000, guid: bf1bb9bb2383e0847a0917ee02b18826, type: 3}
 --- !u!1 &860668492621021069 stripped
 GameObject:
@@ -465,6 +468,19 @@ MonoBehaviour:
   priceLegendary: 100
   textMoneyCarring: {fileID: 0}
   textMoneySaved: {fileID: 0}
+  textItems: {fileID: 0}
+--- !u!114 &5468910117669495886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 860668492621021069}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7804783d2453fa641bb822f9fa7e51c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &4115734487428201158 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 3155227739179128013, guid: bf1bb9bb2383e0847a0917ee02b18826, type: 3}

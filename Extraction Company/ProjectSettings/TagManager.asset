@@ -10,6 +10,7 @@ TagManager:
   - GroupA
   - GroupB
   - GroupC
+  - Mine
   layers:
   - Default
   - TransparentFX
