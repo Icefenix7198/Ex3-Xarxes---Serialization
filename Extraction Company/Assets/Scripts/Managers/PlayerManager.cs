@@ -182,7 +182,7 @@ public class PlayerManager : MonoBehaviour
 
                 serialization.RequestItems(playerId);
 
-                //serialization.RequestMonsters(playerId); //ERIC: WIP, tengo que ver porque se rompe
+                serialization.RequestMonsters(playerId); //ERIC: WIP, tengo que ver porque se rompe
 
                 passedScene = true;
             }

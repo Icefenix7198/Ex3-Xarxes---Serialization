@@ -19,7 +19,10 @@ public class MonsterManager : MonoBehaviour
     [SerializeField] float timeToSpawn;
     [SerializeField] GameObject listPositionsSpawns;
     [SerializeField] GameObject currentMonsters;
+    [SerializeField] List<GameObject> currentMonstersList;
     public int[] limitedSpawns;
+
+    public AudioSource monsterAudio;
 
     // Start is called before the first frame update
     void Start()
@@ -78,10 +81,12 @@ public class MonsterManager : MonoBehaviour
     {
 
         GameObject m = Instantiate(monsterList[monsterIndex], currentMonsters.transform.position, Quaternion.identity);
+        currentMonstersList.Add(m);
 
         if(spawnSound ) 
         {
             //Play Sound
+            monsterAudio.Play();
         }
 
         if (s_udp != null) //If you are server 
@@ -113,9 +118,9 @@ public class MonsterManager : MonoBehaviour
     {
         List<GameObject> ret = new List<GameObject>();
 
-        foreach(Transform child in currentMonsters.transform) //Por cada children en la lista de monstruos spawneados añadirlo a la lista
+        foreach(GameObject child in currentMonstersList) //Por cada children en la lista de monstruos spawneados añadirlo a la lista
         {
-            ret.Add(child.gameObject);
+            ret.Add(child);
         }
 
         return ret;
