@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8154907045759511024}
   - component: {fileID: 5822697585942522524}
   - component: {fileID: 3313448402701441890}
+  - component: {fileID: 717926613111769858}
   m_Layer: 0
   m_Name: Button
   m_TagString: GroupA
@@ -104,8 +105,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 8.136825, y: 6.6355367, z: 10.325406}
-  m_Center: {x: 0.4649552, y: -1.6942965, z: -4.662703}
+  m_Size: {x: 8.136825, y: 6.6355367, z: 7.337139}
+  m_Center: {x: 0.4649552, y: -1.6942965, z: -3.1685693}
 --- !u!114 &3313448402701441890
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118,7 +119,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 163fea5c73d909c42967c63d5b963794, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  button: 0
-  animator:
-  - {fileID: 0}
-  - {fileID: 0}
+  serialization: {fileID: 0}
+--- !u!114 &717926613111769858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7899998641319234315}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80062d88c5990354ca47fb883b4e85bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  text: {fileID: 0}
