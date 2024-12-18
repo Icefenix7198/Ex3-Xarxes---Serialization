@@ -42,6 +42,8 @@ public class PlayerMovement : MonoBehaviour
 
     public Animator animator;
 
+    public bool alive = true;
+
     // Start is called before the first frame update
     void Start()
     {
