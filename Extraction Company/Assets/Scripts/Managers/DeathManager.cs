@@ -11,8 +11,6 @@ public class DeathManager : MonoBehaviour
     AudioSource playerAudioSource;
     public AudioClip explosion;
 
-    float dt = 0;
-
     // Start is called before the first frame update
     void Start()
     {

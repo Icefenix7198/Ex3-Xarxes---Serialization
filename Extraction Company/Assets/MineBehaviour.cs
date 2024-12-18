@@ -4,34 +4,54 @@ using UnityEngine;
 
 public class MineBehaviour : MonoBehaviour
 {
-    GameObject explosion;
-    AudioSource playerAudioSource;
+    [SerializeField] GameObject explosion;
+    AudioSource mineAudioSource;
+    public ParticleSystem particleSystem;
     public AudioClip explosionSound;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     private void OnCollisionExit(Collision collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {
+            mineAudioSource = this.gameObject.GetComponent<AudioSource>();
+            mineAudioSource.maxDistance *= 3;
+            mineAudioSource.volume *= 1.5f;
+            mineAudioSource.clip = explosionSound;
+            mineAudioSource.loop = false;
+            mineAudioSource.Play();
+
+            WaitDoDespawn();
+            particleSystem.Play();
             explosion.SetActive(true);
-
-            playerAudioSource = collision.gameObject.GetComponent<AudioSource>();
-            playerAudioSource.PlayOneShot(explosionSound);
-
-            Destroy(collision.gameObject);
+            particleSystem.Play();
+            mineAudioSource?.Stop();
+            Destroy(this);
         }
     }
 
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            mineAudioSource = this.gameObject.GetComponent<AudioSource>();
+            mineAudioSource.maxDistance *= 3;
+            mineAudioSource.volume *= 1.5f;
+            mineAudioSource.clip = explosionSound;
+            mineAudioSource.loop = false;
+            mineAudioSource.Play();
+
+            WaitDoDespawn();
+            particleSystem.Play();
+            explosion.SetActive(true);
+            particleSystem.Play();
+            mineAudioSource?.Stop();
+            Destroy(this);
+        }
+    }
+
+    IEnumerator WaitDoDespawn()
+    {
+        yield return new WaitForSeconds(0.5f);
+    }
 
 }
