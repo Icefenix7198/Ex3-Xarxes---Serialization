@@ -16,6 +16,7 @@ public class CoilHeadChase : State
     [SerializeField] float currentSuspicionTime = 0.0f;
     public float timeForChange;
     public State wander;
+    bool sigthLocked;
 
     //AI navigation
     [Header("Monster control")]
@@ -24,6 +25,7 @@ public class CoilHeadChase : State
     public void Start() 
     {
         playersList = GameObject.Find("Players");
+        sigthLocked = false;
     }
 
     public override State RunCurrentState()
@@ -46,8 +48,6 @@ public class CoilHeadChase : State
         }
         else 
         {
-            agent.SetDestination(target.transform.position);
-
             //Lose target
             if (Vector3.Distance(this.gameObject.transform.position, target.transform.position) > detectionArea * 1.5f)
             {
@@ -57,6 +57,25 @@ public class CoilHeadChase : State
             currentSuspicionTime = 0.0f;
         }
 
+        sigthLocked = false;
+        for (int i = 0; i < playersList.transform.childCount; i++) 
+        {
+            bool seen = IsInView(playersList.transform.GetChild(i).gameObject, this.gameObject);
+            if (seen) 
+            {
+                sigthLocked = true;
+                target = playersList.transform.GetChild(i).gameObject; //Last player that looked at 
+            }
+        }
+
+        if (target != null && !sigthLocked) 
+        {
+            agent.SetDestination(target.transform.position);
+        }
+        else 
+        {
+            agent.SetDestination(this.gameObject.transform.position);
+        }
         
 
         if (currentSuspicionTime > timeForChange) 
@@ -78,7 +97,7 @@ public class CoilHeadChase : State
         
     }
 
-    private bool IsInView(GameObject origin, GameObject toCheck)
+    private bool IsInView(GameObject origin, GameObject toCheck) //Origin is player, toCheck is the monster
     {
         Vector3 pointOnScreen = origin.GetComponentInChildren<Camera>().WorldToScreenPoint(toCheck.GetComponentInChildren<Renderer>().bounds.center);
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
@@ -897,8 +898,16 @@ public class Serialization : MonoBehaviour
             }
              catch
             {
-                ActionType action = (ActionType)reader.ReadInt32();
-                Debug.LogWarning("Failed deseralization of action:" + action);
+                int a = reader.ReadInt32();
+                if(a < (int)ActionType.NONE) 
+                {
+                    ActionType action = (ActionType)reader.ReadInt32();
+                    Debug.LogWarning("Failed deseralization of action:" + action);
+                }
+                else 
+                {
+                    Debug.LogWarning("Failed deseralization of posible action:" + a);
+                }                
             }
         }
         catch
