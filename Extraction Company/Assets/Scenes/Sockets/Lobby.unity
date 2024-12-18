@@ -4102,7 +4102,7 @@ MonoBehaviour:
   listPositionsSpawns: {fileID: 1957095991}
   currentMonsters: {fileID: 954936773}
   currentMonstersList: []
-  limitedSpawns: 02000000
+  limitedSpawns: 01000000
   monsterAudio: {fileID: 272247650}
 --- !u!4 &272247649
 Transform:
