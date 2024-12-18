@@ -29,13 +29,13 @@ public class CoilHeadChase : State
     public override State RunCurrentState()
     {
         //Choose target
-        if (target == null || !target.GetComponent<PlayerMovement>().isActiveAndEnabled)
+        if (target == null || !target.GetComponent<PlayerMovement>().alive)
         {
             float distanceToBeat = detectionArea;
             for (int i = 0; playersList.transform.childCount > i; i++)
             {
                 float playerDistance = Vector3.Distance(this.gameObject.transform.position, playersList.transform.GetChild(i).position);
-                if (playerDistance < distanceToBeat && playersList.transform.GetChild(i).gameObject.GetComponent<PlayerMovement>().isActiveAndEnabled) 
+                if (playerDistance < distanceToBeat && playersList.transform.GetChild(i).gameObject.GetComponent<PlayerMovement>().alive) 
                 {
                     distanceToBeat = playerDistance;
                     target = playersList.transform.GetChild(i).gameObject;

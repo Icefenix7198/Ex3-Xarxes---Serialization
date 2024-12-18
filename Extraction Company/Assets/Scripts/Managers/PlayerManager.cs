@@ -475,6 +475,7 @@ public class PlayerManager : MonoBehaviour
         playerCam.SetActive(false);
 
         player.playerObj.SetActive(false);
+        player.playerObj.GetComponent<PlayerMovement>().alive = false;
         player.playerObj.GetComponent<PlayerMovement>().enabled = false;
 
         serialization.SendDeathPlayer(player.ID);
