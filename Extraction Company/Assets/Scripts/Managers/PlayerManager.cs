@@ -57,6 +57,7 @@ public class PlayerManager : MonoBehaviour
 
     public float speed;
     float dt;
+    float dtMonster;
 
     float waitToUpdate = 0.0416f; //Times that waits until sending data and for lerp things
     float dtInterpolate = 0;
@@ -70,6 +71,8 @@ public class PlayerManager : MonoBehaviour
 
     public List<TMP_Text> player_Names_UI;
     int playerCountName = 1;
+
+    bool spawnMonster = false;
 
     //Serialized mesanges to send
     struct Action_ID 
@@ -142,14 +145,15 @@ public class PlayerManager : MonoBehaviour
             actionsToDo = new Queue<Action_ID>();
         }
 
-        if(actionsToDo.Count > 0)
+        if(spawnMonster)
         {
-            Action_ID temp = actionsToDo.Dequeue();
+            dtMonster += Time.deltaTime;
 
             //In case a expansion a switch would be better
-            if(temp.actionType == ActionType.REQUEST_MONSTERS) 
+            if(dtMonster > 3f) 
             {
-                serialization.RequestMonsters(temp.playerID);
+                serialization.RequestMonsters(player.ID);
+                dtMonster = 0;
             }
         }
     }
@@ -214,8 +218,7 @@ public class PlayerManager : MonoBehaviour
                 serialization.RequestItems(playerId);
 
                 //Due to calling more than 1 serialization causes problems any additional deseralization are added to a queue that is done at update
-                Action_ID temp = new Action_ID(ActionType.REQUEST_MONSTERS, playerId);
-                actionsToDo.Enqueue(temp);
+                spawnMonster = true;
 
                 passedScene = true;
             }
