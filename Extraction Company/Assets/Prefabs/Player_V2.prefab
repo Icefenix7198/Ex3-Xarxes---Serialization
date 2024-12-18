@@ -75,7 +75,7 @@ Camera:
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 119
-  m_RenderingPath: -1
+  m_RenderingPath: 3
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
@@ -353,12 +353,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6953025022104793281, guid: bf1bb9bb2383e0847a0917ee02b18826, type: 3}
+      propertyPath: m_UseGravity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6953025022104793281, guid: bf1bb9bb2383e0847a0917ee02b18826, type: 3}
       propertyPath: m_Interpolate
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6953025022104793281, guid: bf1bb9bb2383e0847a0917ee02b18826, type: 3}
       propertyPath: m_CollisionDetection
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7817803779965202348, guid: bf1bb9bb2383e0847a0917ee02b18826, type: 3}
       propertyPath: m_LocalPosition.z
