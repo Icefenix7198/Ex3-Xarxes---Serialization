@@ -1,13 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class ShowText : MonoBehaviour
 {
     public GameObject text;
+    TMP_Text text_Press;
+
     void Start()
     {
-       text.SetActive(false);
+        text = GameObject.Find("Press_E");
+
+        text_Press = text.GetComponent<TMP_Text>();
+
+        text_Press.text = "";
     }
 
     
@@ -18,11 +25,11 @@ public class ShowText : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        text.SetActive(true); 
+        text_Press.text = "Press 'E' to interact";
     }
 
     private void OnTriggerExit(Collider other)
     {
-        text.SetActive(false);
+        text_Press.text = "";
     }
 }
