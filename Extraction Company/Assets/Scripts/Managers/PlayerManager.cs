@@ -6,6 +6,7 @@ using static PlayerManager;
 using static System.Net.Mime.MediaTypeNames;
 using TMPro;
 using static UnityEngine.UIElements.UxmlAttributeDescription;
+using static Serialization;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -70,6 +71,20 @@ public class PlayerManager : MonoBehaviour
     public List<TMP_Text> player_Names_UI;
     int playerCountName = 1;
 
+    //Serialized mesanges to send
+    struct Action_ID 
+    {
+        public Action_ID(ActionType action, string ID) 
+        {
+            actionType = action;
+            playerID = ID;
+        }
+        public ActionType actionType;
+        public string playerID;
+    }
+
+    Queue<Action_ID> actionsToDo;
+
     [System.Obsolete]
     private void Update()
     {
@@ -119,6 +134,22 @@ public class PlayerManager : MonoBehaviour
             if (player.playerObj.active == true)
             {
                 UpdatePositionAndRotation();
+            }
+        }
+
+        if(actionsToDo == null) 
+        {
+            actionsToDo = new Queue<Action_ID>();
+        }
+
+        if(actionsToDo.Count > 0)
+        {
+            Action_ID temp = actionsToDo.Dequeue();
+
+            //In case a expansion a switch would be better
+            if(temp.actionType == ActionType.REQUEST_MONSTERS) 
+            {
+                serialization.RequestMonsters(temp.playerID);
             }
         }
     }
@@ -182,7 +213,9 @@ public class PlayerManager : MonoBehaviour
 
                 serialization.RequestItems(playerId);
 
-                //serialization.RequestMonsters(playerId); //ERIC: WIP, tengo que ver porque se rompe
+                //Due to calling more than 1 serialization causes problems any additional deseralization are added to a queue that is done at update
+                Action_ID temp = new Action_ID(ActionType.REQUEST_MONSTERS, playerId);
+                actionsToDo.Enqueue(temp);
 
                 passedScene = true;
             }
