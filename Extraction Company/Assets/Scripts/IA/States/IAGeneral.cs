@@ -8,6 +8,7 @@ public class IAGeneral : MonoBehaviour
 {
     float distanceRendering = 50f; //The area from where the point will be choosen.
     public PlayerManager playerManager;
+    public MonsterManager monsterManager;
 
     List<Vector3> sentTargets = new List<Vector3>();
     [SerializeField] NavMeshAgent agent;
@@ -40,6 +41,16 @@ public class IAGeneral : MonoBehaviour
             }
         }
 
+        if (monsterManager == null)
+        {
+            GameObject tmp = GameObject.Find("MonsterManager");
+
+            if (tmp != null)
+            {
+                monsterManager = tmp.GetComponent<MonsterManager>();
+            }
+        }
+
         RunStateMachine();
 
         SendMonsterInfo();
@@ -59,6 +70,8 @@ public class IAGeneral : MonoBehaviour
                 if (sentTargets[i] != agent.destination) //Not save 
                 {
                     //Send data to client
+                    Vector2 posToSend = new Vector2(this.transform.position.x, this.transform.position.z);
+                    monsterManager.ManageSendUpdate(playerManager.playerList[i].ID, this.gameObject, posToSend, agent.destination);
 
                     sentTargets[i] = agent.destination;
                 }

@@ -202,6 +202,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerManager: {fileID: 0}
+  monsterManager: {fileID: 0}
   agent: {fileID: 363740880174490972}
   myMonsterType: 0
   currentState: {fileID: 6960458260878180371}
@@ -266,15 +267,15 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 5a0c168a51815ee46bb27501f612bd44, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.05
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5a0c168a51815ee46bb27501f612bd44, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.05
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5a0c168a51815ee46bb27501f612bd44, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.05
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 5a0c168a51815ee46bb27501f612bd44, type: 3}
       propertyPath: m_LocalPosition.x

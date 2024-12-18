@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class MonsterManager : MonoBehaviour
 {
@@ -144,5 +145,32 @@ public class MonsterManager : MonoBehaviour
         }
 
         return ret;
+    }
+
+    public void UpdateClientMonster(int monsterIndex,Vector2 pos, Vector3 target)
+    {
+        if (c_udp != null)
+        {
+            if (monsterIndex < currentMonstersList.Count && monsterIndex >= 0)
+            {
+                currentMonstersList[monsterIndex].transform.position = new Vector3(pos.x, 0, pos.y);
+                currentMonstersList[monsterIndex].GetComponent<NavMeshAgent>().SetDestination(target);
+            }
+        }
+    }
+
+    public void ManageSendUpdate(string playerID,GameObject monster,Vector2 position,Vector3 target) 
+    {
+        int monsterIndex = -1;
+        for(int i = 0;i< currentMonstersList.Count; i++) 
+        {
+            if(monster == currentMonstersList[i].gameObject) 
+            {
+                monsterIndex = i;
+                break;
+            }
+        }
+
+        serialization.SerializeUpdateMonster(playerID, monsterIndex, position, target);
     }
 }

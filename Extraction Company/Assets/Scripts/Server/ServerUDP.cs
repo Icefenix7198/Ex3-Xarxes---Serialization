@@ -191,7 +191,7 @@ public class ServerUDP : MonoBehaviour
                         tempData = ogData;
                     }
                 }
-                else if (action == ActionType.ID_NAME || action == ActionType.SPAWN_ITEMS || action == ActionType.CREATE_MONSTER || action == ActionType.MAX_PLAYERS) //This is only to send to the client with the ID
+                else if (action == ActionType.ID_NAME || action == ActionType.SPAWN_ITEMS || action == ActionType.CREATE_MONSTER || action == ActionType.MAX_PLAYERS || action == ActionType.UPDATE_MONSTER) //This is only to send to the client with the ID
                 {
                     if (scoketsUser.NetID == ID)
                     {

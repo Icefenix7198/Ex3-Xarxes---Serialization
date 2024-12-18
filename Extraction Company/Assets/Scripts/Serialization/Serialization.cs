@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Sockets;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Analytics;
 using static ItemGenerator;
 using static PlayerManager;
 
@@ -17,7 +18,8 @@ public class Serialization : MonoBehaviour
         ID_NAME,
         SPAWN_PLAYERS, //Create player in scene for other clients
         CREATE_MONSTER,
-        REQUEST_MONSTERS,
+        REQUEST_MONSTERS, //When spawns player create all current monsters
+        UPDATE_MONSTER, //Send position and target to monster dummy
         SPAWN_ITEMS,
         REQUEST_ITEMS,
         DESTROY_ITEM,
@@ -362,6 +364,42 @@ public class Serialization : MonoBehaviour
         }        
     }
 
+    public void SerializeUpdateMonster(string ID,int monsterIndex,Vector2 monPosition, Vector3 monTarget)
+    {
+        ActionType type = ActionType.UPDATE_MONSTER;
+
+        stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+
+        //Action Serialized
+        writer.Write((int)type);
+
+        //Write player target
+        writer.Write(ID);
+
+        //Write list position of currentMonsterList
+        writer.Write(monsterIndex);
+
+
+        float[] pos = { monPosition.x, monPosition.y };
+
+        for (int i = 0; i < 2; i++)
+        {
+            writer.Write(pos[i]);
+        }
+
+        float[] target = { monTarget.x, monTarget.y, monTarget.z };
+
+        for (int i = 0; i < 3; i++)
+        {
+            writer.Write(target[i]);
+        }
+
+        bytes = stream.ToArray();
+
+        Send(bytes, ID);
+    }
+
     public void SendItems(List<itemObj> items, string ID)
     {
         ActionType type = ActionType.SPAWN_ITEMS;
@@ -662,7 +700,7 @@ public class Serialization : MonoBehaviour
                             string idTmp = pServer.ID;
                             string lastName = pServer.name;
 
-                            if (!playerManager.button.active)
+                            if (!playerManager.button.activeInHierarchy)
                             {
                                 if (playerManager.player.playerObj == null && pList.Count > 1)
                                 {
@@ -680,8 +718,6 @@ public class Serialization : MonoBehaviour
                     case ActionType.CREATE_MONSTER:
                         {
                             int length = reader.ReadInt32();
-
-                            Debug.Log("TEMPORAL! Entro a create monster, size was: " + length);
 
                             for (int i = 0; i < length; i++)
                             {
@@ -703,7 +739,6 @@ public class Serialization : MonoBehaviour
                             binaryLength = sizeof(float) * 7;
                             break;
                         }
-
                     case ActionType.REQUEST_MONSTERS: //For when the player spaws after the game already started
                         {
                             ID = reader.ReadString();
@@ -711,7 +746,32 @@ public class Serialization : MonoBehaviour
                             //Debug.Log("TEMPORAL! Entro en deserialize RequestMonsters, list size was:" + monsterManager.GetExistingMonsterList() + " and id is: " + ID);
                             SendMonsters(monsterManager.GetExistingMonsterList(), ID);
                             break;
-                        }                        
+                        }
+                    case ActionType.UPDATE_MONSTER: //For when the player spaws after the game already started
+                        {
+                            ID = reader.ReadString();
+
+                            int monsterListIndex = reader.ReadInt32();
+
+                            float[] pos = new float[2]; //World position
+                            for (int b = 0; b < pos.Length; b++)
+                            {
+                                pos[b] = reader.ReadSingle();
+                            }
+
+                            Vector2 monPosition = new Vector2(pos[0], pos[1]);
+
+                            float[] target = new float[3]; //Target Monster
+                            for (int t = 0; t < target.Length; t++)
+                            {
+                                target[t] = reader.ReadSingle();
+                            }
+
+                            Vector3 monTarget = new Vector3(target[0], pos[1], target[2]);
+
+                            monsterManager.UpdateClientMonster(monsterListIndex, monPosition, monTarget);
+                            break;
+                        }
                     case ActionType.SPAWN_ITEMS:
                         {
                             List<itemObj> items = new List<itemObj>();
@@ -1010,8 +1070,6 @@ public class Serialization : MonoBehaviour
 
     public void RequestMonsters(string ID)
     {
-        Debug.Log("TEMPORAL: Se llego a la request, ID fue:" + ID);
-
         ActionType type = ActionType.REQUEST_MONSTERS;
 
         stream = new MemoryStream();
