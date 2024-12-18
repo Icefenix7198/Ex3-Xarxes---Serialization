@@ -11,6 +11,8 @@ TagManager:
   - GroupB
   - GroupC
   - Mine
+  - Enemy
+  - Death
   layers:
   - Default
   - TransparentFX

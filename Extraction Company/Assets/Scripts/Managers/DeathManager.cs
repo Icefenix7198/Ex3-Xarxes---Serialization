@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class MineManager : MonoBehaviour
+public class DeathManager : MonoBehaviour
 {
     PlayerManager playerManager;
     PlayerMovement playerMovement;
@@ -11,7 +11,6 @@ public class MineManager : MonoBehaviour
     AudioSource playerAudioSource;
     public AudioClip explosion;
 
-    GameObject mine;
     float dt = 0;
 
     // Start is called before the first frame update
@@ -21,19 +20,30 @@ public class MineManager : MonoBehaviour
         playerMovement = GetComponent<PlayerMovement>();
     }
 
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Mine")) 
+        if (other.CompareTag("Death") || other.CompareTag("Enemy"))
         {
             if (playerMovement.isActiveAndEnabled)
             {
                 playerManager.Death();
             }
-
-            playerAudioSource = other.GetComponent<AudioSource>();
-            playerAudioSource.PlayOneShot(explosion);
-
-            Destroy(other.gameObject);
         }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        //if (other.CompareTag("Mine")) 
+        //{
+        //    if (playerMovement.isActiveAndEnabled)
+        //    {
+        //        playerManager.Death();
+        //    }
+
+        //    playerAudioSource = other.GetComponent<AudioSource>();
+        //    playerAudioSource.PlayOneShot(explosion);
+
+        //    Destroy(other.gameObject);
+        //}
     }
 }
