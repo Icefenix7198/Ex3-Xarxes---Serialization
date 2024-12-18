@@ -70,7 +70,7 @@ public class MonsterManager : MonoBehaviour
                     dt = 0.0f;
                     limitedSpawns[rand] = limitedSpawns[rand] - 1;
 
-                    SpawnEnemy(rand,Vector2.zero,true);
+                    SpawnEnemy(rand,Vector2.zero);
                 }
             }
 
@@ -155,6 +155,11 @@ public class MonsterManager : MonoBehaviour
             {
                 currentMonstersList[monsterIndex].transform.position = new Vector3(pos.x, 0, pos.y);
                 currentMonstersList[monsterIndex].GetComponent<NavMeshAgent>().SetDestination(target);
+            }
+            else if(monsterIndex >= 0) //In case we recive a request to update a monster that we don't have we call request monsters again, as the packets has become lost
+            {
+                //We call request monsters again for the player.
+                serialization.RequestMonsters(playerManager.player.ID); //ERIC: I don't know if this will break but I will try
             }
         }
     }

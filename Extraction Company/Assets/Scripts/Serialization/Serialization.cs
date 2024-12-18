@@ -731,7 +731,7 @@ public class Serialization : MonoBehaviour
 
                                 Vector2 monPosition = new Vector2(pos[0], pos[1]);
 
-                                monsterManager.SpawnEnemy(typeMonster, monPosition);
+                                monsterManager.SpawnEnemy(typeMonster, monPosition,true);
 
                             }
 
@@ -897,6 +897,8 @@ public class Serialization : MonoBehaviour
             }
              catch
             {
+                ActionType action = (ActionType)reader.ReadInt32();
+                Debug.LogWarning("Failed deseralization of action:" + action);
             }
         }
         catch

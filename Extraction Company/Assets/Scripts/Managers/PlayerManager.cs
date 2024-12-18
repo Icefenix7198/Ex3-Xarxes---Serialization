@@ -324,7 +324,7 @@ public class PlayerManager : MonoBehaviour
             dtInterpolate = 0;
         }
 
-        Vector3 vel = new Vector3();
+        //Vector3 vel = new Vector3();
 
         foreach(var movedPlayer in movedPlayers)
         {
