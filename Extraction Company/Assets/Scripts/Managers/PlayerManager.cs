@@ -72,7 +72,7 @@ public class PlayerManager : MonoBehaviour
     public List<TMP_Text> player_Names_UI;
     int playerCountName = 1;
 
-    bool spawnMonster = false;
+    public bool spawnMonster = false;
 
     //Serialized mesanges to send
     struct Action_ID 
@@ -153,6 +153,7 @@ public class PlayerManager : MonoBehaviour
             if(dtMonster > 3f) 
             {
                 serialization.RequestMonsters(player.ID);
+
                 dtMonster = 0;
             }
         }
@@ -219,6 +220,7 @@ public class PlayerManager : MonoBehaviour
 
                 //Due to calling more than 1 serialization causes problems any additional deseralization are added to a queue that is done at update
                 spawnMonster = true;
+                dtMonster = 0;
 
                 passedScene = true;
             }

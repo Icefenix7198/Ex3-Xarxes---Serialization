@@ -16,14 +16,12 @@ public class MonsterManager : MonoBehaviour
 
     [Header("Monster things")]
     public List<GameObject> monsterList; //posible monsters to spawn
-    float dt = 0.0f;
+    [SerializeField] float dt = 0.0f;
     [SerializeField] float timeToSpawn;
     [SerializeField] GameObject listPositionsSpawns;
     [SerializeField] GameObject currentMonsters;
     [SerializeField] List<GameObject> currentMonstersList;
     public int[] limitedSpawns;
-
-    public AudioSource monsterAudio;
 
     // Start is called before the first frame update
     void Start()
@@ -92,7 +90,7 @@ public class MonsterManager : MonoBehaviour
         if(spawnSound ) 
         {
             //Play Sound
-            monsterAudio.Play();
+            m.GetComponent<AudioSource>().Play();
         }
 
         if (s_udp != null) //If you are server 
@@ -100,10 +98,12 @@ public class MonsterManager : MonoBehaviour
             int randSpawnPos = UnityEngine.Random.Range(0, listPositionsSpawns.transform.childCount);
 
             m.transform.position = listPositionsSpawns.transform.GetChild(randSpawnPos).transform.position;
+            m.GetComponent<Collider>().enabled = false; //Server monster shouldn't kill server players
 
+            Vector2 p = new Vector2(m.transform.position.x, m.transform.position.z);
             for (int i = 0; i < playerManager.playerList.Count; i++)
             {
-                Vector2 p = new Vector2(m.transform.position.x, m.transform.position.z);
+                
                 serialization.serializeCreateMonster(playerManager.playerList[i].ID, p, monsterIndex);
             }
 
@@ -112,6 +112,7 @@ public class MonsterManager : MonoBehaviour
         }
         else if (c_udp != null)
         {
+            playerManager.spawnMonster = false;
             m.transform.position = new Vector3(pos.x, 0, pos.y);
 
             //Deactivate component monster
@@ -147,7 +148,7 @@ public class MonsterManager : MonoBehaviour
         return ret;
     }
 
-    public void UpdateClientMonster(int monsterIndex,Vector2 pos, Vector3 target)
+    public void UpdateClientMonster(int monsterIndex,Vector2 pos, Vector3 target, int type = 0)
     {
         if (c_udp != null)
         {
@@ -159,7 +160,7 @@ public class MonsterManager : MonoBehaviour
             else if(monsterIndex >= 0) //In case we recive a request to update a monster that we don't have we call request monsters again, as the packets has become lost
             {
                 //We call request monsters again for the player.
-                serialization.RequestMonsters(playerManager.player.ID); //ERIC: I don't know if this will break but I will try
+                SpawnEnemy(type, pos, true);
             }
         }
     }

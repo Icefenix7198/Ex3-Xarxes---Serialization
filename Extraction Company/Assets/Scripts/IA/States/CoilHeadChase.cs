@@ -36,17 +36,21 @@ public class CoilHeadChase : State
             float distanceToBeat = detectionArea;
             for (int i = 0; playersList.transform.childCount > i; i++)
             {
-                float playerDistance = Vector3.Distance(this.gameObject.transform.position, playersList.transform.GetChild(i).position);
-                if (playerDistance < distanceToBeat && playersList.transform.GetChild(i).gameObject.GetComponent<PlayerMovement>().alive) 
+                if (playersList.transform.GetChild(i).gameObject.GetComponent<PlayerMovement>().alive) 
                 {
-                    distanceToBeat = playerDistance;
-                    target = playersList.transform.GetChild(i).gameObject;
+                    float playerDistance = Vector3.Distance(this.gameObject.transform.position, playersList.transform.GetChild(i).position);
+                    if (playerDistance < distanceToBeat && playersList.transform.GetChild(i).gameObject.GetComponent<PlayerMovement>().alive) 
+                    {
+                        distanceToBeat = playerDistance;
+                        target = playersList.transform.GetChild(i).gameObject;
+                    }
                 }
+                else { currentSuspicionTime += Time.deltaTime * 20 / playersList.transform.childCount; }
             }
 
             currentSuspicionTime += Time.deltaTime;
         }
-        else 
+        else if(target.GetComponent<PlayerMovement>().alive)
         {
             //Lose target
             if (Vector3.Distance(this.gameObject.transform.position, target.transform.position) > detectionArea * 1.5f)
@@ -56,11 +60,16 @@ public class CoilHeadChase : State
 
             currentSuspicionTime = 0.0f;
         }
+        else if (!target.GetComponent<PlayerMovement>().alive) 
+        {
+            target = null;
+        }
 
         sigthLocked = false;
         for (int i = 0; i < playersList.transform.childCount; i++) 
         {
-            bool seen = IsInView(playersList.transform.GetChild(i).gameObject, this.gameObject);
+            bool seen = false;
+            //seen = IsInView(playersList.transform.GetChild(i).gameObject, this.gameObject);
             if (seen) 
             {
                 sigthLocked = true;

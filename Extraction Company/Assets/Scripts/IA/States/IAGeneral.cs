@@ -6,12 +6,13 @@ using UnityEngine.AI;
 
 public class IAGeneral : MonoBehaviour
 {
-    float distanceRendering = 50f; //The area from where the point will be choosen.
+    float distanceRendering = 200f; //The area from where the point will be choosen.
     public PlayerManager playerManager;
     public MonsterManager monsterManager;
 
     List<Vector3> sentTargets = new List<Vector3>();
     [SerializeField] NavMeshAgent agent;
+    float dt; //We use a dt just in case
 
     public enum MONSTER_TYPE 
     {
@@ -53,6 +54,7 @@ public class IAGeneral : MonoBehaviour
 
         RunStateMachine();
 
+        dt += Time.deltaTime;
         SendMonsterInfo();
     }
 
@@ -67,13 +69,15 @@ public class IAGeneral : MonoBehaviour
 
             if(Vector3.Distance(this.gameObject.transform.position, playerManager.playerList[i].position) < distanceRendering) 
             {
-                if (sentTargets[i] != agent.destination) //Not save 
+                if (sentTargets[i] != agent.destination || dt>0.5f) //Not save 
                 {
                     //Send data to client
                     Vector2 posToSend = new Vector2(this.transform.position.x, this.transform.position.z);
                     monsterManager.ManageSendUpdate(playerManager.playerList[i].ID, this.gameObject, posToSend, agent.destination);
 
                     sentTargets[i] = agent.destination;
+
+                    dt = 0f;
                 }
             }
         }
