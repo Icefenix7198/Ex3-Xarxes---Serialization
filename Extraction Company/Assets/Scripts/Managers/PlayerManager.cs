@@ -45,6 +45,7 @@ public class PlayerManager : MonoBehaviour
         public Quaternion actualRotation;
         public Quaternion futureRotation;
         public GameObject gameObject;
+        public string ID;
 
         public Queue<Vector3> positions;
         public Queue<Quaternion> rotations;
@@ -338,7 +339,7 @@ public class PlayerManager : MonoBehaviour
 
             if (movedPlayers.Count > 0)
             {
-                if (movedPlayer.positions.Count > 0) 
+                if (movedPlayer.positions.Count > 0 && movedPlayer.ID != player.ID) 
                 {
                     if (movedPlayer.gameObject.transform.position != movedPlayer.positions.Peek())
                     {
@@ -417,6 +418,7 @@ public class PlayerManager : MonoBehaviour
                 movedPlayer.positions.Enqueue(moveTo);
                 movedPlayer.rotations.Enqueue(rotation);
                 movedPlayer.run = run;
+                movedPlayer.ID = ID;
 
                 bool exist = false;
 
