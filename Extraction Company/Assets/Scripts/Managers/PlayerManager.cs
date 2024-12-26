@@ -374,7 +374,7 @@ public class PlayerManager : MonoBehaviour
                     pMovement.animator.SetBool("Run", false);
                 }
 
-                if (movedPlayer.rotations.Count > 0)
+                if (movedPlayer.rotations.Count > 0 && movedPlayer.ID != player.ID)
                 {
                     if (movedPlayer.gameObject.transform.rotation != movedPlayer.rotations.Peek())
                     {
