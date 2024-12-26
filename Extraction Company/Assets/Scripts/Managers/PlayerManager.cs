@@ -286,6 +286,8 @@ public class PlayerManager : MonoBehaviour
 
             serialization.SendAllPlayers(playerList);
             playerCountName++;
+
+            player.ID = "";
         }
     }
 
