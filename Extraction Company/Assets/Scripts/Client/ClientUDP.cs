@@ -6,6 +6,7 @@ using System.Threading;
 using TMPro;
 using static Serialization;
 using System;
+using System.Collections.Generic;
 
 public class ClientUDP : MonoBehaviour
 {
@@ -33,6 +34,22 @@ public class ClientUDP : MonoBehaviour
     public IPEndPoint ipepServer; 
     Serialization serialization;
 
+    public bool jitter = true;
+    public bool packetLoss = true;
+    public int minJitt = 0;
+    public int maxJitt = 800;
+    public int lossThreshold = 90;
+    public struct Message
+    {
+        public Byte[] message;
+        public DateTime time;
+        public UInt32 id;
+        public IPEndPoint ip;
+
+    }
+
+    public List<Message> messageBuffer = new List<Message>();
+
     // Start is called before the first frame update
     void Start()
     {
@@ -58,7 +75,9 @@ public class ClientUDP : MonoBehaviour
             noConnected.SetActive(false);
 
             Thread mainThread = new Thread(Send);
+            Thread sendThread = new Thread(sendMessages);
             mainThread.Start();
+            sendThread.Start();
         }
         else
         {
@@ -141,6 +160,65 @@ public class ClientUDP : MonoBehaviour
                 passSceneManager.client = true;
                 passSceneManager.clientUDP = true;
                 passSceneManager.firstConnection = false;
+            }
+        }
+    }
+
+    public void sendMessage(Byte[] text, IPEndPoint ip)
+    {
+        System.Random r = new System.Random();
+        if (((r.Next(0, 100) > lossThreshold) && packetLoss) || !packetLoss) // Don't schedule the message with certain probability
+        {
+            Message m = new Message();
+            m.message = text;
+            if (jitter)
+            {
+                m.time = DateTime.Now.AddMilliseconds(r.Next(minJitt, maxJitt)); // delay the message sending according to parameters
+            }
+            else
+            {
+                m.time = DateTime.Now;
+            }
+            m.id = 0;
+            m.ip = ip;
+            lock (messageBuffer)
+            {
+                messageBuffer.Add(m);
+            }
+            Debug.Log(m.time.ToString());
+        }
+
+    }
+    //Run this always in a separate Thread, to send the delayed messages
+    void sendMessages()
+    {
+        Debug.Log("really sending..");
+        while (true)
+        {
+            DateTime d = DateTime.Now;
+            int i = 0;
+            if (messageBuffer.Count > 0)
+            {
+                List<Message> auxBuffer;
+                lock (messageBuffer)
+                {
+                    auxBuffer = new List<Message>(messageBuffer);
+                }
+                foreach (var m in auxBuffer)
+                {
+                    if (m.time < d)
+                    {
+                        server.SendTo(m.message, m.message.Length, SocketFlags.None, m.ip);
+                        lock (messageBuffer)
+                        {
+                            messageBuffer.RemoveAt(i);
+                        }
+                        i--;
+                        string myLog = Encoding.ASCII.GetString(m.message, 0, m.message.Length);
+                        //Debug.Log("message sent!");
+                    }
+                    i++;
+                }
             }
         }
     }

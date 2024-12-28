@@ -935,7 +935,7 @@ public class Serialization : MonoBehaviour
     //Send from the Client to the server
     public void SendToServer(byte[] message)
     {
-        c_udp.server.SendTo(message, message.Length, SocketFlags.None, c_udp.ipepServer);
+        c_udp.sendMessage(message, c_udp.ipepServer);
     }
 
     //Send from the Server to the Client
