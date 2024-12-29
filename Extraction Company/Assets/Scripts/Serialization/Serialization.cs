@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.IO;
+using System.Net;
 using System.Net.Sockets;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Analytics;
 using static ItemGenerator;
 using static PlayerManager;
+using static ServerUDP;
 
 public class Serialization : MonoBehaviour
 {
@@ -30,6 +32,7 @@ public class Serialization : MonoBehaviour
         DOORS,
         WIN,
         DEATH,
+        ACK,
         NONE
     }
 
@@ -555,6 +558,45 @@ public class Serialization : MonoBehaviour
         Send(bytes, ID);
     }
 
+    public byte[] SendAckMessage(byte[] data, string id, string clientID)
+    {
+        stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+
+        writer.Write(id);
+        writer.Write(clientID);
+        writer.Write(data);
+
+        bytes = stream.ToArray();
+
+        return bytes;
+    }
+
+    public string ReturnAckMessage(byte[] data, UserUDP u)
+    {
+        stream = new MemoryStream();
+        stream.Write(data, 0, data.Length);
+        BinaryReader reader = new BinaryReader(stream);
+        stream.Seek(0, SeekOrigin.Begin);
+
+        string id = reader.ReadString();
+        string clientID = reader.ReadString();
+
+        stream = new MemoryStream();
+        BinaryWriter writer = new BinaryWriter(stream);
+
+        ActionType type = ActionType.ACK;
+
+        writer.Write((int)type);
+        writer.Write(id);
+
+        bytes = stream.ToArray();
+
+        u.socket.SendTo(bytes, bytes.Length, SocketFlags.None, u.Remote);
+
+        return clientID;
+    }
+
     public int Deserialize(byte[] message)
     {
         try
@@ -563,6 +605,12 @@ public class Serialization : MonoBehaviour
             stream.Write(message, 0, message.Length);
             BinaryReader reader = new BinaryReader(stream);
             stream.Seek(0, SeekOrigin.Begin);
+
+            if (isS_udp)
+            {
+                string id_ACK = reader.ReadString();
+                string clientID_ACK = reader.ReadString();
+            }
 
             try
             {
@@ -889,6 +937,13 @@ public class Serialization : MonoBehaviour
                             playerManager.ClientDeath(ID);
                             break;
                         }
+                    case ActionType.ACK:
+                        {
+                            string id = reader.ReadString();
+
+                            c_udp.ReciveAck(id);
+                            break;
+                        }
                     default:
                         break;
                 }
@@ -935,7 +990,8 @@ public class Serialization : MonoBehaviour
     //Send from the Client to the server
     public void SendToServer(byte[] message)
     {
-        c_udp.sendMessage(message, c_udp.ipepServer);
+        c_udp.sendMessageACK(message, c_udp.ipepServer);
+        //c_udp.server.SendTo(message, message.Length, SocketFlags.None, c_udp.ipepServer); //Send messages no Jitter and Packet Lost
     }
 
     //Send from the Server to the Client
@@ -957,6 +1013,9 @@ public class Serialization : MonoBehaviour
 
             try
             {
+                string id = reader.ReadString();
+                string clientID = reader.ReadString();
+
                 ID = reader.ReadString();
             }
             catch
@@ -985,6 +1044,9 @@ public class Serialization : MonoBehaviour
 
             try
             {
+                string id = reader.ReadString();
+                string clientID = reader.ReadString();
+
                 ID = reader.ReadString();
                 name = reader.ReadString();
             }
@@ -1001,7 +1063,7 @@ public class Serialization : MonoBehaviour
     }
 
     //Takes bytes of data and extracts the first bits of information to return the first action type of the string.
-    public ActionType ExtractAction(byte[] message)
+    public ActionType ExtractAction(byte[] message, bool ack = false)
     {
         ActionType action = ActionType.NONE;
 
@@ -1015,6 +1077,12 @@ public class Serialization : MonoBehaviour
 
             try
             {
+                if (isS_udp || ack)
+                {
+                    string id = reader.ReadString();
+                    string clientID = reader.ReadString();
+                }
+
                 action = (ActionType)reader.ReadInt32();
             }
             catch

@@ -121,15 +121,18 @@ public class ServerUDP : MonoBehaviour
                 break;
             }
 
-            byte[] ogData = data;
-            byte[] ogData1 = data;
-
             UserUDP u = new UserUDP();
             u.socket = socket;
             u.Remote = Remote;
 
+            byte[] ogData = data;
+            byte[] ogData1 = data;
+            byte[] ogData2 = data;
+
+            string clientID = serialization.ReturnAckMessage(data, u);
+
             string id;
-            id = serialization.ExtractID(data);
+            id = clientID;
             u.NetID = id;
 
             ActionType action = serialization.ExtractAction(ogData1);
@@ -191,7 +194,7 @@ public class ServerUDP : MonoBehaviour
                         tempData = ogData;
                     }
                 }
-                else if (action == ActionType.ID_NAME || action == ActionType.SPAWN_ITEMS || action == ActionType.CREATE_MONSTER || action == ActionType.MAX_PLAYERS || action == ActionType.UPDATE_MONSTER) //This is only to send to the client with the ID
+                else if (action == ActionType.ID_NAME || action == ActionType.SPAWN_ITEMS || action == ActionType.CREATE_MONSTER || action == ActionType.MAX_PLAYERS || action == ActionType.UPDATE_MONSTER || action == ActionType.ACK) //This is only to send to the client with the ID
                 {
                     if (scoketsUser.NetID == ID)
                     {

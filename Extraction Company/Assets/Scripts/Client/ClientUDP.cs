@@ -7,6 +7,7 @@ using TMPro;
 using static Serialization;
 using System;
 using System.Collections.Generic;
+using System.Collections;
 
 public class ClientUDP : MonoBehaviour
 {
@@ -45,10 +46,20 @@ public class ClientUDP : MonoBehaviour
         public DateTime time;
         public UInt32 id;
         public IPEndPoint ip;
+    }
 
+    public struct AckMessage
+    {
+        public Byte[] message;
+        public float time;
+        public string id;
+        public string clientId;
+        public ActionType action;
+        public bool waitForAck;
     }
 
     public List<Message> messageBuffer = new List<Message>();
+    public List<AckMessage> ack_messageBuffer = new List<AckMessage>();
 
     // Start is called before the first frame update
     void Start()
@@ -75,8 +86,9 @@ public class ClientUDP : MonoBehaviour
             noConnected.SetActive(false);
 
             Thread mainThread = new Thread(Send);
-            Thread sendThread = new Thread(sendMessages);
             mainThread.Start();
+
+            Thread sendThread = new Thread(sendMessages);
             sendThread.Start();
         }
         else
@@ -87,6 +99,9 @@ public class ClientUDP : MonoBehaviour
 
             Thread mainThread = new Thread(Send);
             mainThread.Start();
+
+            Thread sendThread = new Thread(sendMessages);
+            sendThread.Start();
         }
 
         address = ipAdress.text;
@@ -101,6 +116,11 @@ public class ClientUDP : MonoBehaviour
         {
             serialization.Deserialize(tempData);
             deserializate = false;
+        }
+
+        if(ack_messageBuffer.Count > 0)
+        {
+            AckMessagesCheck();
         }
     }
 
@@ -151,7 +171,12 @@ public class ClientUDP : MonoBehaviour
                 deserializate = true;
                 tempData = data;
 
-               action = serialization.ExtractAction(data);
+                action = serialization.ExtractAction(data);
+
+                if(action == ActionType.ACK)
+                {
+                    serialization.Deserialize(tempData);
+                }
             }
 
             if (recv != 0 && passSceneManager.firstConnection && action != ActionType.MAX_PLAYERS)
@@ -164,13 +189,38 @@ public class ClientUDP : MonoBehaviour
         }
     }
 
+    public void sendMessageACK(Byte[] text, IPEndPoint ip)
+    {
+        AckMessage am = new AckMessage();
+
+        am.id = System.Guid.NewGuid().ToString();
+        am.clientId = clientID;
+        am.message = text;
+        am.time = 0;
+
+        am.message = serialization.SendAckMessage(text, am.id, am.clientId);
+
+        ActionType action = ActionType.NONE;
+        action = serialization.ExtractAction(am.message, true);
+
+        am.action = action;
+
+        lock (ack_messageBuffer)
+        {
+            ack_messageBuffer.Add(am);
+        }
+    }
+
     public void sendMessage(Byte[] text, IPEndPoint ip)
     {
         System.Random r = new System.Random();
+
         if (((r.Next(0, 100) > lossThreshold) && packetLoss) || !packetLoss) // Don't schedule the message with certain probability
         {
             Message m = new Message();
+
             m.message = text;
+
             if (jitter)
             {
                 m.time = DateTime.Now.AddMilliseconds(r.Next(minJitt, maxJitt)); // delay the message sending according to parameters
@@ -179,16 +229,19 @@ public class ClientUDP : MonoBehaviour
             {
                 m.time = DateTime.Now;
             }
+
             m.id = 0;
             m.ip = ip;
+
             lock (messageBuffer)
             {
                 messageBuffer.Add(m);
             }
+
             Debug.Log(m.time.ToString());
         }
-
     }
+
     //Run this always in a separate Thread, to send the delayed messages
     void sendMessages()
     {
@@ -211,7 +264,18 @@ public class ClientUDP : MonoBehaviour
                         server.SendTo(m.message, m.message.Length, SocketFlags.None, m.ip);
                         lock (messageBuffer)
                         {
-                            messageBuffer.RemoveAt(i);
+                            for (int j = 0; j < ack_messageBuffer.Count; j++)
+                            {
+                                if (ack_messageBuffer[j].message == messageBuffer[i].message)
+                                {
+                                    AckMessage message = ack_messageBuffer[j];
+                                    message.waitForAck = true;
+
+                                    ack_messageBuffer[j] = message;
+                                }
+                            }
+
+                             messageBuffer.RemoveAt(i);
                         }
                         i--;
                         string myLog = Encoding.ASCII.GetString(m.message, 0, m.message.Length);
@@ -219,6 +283,49 @@ public class ClientUDP : MonoBehaviour
                     }
                     i++;
                 }
+            }
+        }
+    }
+
+    void AckMessagesCheck()
+    {
+        for (int i = 0; i < ack_messageBuffer.Count; i++)
+        {
+            AckMessage ackMessage = ack_messageBuffer[i];
+            ackMessage.time += Time.deltaTime;
+
+            bool alreadyInList = false;
+
+            for (int j = 0; j < messageBuffer.Count; j++)
+            {
+                if (ack_messageBuffer[i].message == messageBuffer[j].message)
+                {
+                    alreadyInList = true;
+                }
+            }
+
+            if (ackMessage.time > 0.1f && !alreadyInList && !ackMessage.waitForAck)
+            {
+                sendMessage(ackMessage.message, ipepServer);
+                ackMessage.time = 0;
+            }
+
+            if (ackMessage.waitForAck && ackMessage.time > 1f) 
+            {
+                ackMessage.waitForAck = false;
+            }
+
+            ack_messageBuffer[i] = ackMessage;
+        }
+    }
+
+    public void ReciveAck(string id)
+    {
+        for (int i = 0; i < ack_messageBuffer.Count; i++)
+        {
+            if (ack_messageBuffer[i].id == id)
+            {
+                ack_messageBuffer.RemoveAt(i);
             }
         }
     }
