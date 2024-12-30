@@ -135,7 +135,7 @@ public class ServerUDP : MonoBehaviour
             id = clientID;
             u.NetID = id;
 
-            ActionType action = serialization.ExtractAction(ogData1);
+            ActionType action = serialization.ExtractAction(ogData1, true);
 
             lock (userSocketsList) //ID -2 means that the message is not send to any player and is for the server.
             {
@@ -166,13 +166,13 @@ public class ServerUDP : MonoBehaviour
             }
             else
             {
-                Thread newConnection = new Thread(() => Send(ogData, u.NetID));
+                Thread newConnection = new Thread(() => Send(ogData, u.NetID, true));
                 newConnection.Start();
             }
         }
     }
 
-    public void Send(byte[] data, string ID = "-1")
+    public void Send(byte[] data, string ID = "-1", bool ack = false)
     {
         lock (userSocketsList)
         {
@@ -180,7 +180,7 @@ public class ServerUDP : MonoBehaviour
             {
                 byte[] ogData = data;
 
-                ActionType action = serialization.ExtractAction(data);
+                ActionType action = serialization.ExtractAction(data, ack);
 
                 if (action == ActionType.SPAWN_PLAYERS) //This case is send to EVERYONE, for specific things.
                 {

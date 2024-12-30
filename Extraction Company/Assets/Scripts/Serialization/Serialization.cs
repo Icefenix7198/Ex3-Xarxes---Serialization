@@ -1077,7 +1077,7 @@ public class Serialization : MonoBehaviour
 
             try
             {
-                if (isS_udp || ack)
+                if (ack)
                 {
                     string id = reader.ReadString();
                     string clientID = reader.ReadString();
