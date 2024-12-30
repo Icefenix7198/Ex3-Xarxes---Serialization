@@ -128,6 +128,7 @@ public class ServerUDP : MonoBehaviour
             byte[] ogData = data;
             byte[] ogData1 = data;
             byte[] ogData2 = data;
+            byte[] ogData3 = data;
 
             string clientID = serialization.ReturnAckMessage(data, u);
 
@@ -143,7 +144,7 @@ public class ServerUDP : MonoBehaviour
                 if (!userSocketsList.Contains(u) && id != "-2" && action == ActionType.ID_NAME) //Check if player already exist, if type ID = -2 and if it set name
                 {
                     string name;
-                    name = serialization.ExtractName(data);
+                    name = serialization.ExtractName(ogData3);
                     u.name = name;
 
                     clientsIdList.Add(u.NetID);
@@ -179,12 +180,13 @@ public class ServerUDP : MonoBehaviour
             foreach (var scoketsUser in userSocketsList) //We send the data to each client that collected to the sever
             {
                 byte[] ogData = data;
+                byte[] ogData1 = data;
 
                 ActionType action = serialization.ExtractAction(data, ack);
 
                 if (action == ActionType.SPAWN_PLAYERS) //This case is send to EVERYONE, for specific things.
                 {
-                    scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
+                    scoketsUser.socket.SendTo(ogData1, ogData1.Length, SocketFlags.None, scoketsUser.Remote);
                 }
                 else if (action == ActionType.CREATE_PLAYER || action == ActionType.MOVE_SERVER) //This is very specific for creating the player due to the server needing to also save the data
                 {
@@ -198,14 +200,19 @@ public class ServerUDP : MonoBehaviour
                 {
                     if (scoketsUser.NetID == ID)
                     {
-                        scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
+                        if(action == ActionType.ID_NAME)
+                        {
+                            ogData1 = serialization.QuitACK(ogData1);
+                        }
+
+                        scoketsUser.socket.SendTo(ogData1, ogData1.Length, SocketFlags.None, scoketsUser.Remote);
                     }
                 }
                 else
                 {
                     if (scoketsUser.NetID != ID) //This is to send everyone excluding the original sender (example the movement action)
                     {
-                        scoketsUser.socket.SendTo(data, data.Length, SocketFlags.None, scoketsUser.Remote);
+                        scoketsUser.socket.SendTo(ogData1, ogData1.Length, SocketFlags.None, scoketsUser.Remote);
                     }
                 }
 

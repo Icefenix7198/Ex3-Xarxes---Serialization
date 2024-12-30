@@ -1040,14 +1040,15 @@ public class Serialization : MonoBehaviour
             stream = new MemoryStream();
             stream.Write(message, 0, message.Length);
             BinaryReader reader = new BinaryReader(stream);
-            stream.Seek(sizeof(int), SeekOrigin.Begin);
+            stream.Seek(0, SeekOrigin.Begin);
 
             try
             {
                 string id = reader.ReadString();
                 string clientID = reader.ReadString();
 
-                ID = reader.ReadString();
+                ActionType tmpAction = (ActionType)reader.ReadInt32();
+                string tmpID = reader.ReadString();
                 name = reader.ReadString();
             }
             catch
@@ -1167,5 +1168,21 @@ public class Serialization : MonoBehaviour
         {
             maxPlayers.gameObject.SetActive(true);
         }
+    }
+
+    public byte[] QuitACK(byte[] message)
+    {
+        byte[] data;
+
+        stream = new MemoryStream();
+        stream.Write(message, 0, message.Length);
+        BinaryReader reader = new BinaryReader(stream);
+        stream.Seek(0, SeekOrigin.Begin);
+
+        string id = reader.ReadString();
+        string clientID = reader.ReadString();
+        data = reader.ReadBytes(message.Length);
+
+        return data;
     }
 }
