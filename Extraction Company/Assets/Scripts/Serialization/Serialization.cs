@@ -606,11 +606,11 @@ public class Serialization : MonoBehaviour
             BinaryReader reader = new BinaryReader(stream);
             stream.Seek(0, SeekOrigin.Begin);
 
-            if (isS_udp)
-            {
-                string id_ACK = reader.ReadString();
-                string clientID_ACK = reader.ReadString();
-            }
+            //if (isS_udp)
+            //{
+            //    string id_ACK = reader.ReadString();
+            //    string clientID_ACK = reader.ReadString();
+            //}
 
             try
             {
@@ -1013,8 +1013,8 @@ public class Serialization : MonoBehaviour
 
             try
             {
-                string id = reader.ReadString();
-                string clientID = reader.ReadString();
+                //string id = reader.ReadString();
+                //string clientID = reader.ReadString();
 
                 ID = reader.ReadString();
             }
@@ -1044,8 +1044,8 @@ public class Serialization : MonoBehaviour
 
             try
             {
-                string id = reader.ReadString();
-                string clientID = reader.ReadString();
+                //string id = reader.ReadString();
+                //string clientID = reader.ReadString();
 
                 ActionType tmpAction = (ActionType)reader.ReadInt32();
                 string tmpID = reader.ReadString();
@@ -1078,11 +1078,11 @@ public class Serialization : MonoBehaviour
 
             try
             {
-                if (ack)
-                {
-                    string id = reader.ReadString();
-                    string clientID = reader.ReadString();
-                }
+                //if (ack)
+                //{
+                //    string id = reader.ReadString();
+                //    string clientID = reader.ReadString();
+                //}
 
                 action = (ActionType)reader.ReadInt32();
             }

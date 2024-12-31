@@ -125,12 +125,16 @@ public class ServerUDP : MonoBehaviour
             u.socket = socket;
             u.Remote = Remote;
 
-            byte[] ogData = data;
-            byte[] ogData1 = data;
-            byte[] ogData2 = data;
-            byte[] ogData3 = data;
+            byte[] ogData4 = data;
 
             string clientID = serialization.ReturnAckMessage(data, u);
+
+            ogData4 = serialization.QuitACK(ogData4);
+
+            byte[] ogData = ogData4;
+            byte[] ogData1 = ogData4;
+            byte[] ogData2 = ogData4;
+            byte[] ogData3 = ogData4;
 
             string id;
             id = clientID;
@@ -167,13 +171,13 @@ public class ServerUDP : MonoBehaviour
             }
             else
             {
-                Thread newConnection = new Thread(() => Send(ogData, u.NetID, true));
+                Thread newConnection = new Thread(() => Send(ogData, u.NetID));
                 newConnection.Start();
             }
         }
     }
 
-    public void Send(byte[] data, string ID = "-1", bool ack = false)
+    public void Send(byte[] data, string ID = "-1")
     {
         lock (userSocketsList)
         {
@@ -182,7 +186,7 @@ public class ServerUDP : MonoBehaviour
                 byte[] ogData = data;
                 byte[] ogData1 = data;
 
-                ActionType action = serialization.ExtractAction(data, ack);
+                ActionType action = serialization.ExtractAction(data);
 
                 if (action == ActionType.SPAWN_PLAYERS) //This case is send to EVERYONE, for specific things.
                 {
@@ -200,11 +204,6 @@ public class ServerUDP : MonoBehaviour
                 {
                     if (scoketsUser.NetID == ID)
                     {
-                        if(action == ActionType.ID_NAME)
-                        {
-                            ogData1 = serialization.QuitACK(ogData1);
-                        }
-
                         scoketsUser.socket.SendTo(ogData1, ogData1.Length, SocketFlags.None, scoketsUser.Remote);
                     }
                 }
