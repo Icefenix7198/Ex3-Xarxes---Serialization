@@ -558,13 +558,14 @@ public class Serialization : MonoBehaviour
         Send(bytes, ID);
     }
 
-    public byte[] SendAckMessage(byte[] data, string id, string clientID)
+    public byte[] SendAckMessage(byte[] data, string id, string clientID, int order)
     {
         stream = new MemoryStream();
         BinaryWriter writer = new BinaryWriter(stream);
 
         writer.Write(id);
         writer.Write(clientID);
+        writer.Write(order);
         writer.Write(data);
 
         bytes = stream.ToArray();
@@ -581,6 +582,7 @@ public class Serialization : MonoBehaviour
 
         string id = reader.ReadString();
         string clientID = reader.ReadString();
+        int order = reader.ReadInt32();
 
         stream = new MemoryStream();
         BinaryWriter writer = new BinaryWriter(stream);
@@ -1078,11 +1080,11 @@ public class Serialization : MonoBehaviour
 
             try
             {
-                //if (ack)
-                //{
-                //    string id = reader.ReadString();
-                //    string clientID = reader.ReadString();
-                //}
+                if (ack)
+                {
+                   string id = reader.ReadString();
+                   string clientID = reader.ReadString();
+                }
 
                 action = (ActionType)reader.ReadInt32();
             }
@@ -1181,6 +1183,7 @@ public class Serialization : MonoBehaviour
 
         string id = reader.ReadString();
         string clientID = reader.ReadString();
+        int order = reader.ReadInt32();
         data = reader.ReadBytes(message.Length);
 
         return data;

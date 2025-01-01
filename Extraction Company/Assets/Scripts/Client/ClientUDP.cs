@@ -8,6 +8,8 @@ using static Serialization;
 using System;
 using System.Collections.Generic;
 using System.Collections;
+using UnityEditor;
+using Unity.VisualScripting;
 
 public class ClientUDP : MonoBehaviour
 {
@@ -46,6 +48,8 @@ public class ClientUDP : MonoBehaviour
         public DateTime time;
         public UInt32 id;
         public IPEndPoint ip;
+        public int order;
+        public ActionType action;
     }
 
     public struct AckMessage
@@ -56,6 +60,7 @@ public class ClientUDP : MonoBehaviour
         public string clientId;
         public ActionType action;
         public bool waitForAck;
+        public int order;
     }
 
     public List<Message> messageBuffer = new List<Message>();
@@ -197,21 +202,30 @@ public class ClientUDP : MonoBehaviour
         am.clientId = clientID;
         am.message = text;
         am.time = 0;
-
-        am.message = serialization.SendAckMessage(text, am.id, am.clientId);
+        am.order = 0;
 
         ActionType action = ActionType.NONE;
-        action = serialization.ExtractAction(am.message, true);
+        action = serialization.ExtractAction(text);
 
         am.action = action;
 
         lock (ack_messageBuffer)
         {
+            for(int i = 0; i < ack_messageBuffer.Count; i++)
+            {
+                if (ack_messageBuffer[i].action == am.action)
+                {
+                    am.order++;
+                }
+            }
+
+            am.message = serialization.SendAckMessage(text, am.id, am.clientId, am.order);
+
             ack_messageBuffer.Add(am);
         }
     }
 
-    public void sendMessage(Byte[] text, IPEndPoint ip)
+    public void sendMessage(Byte[] text, IPEndPoint ip, int orderAck, ActionType actionAck)
     {
         System.Random r = new System.Random();
 
@@ -220,6 +234,8 @@ public class ClientUDP : MonoBehaviour
             Message m = new Message();
 
             m.message = text;
+            m.order = orderAck;
+            m.action = actionAck;
 
             if (jitter)
             {
@@ -248,6 +264,8 @@ public class ClientUDP : MonoBehaviour
         Debug.Log("really sending..");
         while (true)
         {
+            System.Random r = new System.Random();
+
             DateTime d = DateTime.Now;
             int i = 0;
             if (messageBuffer.Count > 0)
@@ -257,29 +275,31 @@ public class ClientUDP : MonoBehaviour
                 {
                     auxBuffer = new List<Message>(messageBuffer);
                 }
-                foreach (var m in auxBuffer)
+                for (int h = 0; h < messageBuffer.Count; h++)
                 {
-                    if (m.time < d)
-                    {
-                        server.SendTo(m.message, m.message.Length, SocketFlags.None, m.ip);
-                        lock (messageBuffer)
-                        {
-                            for (int j = 0; j < ack_messageBuffer.Count; j++)
-                            {
-                                if (ack_messageBuffer[j].message == messageBuffer[i].message)
-                                {
-                                    AckMessage message = ack_messageBuffer[j];
-                                    message.waitForAck = true;
 
-                                    ack_messageBuffer[j] = message;
-                                }
-                            }
+                    if (messageBuffer[h].time < d)
+                    { 
+                       server.SendTo(messageBuffer[h].message, messageBuffer[h].message.Length, SocketFlags.None, messageBuffer[h].ip);
 
-                             messageBuffer.RemoveAt(i);
-                        }
-                        i--;
-                        string myLog = Encoding.ASCII.GetString(m.message, 0, m.message.Length);
-                        //Debug.Log("message sent!");
+                       lock (messageBuffer)
+                       {
+                           for (int j = 0; j < ack_messageBuffer.Count; j++)
+                           {
+                               if (ack_messageBuffer[j].message == messageBuffer[i].message)
+                               {
+                                   AckMessage message = ack_messageBuffer[j];
+                                   message.waitForAck = true;
+
+                                   ack_messageBuffer[j] = message;
+                               }
+                           }
+
+                           messageBuffer.RemoveAt(i);
+                       }
+                       i--;
+                            //string myLog = Encoding.ASCII.GetString(messageBuffer[h].message, 0, messageBuffer[h].message.Length);
+                            //Debug.Log("message sent!");
                     }
                     i++;
                 }
@@ -306,7 +326,7 @@ public class ClientUDP : MonoBehaviour
 
             if (ackMessage.time > 0.1f && !alreadyInList && !ackMessage.waitForAck)
             {
-                sendMessage(ackMessage.message, ipepServer);
+                sendMessage(ackMessage.message, ipepServer, ackMessage.order, ackMessage.action);
                 ackMessage.time = 0;
             }
 

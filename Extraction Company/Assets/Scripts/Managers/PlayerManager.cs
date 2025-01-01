@@ -60,7 +60,7 @@ public class PlayerManager : MonoBehaviour
     float dt;
     float dtMonster;
 
-    float waitToUpdate = 0.0416f; //Times that waits until sending data and for lerp things
+    float waitToUpdate = 0.0416f; //Times that waits until sending data and for lerp things, 0.0416f
     float dtInterpolate = 0;
     public float smoothness = 0.05f;
 
