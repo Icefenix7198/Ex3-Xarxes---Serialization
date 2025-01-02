@@ -10,6 +10,15 @@ using static Serialization;
 
 public class ServerUDP : MonoBehaviour
 {
+    public struct Message
+    {
+       public string id;
+       public string clientID;
+       public byte[] data;
+       public ActionType action;
+       public int order;
+    }
+
     Socket socket;
 
     public GameObject UItextObj;
@@ -34,6 +43,9 @@ public class ServerUDP : MonoBehaviour
     public Serialization serialization;
 
     List<string> clientsIdList;
+    List<Message> messagesToSent;
+
+    Dictionary<string, List<Message>> messages;
 
     bool deserializate;
     byte[] tempData;
@@ -55,6 +67,8 @@ public class ServerUDP : MonoBehaviour
     {
         userSocketsList = new List<UserUDP>();
         clientsIdList = new List<String>();
+        messagesToSent = new List<Message>();
+        messages = new Dictionary<string, List<Message>>();
         passScene = GetComponent<PassSceneManager>();
 
         if(UItextObj != null)
@@ -87,6 +101,9 @@ public class ServerUDP : MonoBehaviour
 
         Thread newConnection = new Thread(Receive);
         newConnection.Start();
+
+        Thread sendMessages = new Thread(SendMessages);
+        sendMessages.Start();
     }
 
     void Update()
@@ -100,7 +117,7 @@ public class ServerUDP : MonoBehaviour
             deserializate = false;
         }
     }
- 
+
     void Receive()
     {
         int recv;
@@ -125,15 +142,15 @@ public class ServerUDP : MonoBehaviour
             u.socket = socket;
             u.Remote = Remote;
 
-            byte[] ogData4 = data;
+            byte[] ogData = data; //Will quit Ack layer
+            byte[] ogData3 = data;
 
             string clientID = serialization.ReturnAckMessage(data, u);
 
-            ogData4 = serialization.QuitACK(ogData4);
+            ogData = serialization.QuitACK(ogData); //Quit layer to ogData
 
-            byte[] ogData = ogData4;
-            byte[] ogData1 = ogData4;
-            byte[] ogData3 = ogData4;
+            byte[] ogData1 = ogData;
+            byte[] ogData2 = ogData;
 
             string id;
             id = clientID;
@@ -146,7 +163,7 @@ public class ServerUDP : MonoBehaviour
                 if (!userSocketsList.Contains(u) && id != "-2" && action == ActionType.ID_NAME) //Check if player already exist, if type ID = -2 and if it set name
                 {
                     string name;
-                    name = serialization.ExtractName(ogData3);
+                    name = serialization.ExtractName(ogData2);
                     u.name = name;
 
                     clientsIdList.Add(u.NetID);
@@ -162,16 +179,27 @@ public class ServerUDP : MonoBehaviour
                 }
             }
 
-            if(action == ActionType.DOORS || action == ActionType.REQUEST_ITEMS || action == ActionType.DESTROY_ITEM ||action == ActionType.EXTRACTION_TO_SERVER || action == ActionType.REQUEST_MONSTERS) //This is for messages that only need info from the server as an awnser, and not send it to other people
-            {
-                //Debug.Log("TEMPORAL! Entro en el if de serverUDP");
-                serialization.Deserialize(data);
-            }
-            else
-            {
-                Thread newConnection = new Thread(() => Send(ogData, u.NetID));
-                newConnection.Start();
-            }
+            serialization.SendAMessage(ogData3, ogData);
+        }
+    }
+
+    void MessageSender(byte[] ogData4, string clientID) //Here the proccess of sendig starts
+    {
+        byte[] ogData = ogData4;
+        byte[] ogData1 = ogData4;
+        byte[] ogData2 = ogData4;
+
+        ActionType action = serialization.ExtractAction(ogData1);
+
+        if (action == ActionType.DOORS || action == ActionType.REQUEST_ITEMS || action == ActionType.DESTROY_ITEM || action == ActionType.EXTRACTION_TO_SERVER || action == ActionType.REQUEST_MONSTERS) //This is for messages that only need info from the server as an awnser, and not send it to other people
+        {
+            //Debug.Log("TEMPORAL! Entro en el if de serverUDP");
+            serialization.Deserialize(ogData2);
+        }
+        else
+        {
+            Thread newConnection = new Thread(() => Send(ogData, clientID));
+            newConnection.Start();
         }
     }
 
@@ -232,5 +260,76 @@ public class ServerUDP : MonoBehaviour
         }
 
         socket.Close();
+    }
+
+    public void SaveMessages(Message message) //Save the messages to wait in order of execution (drop one if has passed to much time)
+    {
+        Message m = message;
+
+        if (messages.ContainsKey(message.clientID))
+        {
+            List<Message> mList = messages[message.clientID];
+            mList.Add(m);
+            messages[message.clientID] = mList;
+        }
+        else
+        {
+            List<Message> mList = new List<Message>();
+            mList.Add(m);
+
+            messages.Add(message.clientID, mList);
+        }
+    }
+
+    void SendMessages() //Send the messages of the list MessagesToSent
+    {
+        while (true)
+        {
+            if (userSocketsList.Count > 0)
+            {
+                foreach (UserUDP u in userSocketsList)
+                {
+                    if(u.NetID != null && messages != null)
+                    {
+                        if(messages.Count > 0)
+                        {
+                            if (messages.ContainsKey(u.NetID))
+                            {
+                                List<Message> mList = new List<Message>();
+
+                                if (messages.TryGetValue(u.NetID, out mList))
+                                {
+                                    for (int i = 0; i < mList.Count; i++)
+                                    {
+                                        if (mList[i].order == 0)
+                                        {
+                                            messagesToSent.Add(mList[i]);
+                                            mList.RemoveAt(i);
+
+                                            for (int j = 0; j < mList.Count; j++)
+                                            {
+                                                Message mLess = mList[j];
+                                                mLess.order--;
+                                                mList[j] = mLess;
+                                            }
+
+                                            messages[u.NetID] = mList;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(messagesToSent.Count > 0)
+            {
+                foreach (var message in messagesToSent)
+                {
+                    MessageSender(message.data, message.clientID);
+                }
+            }
+        }
     }
 }

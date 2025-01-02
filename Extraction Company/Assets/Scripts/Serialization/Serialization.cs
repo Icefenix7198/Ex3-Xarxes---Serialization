@@ -10,6 +10,7 @@ using UnityEngine.Analytics;
 using static ItemGenerator;
 using static PlayerManager;
 using static ServerUDP;
+using static System.Collections.Specialized.BitVector32;
 
 public class Serialization : MonoBehaviour
 {
@@ -1099,6 +1100,37 @@ public class Serialization : MonoBehaviour
         }
 
         return action;
+    }
+
+    public void SendAMessage(byte[] data, byte[] ogData)
+    {
+        stream = new MemoryStream();
+        stream.Write(data, 0, data.Length);
+        BinaryReader reader = new BinaryReader(stream);
+        stream.Seek(0, SeekOrigin.Begin);
+
+        try
+        {
+            string id = reader.ReadString();
+            string clientID = reader.ReadString();
+            int order = reader.ReadInt32();
+            ActionType action = (ActionType)reader.ReadInt32();
+            byte[] m = ogData;
+
+
+            Message message = new Message();
+            message.id = id;
+            message.data = m;
+            message.order = order;
+            message.action = action;
+            message.clientID = clientID;
+
+            s_udp.SaveMessages(message); //Here we save the message into the server
+        }
+        catch
+        {
+            Debug.Log("Can't extract the message");
+        }
     }
 
     public byte[] AddToSerializeChain(byte[] chain , byte[] message) //Old byte array, new btye array to add after it.

@@ -194,9 +194,10 @@ public class ClientUDP : MonoBehaviour
         }
     }
 
-    public void sendMessageACK(Byte[] text, IPEndPoint ip)
+    public void sendMessageACK(byte[] text, IPEndPoint ip)
     {
         AckMessage am = new AckMessage();
+        byte[] data = text;
 
         am.id = System.Guid.NewGuid().ToString();
         am.clientId = clientID;
@@ -205,19 +206,13 @@ public class ClientUDP : MonoBehaviour
         am.order = 0;
 
         ActionType action = ActionType.NONE;
-        action = serialization.ExtractAction(text);
+        action = serialization.ExtractAction(data);
 
         am.action = action;
 
         lock (ack_messageBuffer)
         {
-            for(int i = 0; i < ack_messageBuffer.Count; i++)
-            {
-                if (ack_messageBuffer[i].action == am.action)
-                {
-                    am.order++;
-                }
-            }
+            am.order = ack_messageBuffer.Count;
 
             am.message = serialization.SendAckMessage(text, am.id, am.clientId, am.order);
 
