@@ -6,7 +6,7 @@ public class MineBehaviour : MonoBehaviour
 {
     [SerializeField] GameObject explosion;
     AudioSource mineAudioSource;
-    public ParticleSystem particleSystem;
+    public new ParticleSystem particleSystem;
     public AudioClip explosionSound;
 
     private void OnCollisionExit(Collision collision)

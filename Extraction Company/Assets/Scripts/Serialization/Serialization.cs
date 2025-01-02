@@ -16,6 +16,7 @@ public class Serialization : MonoBehaviour
 {
     public enum ActionType
     {
+        NONE,
         CREATE_PLAYER, //Create Player for new Client
         MOVE_SERVER,
         MOVE_CLIENT,//Move all players positions
@@ -34,7 +35,7 @@ public class Serialization : MonoBehaviour
         WIN,
         DEATH,
         ACK,
-        NONE
+        MAX
     }
 
     public struct ItemToDestroy
@@ -227,7 +228,7 @@ public class Serialization : MonoBehaviour
 
         bytes = stream.ToArray();
 
-        Send(bytes, id);
+        Send(bytes, id, type);
     }
 
     //Tell all current existing player
@@ -581,23 +582,32 @@ public class Serialization : MonoBehaviour
         BinaryReader reader = new BinaryReader(stream);
         stream.Seek(0, SeekOrigin.Begin);
 
-        string id = reader.ReadString();
-        string clientID = reader.ReadString();
-        int order = reader.ReadInt32();
+        try
+        {
+            string id = reader.ReadString();
+            string clientID = reader.ReadString();
+            int order = reader.ReadInt32();
 
-        stream = new MemoryStream();
-        BinaryWriter writer = new BinaryWriter(stream);
+            stream = new MemoryStream();
+            BinaryWriter writer = new BinaryWriter(stream);
 
-        ActionType type = ActionType.ACK;
+            ActionType type = ActionType.ACK;
 
-        writer.Write((int)type);
-        writer.Write(id);
+            writer.Write((int)type);
+            writer.Write(id);
 
-        bytes = stream.ToArray();
+            bytes = stream.ToArray();
 
-        u.socket.SendTo(bytes, bytes.Length, SocketFlags.None, u.Remote);
+            u.socket.SendTo(bytes, bytes.Length, SocketFlags.None, u.Remote);
 
-        return clientID;
+            return clientID;
+        }
+        catch 
+        {
+            Debug.Log("Problem reading/sending acknoledgment");
+            return null;
+        }
+        
     }
 
     public int Deserialize(byte[] message)
@@ -957,7 +967,7 @@ public class Serialization : MonoBehaviour
              catch
             {
                 int a = reader.ReadInt32();
-                if(a < (int)ActionType.NONE) 
+                if(a < (int)ActionType.MAX) 
                 {
                     ActionType action = (ActionType)reader.ReadInt32();
                     Debug.LogWarning("Failed deseralization of action:" + action);
@@ -977,11 +987,11 @@ public class Serialization : MonoBehaviour
     }
 
     //The send is generic as SendToServer only requieres bytes of data and just ignores the ID as the server don't have one.
-    private void Send(byte[] message, string id)
+    private void Send(byte[] message, string id, ActionType action = ActionType.MAX)
     {
         if (isC_udp)
         {
-            SendToServer(bytes);
+            SendToServer(bytes, action);
         }
 
         if (isS_udp)
@@ -991,9 +1001,9 @@ public class Serialization : MonoBehaviour
     }
 
     //Send from the Client to the server
-    public void SendToServer(byte[] message)
+    public void SendToServer(byte[] message, ActionType action)
     {
-        c_udp.sendMessageACK(message, c_udp.ipepServer);
+        c_udp.sendMessageACK(message, action);
         //c_udp.server.SendTo(message, message.Length, SocketFlags.None, c_udp.ipepServer); //Send messages no Jitter and Packet Lost
     }
 
@@ -1035,7 +1045,7 @@ public class Serialization : MonoBehaviour
 
     public string ExtractName(byte[] message)
     {
-        string ID = "-2";
+        //string ID = "-2";
         string name = "Default";
 
         try
@@ -1085,6 +1095,7 @@ public class Serialization : MonoBehaviour
                 {
                    string id = reader.ReadString();
                    string clientID = reader.ReadString();
+                   int order = reader.ReadInt32();
                 }
 
                 action = (ActionType)reader.ReadInt32();
@@ -1102,7 +1113,7 @@ public class Serialization : MonoBehaviour
         return action;
     }
 
-    public void SendAMessage(byte[] data, byte[] ogData)
+    public void SendAMessage(byte[] data, byte[] ogData) // with header and without acknolegment header
     {
         stream = new MemoryStream();
         stream.Write(data, 0, data.Length);
@@ -1206,7 +1217,7 @@ public class Serialization : MonoBehaviour
 
     public byte[] QuitACK(byte[] message)
     {
-        byte[] data;
+        byte[] data = new byte[1024];
 
         stream = new MemoryStream();
         stream.Write(message, 0, message.Length);

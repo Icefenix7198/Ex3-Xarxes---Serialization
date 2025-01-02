@@ -143,7 +143,7 @@ public class ServerUDP : MonoBehaviour
             u.Remote = Remote;
 
             byte[] ogData = data; //Will quit Ack layer
-            byte[] ogData3 = data;
+            byte[] ogData3 = data; //Will have ackolegment header
 
             string clientID = serialization.ReturnAckMessage(data, u);
 
@@ -169,6 +169,7 @@ public class ServerUDP : MonoBehaviour
                     clientsIdList.Add(u.NetID);
                     userSocketsList.Add(u);
 
+                    //If a player over the for allowed tries to connect
                     if (userSocketsList.Count > 4)
                     {
                         serialization.MaxPlayers(u.NetID);
@@ -268,9 +269,10 @@ public class ServerUDP : MonoBehaviour
 
         if (messages.ContainsKey(message.clientID))
         {
-            List<Message> mList = messages[message.clientID];
-            mList.Add(m);
-            messages[message.clientID] = mList;
+            //List<Message> mList = messages[message.clientID];
+            messages[message.clientID].Add(m);
+            //mList.Add(m);
+            //messages[message.clientID] = mList;
         }
         else
         {
