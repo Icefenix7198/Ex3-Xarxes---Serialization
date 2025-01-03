@@ -587,6 +587,7 @@ public class Serialization : MonoBehaviour
             string id = reader.ReadString();
             string clientID = reader.ReadString();
             int order = reader.ReadInt32();
+            ActionType action = (ActionType)reader.ReadInt32();
 
             stream = new MemoryStream();
             BinaryWriter writer = new BinaryWriter(stream);
@@ -598,6 +599,7 @@ public class Serialization : MonoBehaviour
 
             bytes = stream.ToArray();
 
+            Debug.Log("Sending ack for action: " + action.ToString());
             u.socket.SendTo(bytes, bytes.Length, SocketFlags.None, u.Remote);
 
             return clientID;
@@ -1113,15 +1115,16 @@ public class Serialization : MonoBehaviour
         return action;
     }
 
-    public void SendAMessage(byte[] data, byte[] ogData) // with header and without acknolegment header
+    public void SendAMessage(byte[] data, byte[] ogData, UserUDP u) // with header and without acknolegment header
     {
-        stream = new MemoryStream();
-        stream.Write(data, 0, data.Length);
-        BinaryReader reader = new BinaryReader(stream);
-        stream.Seek(0, SeekOrigin.Begin);
-
         try
         {
+            stream = new MemoryStream();
+            stream.Write(data, 0, data.Length);
+            BinaryReader reader = new BinaryReader(stream);
+            stream.Seek(0, SeekOrigin.Begin);
+
+
             string id = reader.ReadString();
             string clientID = reader.ReadString();
             int order = reader.ReadInt32();
@@ -1137,9 +1140,20 @@ public class Serialization : MonoBehaviour
             message.clientID = clientID;
 
             s_udp.SaveMessages(message); //Here we save the message into the server
+            ReturnAckMessage(data, u);
         }
         catch
         {
+            if(s_udp.messageToSentNow != null)
+            {
+                if(s_udp.messageToSentNow.Count > 0)
+                {
+                    if (s_udp.messageToSentNow.ContainsKey(u.NetID))
+                    {
+                        s_udp.messageToSentNow[u.NetID]++;
+                    }
+                }
+            }
             Debug.Log("Can't extract the message");
         }
     }
@@ -1224,10 +1238,17 @@ public class Serialization : MonoBehaviour
         BinaryReader reader = new BinaryReader(stream);
         stream.Seek(0, SeekOrigin.Begin);
 
-        string id = reader.ReadString();
-        string clientID = reader.ReadString();
-        int order = reader.ReadInt32();
-        data = reader.ReadBytes(message.Length);
+        try
+        {
+            string id = reader.ReadString();
+            string clientID = reader.ReadString();
+            int order = reader.ReadInt32();
+            data = reader.ReadBytes(message.Length);
+        }
+        catch
+        {
+            Debug.Log("Cant quit ack!");
+        }
 
         return data;
     }

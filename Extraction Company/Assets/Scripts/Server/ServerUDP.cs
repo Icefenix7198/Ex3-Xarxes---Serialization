@@ -46,6 +46,7 @@ public class ServerUDP : MonoBehaviour
     List<Message> messagesToSent;
 
     Dictionary<string, List<Message>> messages;
+    public Dictionary<string, int> messageToSentNow;
 
     bool deserializate;
     byte[] tempData;
@@ -69,6 +70,7 @@ public class ServerUDP : MonoBehaviour
         clientsIdList = new List<String>();
         messagesToSent = new List<Message>();
         messages = new Dictionary<string, List<Message>>();
+        messageToSentNow = new Dictionary<string, int>();
         passScene = GetComponent<PassSceneManager>();
 
         if(UItextObj != null)
@@ -131,56 +133,64 @@ public class ServerUDP : MonoBehaviour
 
         while (true)
         {
-            recv = socket.ReceiveFrom(data, ref Remote);
-
-            if (recv == 0)
+            try
             {
-                break;
-            }
+                recv = socket.ReceiveFrom(data, ref Remote);
 
-            UserUDP u = new UserUDP();
-            u.socket = socket;
-            u.Remote = Remote;
-
-            byte[] ogData = data; //Will quit Ack layer
-            byte[] ogData3 = data; //Will have ackolegment header
-
-            string clientID = serialization.ReturnAckMessage(data, u);
-
-            ogData = serialization.QuitACK(ogData); //Quit layer to ogData
-
-            byte[] ogData1 = ogData;
-            byte[] ogData2 = ogData;
-
-            string id;
-            id = clientID;
-            u.NetID = id;
-
-            ActionType action = serialization.ExtractAction(ogData1);
-
-            lock (userSocketsList) //ID -2 means that the message is not send to any player and is for the server.
-            {
-                if (!userSocketsList.Contains(u) && id != "-2" && action == ActionType.ID_NAME) //Check if player already exist, if type ID = -2 and if it set name
+                if (recv == 0)
                 {
-                    string name;
-                    name = serialization.ExtractName(ogData2);
-                    u.name = name;
+                    break;
+                }
 
-                    clientsIdList.Add(u.NetID);
-                    userSocketsList.Add(u);
+                UserUDP u = new UserUDP();
+                u.socket = socket;
+                u.Remote = Remote;
 
-                    //If a player over the for allowed tries to connect
-                    if (userSocketsList.Count > 4)
+                byte[] ogData = data; //Will quit Ack layer
+                byte[] ogData3 = data; //Will have ackolegment header
+
+                ogData = serialization.QuitACK(ogData); //Quit layer to ogData
+
+                byte[] ogData1 = ogData;
+                byte[] ogData2 = ogData;
+                byte[] ogData4 = ogData;
+
+                ActionType action = serialization.ExtractAction(ogData1);
+
+                string clientID = serialization.ExtractID(ogData1);
+
+                string id;
+                id = clientID;
+                u.NetID = id;
+
+                lock (userSocketsList) //ID -2 means that the message is not send to any player and is for the server.
+                {
+                    if (!userSocketsList.Contains(u) && id != "-2" && action == ActionType.ID_NAME) //Check if player already exist, if type ID = -2 and if it set name
                     {
-                        serialization.MaxPlayers(u.NetID);
+                        string name;
+                        name = serialization.ExtractName(ogData2);
+                        u.name = name;
 
-                        clientsIdList.Remove(u.NetID);
-                        userSocketsList.Remove(u);
+                        clientsIdList.Add(u.NetID);
+                        userSocketsList.Add(u);
+
+                        //If a player over the for allowed tries to connect
+                        if (userSocketsList.Count > 4)
+                        {
+                            serialization.MaxPlayers(u.NetID);
+
+                            clientsIdList.Remove(u.NetID);
+                            userSocketsList.Remove(u);
+                        }
                     }
                 }
-            }
 
-            serialization.SendAMessage(ogData3, ogData);
+                serialization.SendAMessage(ogData3, ogData, u);
+            }
+            catch
+            {
+
+            }
         }
     }
 
@@ -269,10 +279,11 @@ public class ServerUDP : MonoBehaviour
 
         if (messages.ContainsKey(message.clientID))
         {
-            //List<Message> mList = messages[message.clientID];
+            //int counter = messageToSentNow[message.clientID];
+            //counter++;
+
             messages[message.clientID].Add(m);
-            //mList.Add(m);
-            //messages[message.clientID] = mList;
+            //messageToSentNow[message.clientID] = counter;
         }
         else
         {
@@ -280,6 +291,7 @@ public class ServerUDP : MonoBehaviour
             mList.Add(m);
 
             messages.Add(message.clientID, mList);
+            messageToSentNow.Add(message.clientID, 0);
         }
     }
 
@@ -289,33 +301,37 @@ public class ServerUDP : MonoBehaviour
         {
             if (userSocketsList.Count > 0)
             {
-                foreach (UserUDP u in userSocketsList)
+                lock (userSocketsList) 
                 {
-                    if(u.NetID != null && messages != null)
+                    foreach (UserUDP u in userSocketsList)
                     {
-                        if(messages.Count > 0)
+                        if (u.NetID != null && messages != null)
                         {
-                            if (messages.ContainsKey(u.NetID))
+                            if (messages.Count > 0)
                             {
-                                List<Message> mList = new List<Message>();
-
-                                if (messages.TryGetValue(u.NetID, out mList))
+                                if (messages.ContainsKey(u.NetID))
                                 {
-                                    for (int i = 0; i < mList.Count; i++)
+                                    List<Message> mList = new List<Message>();
+
+                                    if (messages.TryGetValue(u.NetID, out mList))
                                     {
-                                        if (mList[i].order == 0)
+                                        for (int i = 0; i < mList.Count; i++)
                                         {
-                                            messagesToSent.Add(mList[i]);
-                                            mList.RemoveAt(i);
-
-                                            for (int j = 0; j < mList.Count; j++)
+                                            if (mList[i].order == messageToSentNow[u.NetID])
                                             {
-                                                Message mLess = mList[j];
-                                                mLess.order--;
-                                                mList[j] = mLess;
-                                            }
+                                                messagesToSent.Add(mList[i]);
+                                                mList.RemoveAt(i);
 
-                                            messages[u.NetID] = mList;
+                                                //for (int j = 0; j < mList.Count; j++)
+                                                //{
+                                                //    Message mLess = mList[j];
+                                                //    mLess.order--;
+                                                //    mList[j] = mLess;
+                                                //}
+
+                                                messages[u.NetID] = mList;
+                                                messageToSentNow[u.NetID]++;
+                                            }
                                         }
                                     }
                                 }
@@ -325,11 +341,16 @@ public class ServerUDP : MonoBehaviour
                 }
             }
 
-            if(messagesToSent.Count > 0)
+            lock (messagesToSent)
             {
-                foreach (var message in messagesToSent)
+                if (messagesToSent.Count > 0)
                 {
-                    MessageSender(message.data, message.clientID);
+                    foreach (var message in messagesToSent)
+                    {
+                        MessageSender(message.data, message.clientID);
+                    }
+
+                    messagesToSent.Clear();
                 }
             }
         }

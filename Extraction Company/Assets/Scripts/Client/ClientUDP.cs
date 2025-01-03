@@ -42,6 +42,9 @@ public class ClientUDP : MonoBehaviour
     public int minJitt = 0;
     public int maxJitt = 800;
     public int lossThreshold = 90;
+
+    int messagesCount = 0;
+
     public struct Message
     {
         public Byte[] message;
@@ -215,17 +218,16 @@ public class ClientUDP : MonoBehaviour
             action = serialization.ExtractAction(data);
         }
 
-       
-
         am.action = action;
 
         lock (ack_messageBuffer)
         {
-            am.order = ack_messageBuffer.Count;
+            am.order = messagesCount;
 
             am.message = serialization.SendAckMessage(text, am.id, am.clientId, am.order);
 
             ack_messageBuffer.Add(am);
+            messagesCount++;
         }
     }
 
@@ -235,6 +237,8 @@ public class ClientUDP : MonoBehaviour
 
         if (((r.Next(0, 100) > lossThreshold) && packetLoss) || !packetLoss) // Don't schedule the message with certain probability
         {
+            Debug.Log("Action to send: " + actionAck.ToString());
+
             Message m = new Message();
 
             m.message = text;
@@ -258,7 +262,7 @@ public class ClientUDP : MonoBehaviour
                 messageBuffer.Add(m);
             }
 
-            Debug.Log(m.time.ToString());
+            //Debug.Log(m.time.ToString());
         }
     }
 
@@ -334,7 +338,7 @@ public class ClientUDP : MonoBehaviour
                 ackMessage.time = 0;
             }
 
-            if (ackMessage.waitForAck && ackMessage.time > 1f) 
+            if (ackMessage.waitForAck && ackMessage.time > 3f) 
             {
                 ackMessage.waitForAck = false;
             }
@@ -349,6 +353,7 @@ public class ClientUDP : MonoBehaviour
         {
             if (ack_messageBuffer[i].id == id)
             {
+                Debug.Log("ACK Action: " + ack_messageBuffer[i].action.ToString());
                 ack_messageBuffer.RemoveAt(i);
             }
         }
