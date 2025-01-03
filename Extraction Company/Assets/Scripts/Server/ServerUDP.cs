@@ -315,6 +315,11 @@ public class ServerUDP : MonoBehaviour
 
                                     if (messages.TryGetValue(u.NetID, out mList))
                                     {
+                                        if (messages[u.NetID].Count > messageToSentNow[u.NetID] + 10) //Avanzar si hay un mensaje que no llega hace rato
+                                        {
+                                            messageToSentNow[u.NetID]++;
+                                        }
+
                                         for (int i = 0; i < mList.Count; i++)
                                         {
                                             if (mList[i].order == messageToSentNow[u.NetID])
@@ -331,6 +336,10 @@ public class ServerUDP : MonoBehaviour
 
                                                 messages[u.NetID] = mList;
                                                 messageToSentNow[u.NetID]++;
+                                            }
+                                            else if(mList[i].order < messageToSentNow[u.NetID]) //Eliminar mensajes que llegan tarde
+                                            {
+                                                mList.RemoveAt(i);
                                             }
                                         }
                                     }
