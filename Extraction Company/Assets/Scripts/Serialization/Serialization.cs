@@ -267,7 +267,7 @@ public class Serialization : MonoBehaviour
 
         bytes = stream.ToArray();
 
-        Send(bytes, lastID);
+        Send(bytes, lastID,type);
     }
 
     public string serializeMovement(string ID, Vector3 movement, Quaternion rotation, bool run)
@@ -560,7 +560,7 @@ public class Serialization : MonoBehaviour
         Send(bytes, ID);
     }
 
-    public byte[] SendAckMessage(byte[] data, string id, string clientID, int order)
+    public byte[] AddHeaderAckMessage(byte[] data, string id, string clientID, int order)
     {
         stream = new MemoryStream();
         BinaryWriter writer = new BinaryWriter(stream);
@@ -768,7 +768,7 @@ public class Serialization : MonoBehaviour
                             {
                                 if (playerManager.player.playerObj == null && pList.Count > 1)
                                 {
-                                    pList.RemoveAt(lengthSize - 1);
+                                    pList.RemoveAt(lengthSize - 1); //If we already have a player obj we eliminate the last player as its the own player (?)
                                     playerManager.SpawnAllPlayers(pList);
                                 }
 
@@ -998,21 +998,21 @@ public class Serialization : MonoBehaviour
 
         if (isS_udp)
         {
-            SendToClient(bytes, id);
+            SendToClient(bytes, id, action);
         }
     }
 
     //Send from the Client to the server
     public void SendToServer(byte[] message, ActionType action)
     {
-        c_udp.sendMessageACK(message, action);
+        c_udp.SendMessageACK(message, action);
         //c_udp.server.SendTo(message, message.Length, SocketFlags.None, c_udp.ipepServer); //Send messages no Jitter and Packet Lost
     }
 
     //Send from the Server to the Client
-    public void SendToClient(byte[] message, string ID)
+    public void SendToClient(byte[] message, string ID, ActionType action)
     {
-        s_udp.Send(message, ID);
+        s_udp.Send(message, ID,action);
     }
 
     public string ExtractID(byte[] message)

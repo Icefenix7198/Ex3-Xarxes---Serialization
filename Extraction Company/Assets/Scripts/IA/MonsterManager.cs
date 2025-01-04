@@ -154,7 +154,7 @@ public class MonsterManager : MonoBehaviour
         {
             if (monsterIndex < currentMonstersList.Count && monsterIndex >= 0)
             {
-                currentMonstersList[monsterIndex].transform.position = new Vector3(pos.x, 0, pos.y);
+                //currentMonstersList[monsterIndex].transform.position = new Vector3(pos.x, 0, pos.y);
                 currentMonstersList[monsterIndex].GetComponent<NavMeshAgent>().SetDestination(target);
             }
             else if(monsterIndex >= 0) //In case we recive a request to update a monster that we don't have we call request monsters again, as the packets has become lost

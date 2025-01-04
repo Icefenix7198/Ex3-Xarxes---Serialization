@@ -152,7 +152,10 @@ public class PlayerManager : MonoBehaviour
             //In case a expansion a switch would be better
             if(dtMonster > 3f) 
             {
-                serialization.RequestMonsters(player.ID);
+                if(player.ID != null) 
+                {
+                    serialization.RequestMonsters(player.ID);
+                }
 
                 dtMonster = 0;
             }
@@ -229,6 +232,14 @@ public class PlayerManager : MonoBehaviour
                 Player pTemp = new Player();
                 pTemp.ID = playerId;
 
+                foreach(Transform children in clientParent.transform) 
+                {
+                    if(children.gameObject.GetComponent<TextMeshProUGUI>().text == playerId) 
+                    {
+                        return; //If player already exists, don't instantiate
+                    }
+                }
+
                 pTemp.playerObj = Instantiate(playerPref, clientParent.transform);
 
                 pTemp.playerObj.transform.position = playerNum >= 4 ? clientParent.transform.position : spawnPositions[playerNum+1].position;
@@ -256,6 +267,14 @@ public class PlayerManager : MonoBehaviour
         {
             player = new Player();
             player.ID = playerId;
+
+            foreach (Transform children in clientParent.transform)
+            {
+                if (playerId == children.gameObject.GetComponent<TextMeshProUGUI>().text)
+                {
+                    return;
+                }
+            }
 
             GameObject tmp = Instantiate(playerPref, clientParent.transform);
 
@@ -299,8 +318,23 @@ public class PlayerManager : MonoBehaviour
     {
         int nameCount = 1;
 
-        foreach (var pServer in pList) 
+        foreach (PlayerServer pServer in pList) 
         {
+            bool alreadyExist = false;
+            foreach(Transform children in clientParent.transform) 
+            {
+                if(pServer.ID == children.GetComponent<Player>().ID) 
+                {
+                    alreadyExist = true;
+                }
+            }
+
+            //Skip the creation of this player
+            if (!alreadyExist) 
+            {
+                continue;
+            }
+
             GameObject tmpPlayer = Instantiate(playerPref, clientParent.transform);
             tmpPlayer.transform.position = pServer.position;
             tmpPlayer.transform.rotation = pServer.rotation;

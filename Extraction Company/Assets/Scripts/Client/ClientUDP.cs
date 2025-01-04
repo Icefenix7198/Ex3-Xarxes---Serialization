@@ -96,7 +96,7 @@ public class ClientUDP : MonoBehaviour
             Thread mainThread = new Thread(Send);
             mainThread.Start();
 
-            Thread sendThread = new Thread(sendMessages);
+            Thread sendThread = new Thread(SendMessages);
             sendThread.Start();
         }
         else
@@ -108,7 +108,7 @@ public class ClientUDP : MonoBehaviour
             Thread mainThread = new Thread(Send);
             mainThread.Start();
 
-            Thread sendThread = new Thread(sendMessages);
+            Thread sendThread = new Thread(SendMessages);
             sendThread.Start();
         }
 
@@ -199,7 +199,7 @@ public class ClientUDP : MonoBehaviour
         }
     }
 
-    public void sendMessageACK(byte[] text, ActionType passedAction)
+    public void SendMessageACK(byte[] text, ActionType passedAction)
     {
         AckMessage am = new AckMessage();
         byte[] data = text;
@@ -226,14 +226,14 @@ public class ClientUDP : MonoBehaviour
         {
             am.order = messagesCount;
 
-            am.message = serialization.SendAckMessage(text, am.id, am.clientId, am.order);
+            am.message = serialization.AddHeaderAckMessage(text, am.id, am.clientId, am.order);
 
             ack_messageBuffer.Add(am);
             messagesCount++;
         }
     }
 
-    public void sendMessage(byte[] text, IPEndPoint ip, int orderAck, ActionType actionAck)
+    public void SendMessage(byte[] text, IPEndPoint ip, int orderAck, ActionType actionAck)
     {
         System.Random r = new System.Random();
 
@@ -269,7 +269,7 @@ public class ClientUDP : MonoBehaviour
     }
 
     //Run this always in a separate Thread, to send the delayed messages
-    void sendMessages()
+    void SendMessages()
     {
         Debug.Log("really sending..");
         while (true)
@@ -329,15 +329,19 @@ public class ClientUDP : MonoBehaviour
 
             for (int j = 0; j < messageBuffer.Count; j++)
             {
-                if (ack_messageBuffer[i].message == messageBuffer[j].message)
+                if (j < ack_messageBuffer.Count) //This is just in case, as sometimes , probably due to threads bs, j can get out of range.
                 {
-                    alreadyInList = true;
+                    if (ack_messageBuffer[i].message == messageBuffer[j].message)
+                    {
+                        alreadyInList = true;
+                    }
                 }
+                
             }
 
             if (ackMessage.time > 0.1f && !alreadyInList && !ackMessage.waitForAck)
             {
-                sendMessage(ackMessage.message, ipepServer, ackMessage.order, ackMessage.action);
+                SendMessage(ackMessage.message, ipepServer, ackMessage.order, ackMessage.action);
                 ackMessage.time = 0;
             }
 
@@ -346,7 +350,11 @@ public class ClientUDP : MonoBehaviour
                 ackMessage.waitForAck = false;
             }
 
-            ack_messageBuffer[i] = ackMessage;
+            if(i < ack_messageBuffer.Count) //Sometimes it becomes out of index, probably some thread BS.
+            {
+                ack_messageBuffer[i] = ackMessage;
+            }
+            
         }
     }
 

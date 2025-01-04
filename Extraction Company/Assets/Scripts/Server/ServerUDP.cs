@@ -215,7 +215,7 @@ public class ServerUDP : MonoBehaviour
         }
     }
 
-    public void Send(byte[] data, string ID = "-1")
+    public void Send(byte[] data, string ID = "-1", ActionType act = ActionType.MAX)
     {
         lock (userSocketsList)
         {
@@ -224,7 +224,17 @@ public class ServerUDP : MonoBehaviour
                 byte[] ogData = data;
                 byte[] ogData1 = data;
 
-                ActionType action = serialization.ExtractAction(data);
+                ActionType action;
+                if (act != ActionType.MAX) 
+                {
+                    action = act;
+                }
+                else 
+                {
+                    action = serialization.ExtractAction(data);
+                }
+
+                
 
                 if (action == ActionType.SPAWN_PLAYERS) //This case is send to EVERYONE, for specific things.
                 {
