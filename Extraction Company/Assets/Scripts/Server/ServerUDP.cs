@@ -28,7 +28,7 @@ public class ServerUDP : MonoBehaviour
     public PassSceneManager passScene;
 
     int port = 9050;
-    public string serverName = "DefaultName";
+    public string serverName;
 
     public GameObject connected;
     public GameObject noConnected;
@@ -72,8 +72,9 @@ public class ServerUDP : MonoBehaviour
         messages = new Dictionary<string, List<Message>>();
         messageToSentNow = new Dictionary<string, int>();
         passScene = GetComponent<PassSceneManager>();
+        serverName = "DefaultName";
 
-        if(UItextObj != null)
+        if (UItextObj != null)
             UItext = UItextObj.GetComponent<TextMeshProUGUI>();
 
         DontDestroyOnLoad(this.gameObject);
@@ -315,31 +316,30 @@ public class ServerUDP : MonoBehaviour
 
                                     if (messages.TryGetValue(u.NetID, out mList))
                                     {
-                                        if (messages[u.NetID].Count > messageToSentNow[u.NetID] + 10) //Avanzar si hay un mensaje que no llega hace rato
+                                        if(messageToSentNow.Count > 0)
                                         {
-                                            messageToSentNow[u.NetID]++;
-                                        }
-
-                                        for (int i = 0; i < mList.Count; i++)
-                                        {
-                                            if (mList[i].order == messageToSentNow[u.NetID])
+                                            if (messageToSentNow.ContainsKey(u.NetID))
                                             {
-                                                messagesToSent.Add(mList[i]);
-                                                mList.RemoveAt(i);
+                                                if (messages[u.NetID].Count > messageToSentNow[u.NetID] + 10) //Avanzar si hay un mensaje que no llega hace rato
+                                                {
+                                                    messageToSentNow[u.NetID]++;
+                                                }
 
-                                                //for (int j = 0; j < mList.Count; j++)
-                                                //{
-                                                //    Message mLess = mList[j];
-                                                //    mLess.order--;
-                                                //    mList[j] = mLess;
-                                                //}
+                                                for (int i = 0; i < mList.Count; i++)
+                                                {
+                                                    if (mList[i].order == messageToSentNow[u.NetID])
+                                                    {
+                                                        messagesToSent.Add(mList[i]);
+                                                        mList.RemoveAt(i);
 
-                                                messages[u.NetID] = mList;
-                                                messageToSentNow[u.NetID]++;
-                                            }
-                                            else if(mList[i].order < messageToSentNow[u.NetID]) //Eliminar mensajes que llegan tarde
-                                            {
-                                                mList.RemoveAt(i);
+                                                        messages[u.NetID] = mList;
+                                                        messageToSentNow[u.NetID]++;
+                                                    }
+                                                    else if (mList[i].order < messageToSentNow[u.NetID]) //Eliminar mensajes que llegan tarde
+                                                    {
+                                                        mList.RemoveAt(i);
+                                                    }
+                                                }
                                             }
                                         }
                                     }
