@@ -104,7 +104,7 @@ public class MonsterManager : MonoBehaviour
             for (int i = 0; i < playerManager.playerList.Count; i++)
             {
                 
-                serialization.serializeCreateMonster(playerManager.playerList[i].ID, p, monsterIndex);
+                serialization.SerializeCreateMonster(playerManager.playerList[i].ID, p, monsterIndex);
             }
 
             //gameObject.transform

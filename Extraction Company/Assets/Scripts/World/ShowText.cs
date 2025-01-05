@@ -17,12 +17,6 @@ public class ShowText : MonoBehaviour
         text_Press.text = "";
     }
 
-    
-    void Update()
-    {
-        
-    }
-
     private void OnTriggerEnter(Collider other)
     {
         if(text_Press == null) 

@@ -317,7 +317,7 @@ public class PlayerManager : MonoBehaviour
 
     public void CreateNewPlayer() //This is called by the button CREATE PLAYER.
     {
-        serialization.serializeCreatePlayer(c_udp.clientID, serialization.tmpNameClient, playerList.Count);
+        serialization.SerializeCreatePlayer(c_udp.clientID, serialization.tmpNameClient, playerList.Count);
     }
 
     public void SpawnAllPlayers(List<PlayerServer> pList)
@@ -469,7 +469,6 @@ public class PlayerManager : MonoBehaviour
                     {
                         movedPlayers[i] = movedPlayer;
                         exist = true;
-
                     }
                 }
 

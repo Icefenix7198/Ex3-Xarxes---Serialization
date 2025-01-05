@@ -215,7 +215,7 @@ public class Serialization : MonoBehaviour
         Send(bytes, id,type);
     }
 
-    public void serializeCreatePlayer(string id, string name, int numPlayers = -1)
+    public void SerializeCreatePlayer(string id, string name, int numPlayers = -1)
     {
         ActionType type = ActionType.CREATE_PLAYER;
 
@@ -313,7 +313,7 @@ public class Serialization : MonoBehaviour
         return id;
     }
 
-    public string serializeCreateMonster(string id, Vector2 position, int monsterType = 0)
+    public string SerializeCreateMonster(string id, Vector2 position, int monsterType = 0)
     {
         ActionType type = ActionType.CREATE_MONSTER;
 
@@ -434,7 +434,7 @@ public class Serialization : MonoBehaviour
 
         bytes = stream.ToArray();
 
-        Send(bytes, ID);
+        Send(bytes, ID,type);
     } 
     
     public void SendDestroyItem(itemObj item, string ID)
@@ -1205,7 +1205,7 @@ public class Serialization : MonoBehaviour
 
         bytes = stream.ToArray();
 
-        Send(bytes, "-2");
+        Send(bytes, "-2",type);
     }
 
     public void RequestMonsters(string ID)

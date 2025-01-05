@@ -99,6 +99,25 @@ public class ItemGenerator : MonoBehaviour
 
         foreach (itemObj item in items)
         {
+            bool existingItem = false;
+            if(allItems != null) 
+            {
+                foreach(itemObj childItem in allItems) 
+                {
+                    if(item.ID == childItem.ID) 
+                    {
+                        existingItem = true;
+                    }
+                }
+            }
+            
+
+            //If item already spawned ignore
+            if (existingItem) 
+            {
+                continue;
+            }
+
             GameObject tmpObj;
             tmpObj = Instantiate(allObjects[item.objType], parentItems.transform);
             tmpObj.transform.position = item.pos;

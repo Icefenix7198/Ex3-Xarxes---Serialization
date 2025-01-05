@@ -126,10 +126,14 @@ public class ClientUDP : MonoBehaviour
             deserializate = false;
         }
 
-        if(ack_messageBuffer.Count > 0)
+        if (ack_messageBuffer != null)
         {
-            AckMessagesCheck();
+            if (ack_messageBuffer.Count > 0)
+            {
+                AckMessagesCheck();
+            }
         }
+        
     }
 
     public void Send()
@@ -320,42 +324,46 @@ public class ClientUDP : MonoBehaviour
 
     void AckMessagesCheck()
     {
-        for (int i = 0; i < ack_messageBuffer.Count; i++)
+        if(ack_messageBuffer != null) 
         {
-            AckMessage ackMessage = ack_messageBuffer[i];
-            ackMessage.time += Time.deltaTime;
-
-            bool alreadyInList = false;
-
-            for (int j = 0; j < messageBuffer.Count; j++)
+            for (int i = 0; i < ack_messageBuffer.Count; i++)
             {
-                if (j < ack_messageBuffer.Count) //This is just in case, as sometimes , probably due to threads bs, j can get out of range.
+                AckMessage ackMessage = ack_messageBuffer[i];
+                ackMessage.time += Time.deltaTime;
+
+                bool alreadyInList = false;
+
+                for (int j = 0; j < messageBuffer.Count; j++)
                 {
-                    if (ack_messageBuffer[i].message == messageBuffer[j].message)
+                    if (j < ack_messageBuffer.Count && i < ack_messageBuffer.Count) //This is just in case, as sometimes , probably due to threads bs, j can get out of range.
                     {
-                        alreadyInList = true;
+                        if (ack_messageBuffer[i].message == messageBuffer[j].message)
+                        {
+                            alreadyInList = true;
+                        }
                     }
-                }
                 
-            }
+                }
 
-            if (ackMessage.time > 0.1f && !alreadyInList && !ackMessage.waitForAck)
-            {
-                SendMessage(ackMessage.message, ipepServer, ackMessage.order, ackMessage.action);
-                ackMessage.time = 0;
-            }
+                if (ackMessage.time > 0.1f && !alreadyInList && !ackMessage.waitForAck)
+                {
+                    SendMessage(ackMessage.message, ipepServer, ackMessage.order, ackMessage.action);
+                    ackMessage.time = 0;
+                }
 
-            if (ackMessage.waitForAck && ackMessage.time > 3f) 
-            {
-                ackMessage.waitForAck = false;
-            }
+                if (ackMessage.waitForAck && ackMessage.time > 3f) 
+                {
+                    ackMessage.waitForAck = false;
+                }
 
-            if(i < ack_messageBuffer.Count) //Sometimes it becomes out of index, probably some thread BS.
-            {
-                ack_messageBuffer[i] = ackMessage;
-            }
+                if(i < ack_messageBuffer.Count) //Sometimes it becomes out of index, probably some thread BS.
+                {
+                    ack_messageBuffer[i] = ackMessage;
+                }
             
+            }
         }
+        
     }
 
     public void ReciveAck(string id)
