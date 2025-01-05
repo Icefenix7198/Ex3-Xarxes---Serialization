@@ -181,7 +181,10 @@ public class ClientUDP : MonoBehaviour
             if (recv != 0)
             {
                 deserializate = true;
-                tempData = data;
+                Array.Copy(data, tempData, data.Length);
+
+                byte[] data2 = new byte[1024];
+                Array.Copy(data, data2, data.Length);
 
                 action = serialization.ExtractAction(data);
 
@@ -189,7 +192,7 @@ public class ClientUDP : MonoBehaviour
 
                 if(action == ActionType.ACK)
                 {
-                    serialization.Deserialize(tempData);
+                    serialization.Deserialize(data2);
                 }
             }
 
@@ -333,17 +336,21 @@ public class ClientUDP : MonoBehaviour
 
                 bool alreadyInList = false;
 
-                for (int j = 0; j < messageBuffer.Count; j++)
+                if(messageBuffer != null) 
                 {
-                    if (j < ack_messageBuffer.Count && i < ack_messageBuffer.Count) //This is just in case, as sometimes , probably due to threads bs, j can get out of range.
+                    for (int j = 0; j < messageBuffer.Count; j++)
                     {
-                        if (ack_messageBuffer[i].message == messageBuffer[j].message)
+                        if (j < ack_messageBuffer.Count && i < ack_messageBuffer.Count) //This is just in case, as sometimes , probably due to threads bs, j can get out of range.
                         {
-                            alreadyInList = true;
+                            if (ack_messageBuffer[i].message == messageBuffer[j].message)
+                            {
+                                alreadyInList = true;
+                            }
                         }
-                    }
                 
+                    }
                 }
+                
 
                 if (ackMessage.time > 0.1f && !alreadyInList && !ackMessage.waitForAck)
                 {

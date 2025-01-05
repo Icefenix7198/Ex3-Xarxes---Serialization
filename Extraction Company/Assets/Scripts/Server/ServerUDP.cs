@@ -147,14 +147,20 @@ public class ServerUDP : MonoBehaviour
                 u.socket = socket;
                 u.Remote = Remote;
 
-                byte[] ogData = data; //Will quit Ack layer
-                byte[] ogData3 = data; //Will have ackolegment header
+                
+                byte[] ogData = new byte[1024]; //Will quit Ack layer
+                Array.Copy(data, ogData, data.Length);
 
-                ogData = serialization.QuitACK(ogData); //Quit layer to ogData
+                byte[] ogData3 = new byte[1024]; //Will have ackolegment header
+                Array.Copy(data, ogData3, data.Length);
 
-                byte[] ogData1 = ogData;
-                byte[] ogData2 = ogData;
-                byte[] ogData4 = ogData;
+                ogData = serialization.QuitACK(ogData); //Eliminate layer to ogData
+
+                byte[] ogData1 = new byte[1024]; 
+                Array.Copy(ogData, ogData1, ogData.Length);
+
+                byte[] ogData2 = new byte[1024]; 
+                Array.Copy(ogData, ogData2, ogData.Length);
 
                 ActionType action = serialization.ExtractAction(ogData1);
 
@@ -202,9 +208,13 @@ public class ServerUDP : MonoBehaviour
 
     void MessageSender(byte[] ogData4, string clientID) //Here the proccess of sendig starts
     {
-        byte[] ogData = ogData4;
-        byte[] ogData1 = ogData4;
-        byte[] ogData2 = ogData4;
+        
+        byte[] ogData = new byte[1024];
+        Array.Copy(ogData4, ogData, ogData4.Length);
+        byte[] ogData1 = new byte[1024];
+        Array.Copy(ogData4, ogData1, ogData4.Length);
+        byte[] ogData2 = new byte[1024];
+        Array.Copy(ogData4, ogData2, ogData4.Length);
 
         ActionType action = serialization.ExtractAction(ogData1);
 
@@ -226,8 +236,11 @@ public class ServerUDP : MonoBehaviour
         {
             foreach (var scoketsUser in userSocketsList) //We send the data to each client that collected to the sever
             {
-                byte[] ogData = data;
-                byte[] ogData1 = data;
+                byte[] ogData = new byte[1024];
+                Array.Copy(data, ogData, data.Length); 
+                
+                byte[] ogData1 = new byte[1024];
+                Array.Copy(data, ogData1, data.Length);
 
                 ActionType action;
                 if (act != ActionType.MAX) 
@@ -250,7 +263,9 @@ public class ServerUDP : MonoBehaviour
                     if(userSocketsList.Count <= 4)
                     {
                         deserializate = true;
-                        tempData = ogData;
+
+                        Array.Copy(ogData, tempData, ogData.Length);
+
                     }
                 }
                 else if (action == ActionType.ID_NAME || action == ActionType.SPAWN_ITEMS || action == ActionType.CREATE_MONSTER || action == ActionType.MAX_PLAYERS || action == ActionType.UPDATE_MONSTER || action == ActionType.ACK) //This is only to send to the client with the ID
@@ -260,7 +275,7 @@ public class ServerUDP : MonoBehaviour
                         scoketsUser.socket.SendTo(ogData1, ogData1.Length, SocketFlags.None, scoketsUser.Remote);
                     }
                 }
-                else
+                else if (action != ActionType.NONE)
                 {
                     if (scoketsUser.NetID != ID) //This is to send everyone excluding the original sender (example the movement action)
                     {

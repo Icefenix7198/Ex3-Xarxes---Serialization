@@ -154,7 +154,7 @@ public class PlayerManager : MonoBehaviour
             {
                 if(player.ID != null) 
                 {
-                    serialization.RequestMonsters(player.ID);
+                    //serialization.RequestMonsters(player.ID);
                 }
 
                 dtMonster = 0;
