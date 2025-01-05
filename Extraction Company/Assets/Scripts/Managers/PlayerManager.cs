@@ -263,44 +263,50 @@ public class PlayerManager : MonoBehaviour
             }
         }
 
-        if(s_udp != null)
+        if(s_udp != null) //If server recives a message to create a new player it creates it and then sends the list to all other people
         {
             player = new Player();
             player.ID = playerId;
 
+            bool playerExist = false;
             foreach (Transform children in clientParent.transform)
             {
                 if (playerId == children.gameObject.GetComponent<TextMeshProUGUI>().text)
                 {
-                    return;
+                    playerExist = true;
                 }
             }
 
-            GameObject tmp = Instantiate(playerPref, clientParent.transform);
+            //If player not already existing add it to list
+            if (!playerExist) 
+            {
+                GameObject tmp = Instantiate(playerPref, clientParent.transform);
 
-            player.playerObj = tmp;
-            player.playerObj.transform.position = spawnPositions[playerList.Count].position;
+                player.playerObj = tmp;
+                player.playerObj.transform.position = spawnPositions[playerList.Count].position;
 
-            player.playerRb = player.playerObj.GetComponent<Rigidbody>();
-            player.playerRb.freezeRotation = true;
+                player.playerRb = player.playerObj.GetComponent<Rigidbody>();
+                player.playerRb.freezeRotation = true;
 
-            player.textID = player.playerObj.GetComponent<TextMeshProUGUI>();
-            player.textID.text = playerId;
+                player.textID = player.playerObj.GetComponent<TextMeshProUGUI>();
+                player.textID.text = playerId;
 
-            Transform child = player.playerObj.transform.GetChild(0);
-            child.gameObject.GetComponent<TextMeshPro>().text = playerName;
-            player_Names_UI[playerCountName - 1].text = playerName;
-            extractionManager.extractions_ofPlayers.Add(playerId, 0);
-            extractionManager.extractions.Add(playerName, 0);
-            extractionManager.player_Names.Add(playerName);
-            extractionManager.player_Numbers.Add(0);
+                Transform child = player.playerObj.transform.GetChild(0);
+                child.gameObject.GetComponent<TextMeshPro>().text = playerName;
+                player_Names_UI[playerCountName - 1].text = playerName;
+                extractionManager.extractions_ofPlayers.Add(playerId, 0);
+                extractionManager.extractions.Add(playerName, 0);
+                extractionManager.player_Names.Add(playerName);
+                extractionManager.player_Numbers.Add(0);
 
-            PlayerServer pServer = new PlayerServer();
-            pServer.ID = playerId;
-            pServer.position = tmp.transform.position;
-            pServer.name = playerName;
+                PlayerServer pServer = new PlayerServer();
+                pServer.ID = playerId;
+                pServer.position = tmp.transform.position;
+                pServer.name = playerName;
 
-            playerList.Add(pServer);
+                playerList.Add(pServer);
+            }
+            
 
             serialization.SendAllPlayers(playerList);
             playerCountName++;

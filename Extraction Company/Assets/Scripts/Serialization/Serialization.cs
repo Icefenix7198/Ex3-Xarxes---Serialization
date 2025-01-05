@@ -212,7 +212,7 @@ public class Serialization : MonoBehaviour
 
         bytes = stream.ToArray();
 
-        Send(bytes, id);
+        Send(bytes, id,type);
     }
 
     public void serializeCreatePlayer(string id, string name, int numPlayers = -1)
@@ -264,6 +264,7 @@ public class Serialization : MonoBehaviour
 
             lastID = a.ID;
         }
+
 
         bytes = stream.ToArray();
 

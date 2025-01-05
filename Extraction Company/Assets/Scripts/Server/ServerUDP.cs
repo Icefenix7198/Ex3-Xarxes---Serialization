@@ -172,8 +172,13 @@ public class ServerUDP : MonoBehaviour
                         name = serialization.ExtractName(ogData2);
                         u.name = name;
 
-                        clientsIdList.Add(u.NetID);
-                        userSocketsList.Add(u);
+                        
+                        if (!userSocketsList.Contains(u)) 
+                        {   
+                            clientsIdList.Add(u.NetID);
+                            userSocketsList.Add(u);
+                        }
+                        
 
                         //If a player over the for allowed tries to connect
                         if (userSocketsList.Count > 4)
