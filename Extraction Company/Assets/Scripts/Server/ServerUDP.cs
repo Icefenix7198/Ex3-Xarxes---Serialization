@@ -73,6 +73,7 @@ public class ServerUDP : MonoBehaviour
         messageToSentNow = new Dictionary<string, int>();
         passScene = GetComponent<PassSceneManager>();
         serverName = "DefaultName";
+        tempData = new byte[1024];
 
         if (UItextObj != null)
             UItext = UItextObj.GetComponent<TextMeshProUGUI>();
@@ -252,8 +253,6 @@ public class ServerUDP : MonoBehaviour
                     action = serialization.ExtractAction(data);
                 }
 
-                
-
                 if (action == ActionType.SPAWN_PLAYERS) //This case is send to EVERYONE, for specific things.
                 {
                     scoketsUser.socket.SendTo(ogData1, ogData1.Length, SocketFlags.None, scoketsUser.Remote);
@@ -350,7 +349,7 @@ public class ServerUDP : MonoBehaviour
                                         {
                                             if (messageToSentNow.ContainsKey(u.NetID))
                                             {
-                                                if (messages[u.NetID].Count > messageToSentNow[u.NetID] + 10) //Avanzar si hay un mensaje que no llega hace rato
+                                                if (messages[u.NetID].Count > messageToSentNow[u.NetID] + 2) //Avanzar si hay un mensaje que no llega hace rato
                                                 {
                                                     messageToSentNow[u.NetID]++;
                                                 }

@@ -326,21 +326,6 @@ public class PlayerManager : MonoBehaviour
 
         foreach (PlayerServer pServer in pList) 
         {
-            bool alreadyExist = false;
-            foreach(Transform children in clientParent.transform) 
-            {
-                if(pServer.ID == children.GetComponent<Player>().ID) 
-                {
-                    alreadyExist = true;
-                }
-            }
-
-            //Skip the creation of this player
-            if (!alreadyExist) 
-            {
-                continue;
-            }
-
             GameObject tmpPlayer = Instantiate(playerPref, clientParent.transform);
             tmpPlayer.transform.position = pServer.position;
             tmpPlayer.transform.rotation = pServer.rotation;

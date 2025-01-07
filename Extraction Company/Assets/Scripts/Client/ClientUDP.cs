@@ -77,6 +77,7 @@ public class ClientUDP : MonoBehaviour
 
         passSceneManager = GetComponent<PassSceneManager>();
         serialization = GetComponent<Serialization>();
+        tempData = new byte[1024];
         deserializate = false;
     }
     public void StartClient()
@@ -133,7 +134,6 @@ public class ClientUDP : MonoBehaviour
                 AckMessagesCheck();
             }
         }
-        
     }
 
     public void Send()
@@ -180,19 +180,23 @@ public class ClientUDP : MonoBehaviour
 
             if (recv != 0)
             {
-                deserializate = true;
-                Array.Copy(data, tempData, data.Length);
-
-                byte[] data2 = new byte[1024];
-                Array.Copy(data, data2, data.Length);
-
-                action = serialization.ExtractAction(data);
-
-                Debug.Log("Action: " + action.ToString());
-
-                if(action == ActionType.ACK)
+                if(data != null)
                 {
-                    serialization.Deserialize(data2);
+                    deserializate = true;
+
+                    Array.Copy(data, tempData, data.Length);
+
+                    byte[] data2 = new byte[1024];
+                    Array.Copy(data, data2, data.Length);
+
+                    action = serialization.ExtractAction(data);
+
+                    Debug.Log("Action: " + action.ToString());
+
+                    if (action == ActionType.ACK)
+                    {
+                        serialization.Deserialize(data2);
+                    }
                 }
             }
 
