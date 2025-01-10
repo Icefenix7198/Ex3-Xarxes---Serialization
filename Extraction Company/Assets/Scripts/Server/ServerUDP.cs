@@ -362,8 +362,19 @@ public class ServerUDP : MonoBehaviour
                                                     }
                                                     else if (mList[i].order < messageToSentNow[u.NetID]) //Eliminar mensajes que llegan tarde
                                                     {
-                                                        Debug.Log("Drop: " + mList[i].action.ToString());
-                                                        mList.RemoveAt(i);
+                                                        if (mList[i].action == ActionType.MOVE_SERVER)
+                                                        {
+                                                            Debug.Log("Drop: " + mList[i].action.ToString());
+                                                            mList.RemoveAt(i);
+                                                        }
+                                                        else
+                                                        {
+                                                            messagesToSent.Add(mList[i]);
+                                                            mList.RemoveAt(i);
+
+                                                            messages[u.NetID] = mList;
+                                                            messageToSentNow[u.NetID]++;
+                                                        }
                                                     }
                                                     else if(mList[i].order > messageToSentNow[u.NetID] + 10) //Avanzar si hay un mensaje que no llega hace rato
                                                     {
