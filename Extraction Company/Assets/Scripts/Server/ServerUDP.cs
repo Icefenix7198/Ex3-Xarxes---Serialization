@@ -365,7 +365,7 @@ public class ServerUDP : MonoBehaviour
                                                         Debug.Log("Drop: " + mList[i].action.ToString());
                                                         mList.RemoveAt(i);
                                                     }
-                                                    else if(mList[i].order > messageToSentNow[u.NetID] + 3) //Avanzar si hay un mensaje que no llega hace rato
+                                                    else if(mList[i].order > messageToSentNow[u.NetID] + 10) //Avanzar si hay un mensaje que no llega hace rato
                                                     {
                                                         messageToSentNow[u.NetID]++;
                                                     }
