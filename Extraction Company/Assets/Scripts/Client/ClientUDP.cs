@@ -342,16 +342,21 @@ public class ClientUDP : MonoBehaviour
 
                 if(messageBuffer != null) 
                 {
-                    for (int j = 0; j < messageBuffer.Count; j++)
+                    lock (messageBuffer)
                     {
-                        if (j < ack_messageBuffer.Count && i < ack_messageBuffer.Count) //This is just in case, as sometimes , probably due to threads bs, j can get out of range.
+                        for (int j = 0; j < messageBuffer.Count; j++)
                         {
-                            if (ack_messageBuffer[i].message == messageBuffer[j].message)
+                            if (j < ack_messageBuffer.Count && i < ack_messageBuffer.Count) //This is just in case, as sometimes , probably due to threads bs, j can get out of range.
                             {
-                                alreadyInList = true;
+                                lock(ack_messageBuffer)
+                                {
+                                    if (ack_messageBuffer[i].message == messageBuffer[j].message)
+                                    {
+                                        alreadyInList = true;
+                                    }
+                                }
                             }
                         }
-                
                     }
                 }
                 
@@ -367,11 +372,13 @@ public class ClientUDP : MonoBehaviour
                     ackMessage.waitForAck = false;
                 }
 
-                if(i < ack_messageBuffer.Count) //Sometimes it becomes out of index, probably some thread BS.
+                lock (ack_messageBuffer)
                 {
-                    ack_messageBuffer[i] = ackMessage;
+                    if (i < ack_messageBuffer.Count) //Sometimes it becomes out of index, probably some thread BS.
+                    {
+                        ack_messageBuffer[i] = ackMessage;
+                    }
                 }
-            
             }
         }
         

@@ -349,15 +349,11 @@ public class ServerUDP : MonoBehaviour
                                         {
                                             if (messageToSentNow.ContainsKey(u.NetID))
                                             {
-                                                if (messages[u.NetID].Count > messageToSentNow[u.NetID] + 2) //Avanzar si hay un mensaje que no llega hace rato
-                                                {
-                                                    messageToSentNow[u.NetID]++;
-                                                }
-
                                                 for (int i = 0; i < mList.Count; i++)
                                                 {
                                                     if (mList[i].order == messageToSentNow[u.NetID])
                                                     {
+                                                        Debug.Log("Exectue: " + mList[i].action.ToString());
                                                         messagesToSent.Add(mList[i]);
                                                         mList.RemoveAt(i);
 
@@ -366,7 +362,12 @@ public class ServerUDP : MonoBehaviour
                                                     }
                                                     else if (mList[i].order < messageToSentNow[u.NetID]) //Eliminar mensajes que llegan tarde
                                                     {
+                                                        Debug.Log("Drop: " + mList[i].action.ToString());
                                                         mList.RemoveAt(i);
+                                                    }
+                                                    else if(mList[i].order > messageToSentNow[u.NetID] + 3) //Avanzar si hay un mensaje que no llega hace rato
+                                                    {
+                                                        messageToSentNow[u.NetID]++;
                                                     }
                                                 }
                                             }
