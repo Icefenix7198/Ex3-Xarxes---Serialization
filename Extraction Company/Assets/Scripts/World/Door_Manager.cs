@@ -26,19 +26,23 @@ public class Door_Manager : MonoBehaviour
             buttonB = false;
             buttonC = false;
         }
-
-        if (door == "B")
+        else if (door == "B")
         {
             buttonB = !buttonB;
             buttonA = false;
             buttonC = false;
         }
-
-        if (door == "C")
+        else if (door == "C")
         {
             buttonC = !buttonC;
             buttonA = false;
             buttonB = false;
+        }
+        else 
+        {
+            buttonA = false;
+            buttonB = false;
+            buttonC = false;
         }
 
         ExecuteDoors();
@@ -48,19 +52,29 @@ public class Door_Manager : MonoBehaviour
     {
         for (int i = 0; i < Doors.Count; i++)
         {
-            if (Doors[i].CompareTag("GroupA"))
+            if (Doors[i].tag == "GroupA")
             {
-                Doors[i].transform.GetChild(0).GetComponent<Animator>().SetBool("Button", buttonA);
-            }
+                if (Doors[i].transform.GetChild(0).GetComponent<Animator>() != null)
+                {
+                    Doors[i].transform.GetChild(0).GetComponent<Animator>().SetBool("Button", buttonA);
+                }
 
-            if (Doors[i].CompareTag("GroupB"))
-            {
-                Doors[i].transform.GetChild(0).GetComponent<Animator>().SetBool("Button", buttonB);
             }
-
-            if (Doors[i].CompareTag("GroupC"))
+            else if (Doors[i].tag == ("GroupB"))
             {
-                Doors[i].transform.GetChild(0).GetComponent<Animator>().SetBool("Button", buttonC);
+                if (Doors[i].transform.GetChild(0).GetComponent<Animator>() != null)
+                {
+                    Doors[i].transform.GetChild(0).GetComponent<Animator>().SetBool("Button", buttonB);
+                }
+
+            }
+            else if (Doors[i].tag == ("GroupC"))
+            {
+                if (Doors[i].transform.GetChild(0).GetComponent<Animator>() != null)
+                {
+                    Doors[i].transform.GetChild(0).GetComponent<Animator>().SetBool("Button", buttonC);
+                }
+
             }
         }
     }

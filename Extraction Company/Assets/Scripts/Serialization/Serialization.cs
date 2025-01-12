@@ -542,7 +542,7 @@ public class Serialization : MonoBehaviour
 
         bytes = stream.ToArray();
 
-        Send(bytes, ID);
+        Send(bytes, ID, type);
     }
 
     public void SendDoors(string door, string ID = "-2")
@@ -558,7 +558,7 @@ public class Serialization : MonoBehaviour
 
         bytes = stream.ToArray();
 
-        Send(bytes, ID);
+        Send(bytes, ID, type);
     }
 
     public byte[] AddHeaderAckMessage(byte[] data, string id, string clientID, int order)
