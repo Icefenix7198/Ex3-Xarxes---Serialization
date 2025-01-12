@@ -64,6 +64,7 @@ public class ClientUDP : MonoBehaviour
         public ActionType action;
         public bool waitForAck;
         public int order;
+        public int attemptsToSend;
     }
 
     public List<Message> messageBuffer = new List<Message>();
@@ -370,6 +371,12 @@ public class ClientUDP : MonoBehaviour
                 if (ackMessage.waitForAck && ackMessage.time > 3f) 
                 {
                     ackMessage.waitForAck = false;
+                    ackMessage.attemptsToSend++;
+                }
+
+                if(ackMessage.attemptsToSend > 2)
+                {
+                    ReciveAck(ackMessage.id);
                 }
 
                 lock (ack_messageBuffer)

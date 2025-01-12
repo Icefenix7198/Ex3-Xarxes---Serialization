@@ -209,25 +209,27 @@ public class ServerUDP : MonoBehaviour
 
     void MessageSender(byte[] ogData4, string clientID) //Here the proccess of sendig starts
     {
-        
-        byte[] ogData = new byte[1024];
-        Array.Copy(ogData4, ogData, ogData4.Length);
-        byte[] ogData1 = new byte[1024];
-        Array.Copy(ogData4, ogData1, ogData4.Length);
-        byte[] ogData2 = new byte[1024];
-        Array.Copy(ogData4, ogData2, ogData4.Length);
-
-        ActionType action = serialization.ExtractAction(ogData1);
-
-        if (action == ActionType.DOORS || action == ActionType.REQUEST_ITEMS || action == ActionType.DESTROY_ITEM || action == ActionType.EXTRACTION_TO_SERVER || action == ActionType.REQUEST_MONSTERS) //This is for messages that only need info from the server as an awnser, and not send it to other people
+        if(ogData4 != null & clientID != null)
         {
-            //Debug.Log("TEMPORAL! Entro en el if de serverUDP");
-            serialization.Deserialize(ogData2);
-        }
-        else
-        {
-            Thread newConnection = new Thread(() => Send(ogData, clientID));
-            newConnection.Start();
+            byte[] ogData = new byte[1024];
+            Array.Copy(ogData4, ogData, ogData4.Length);
+            byte[] ogData1 = new byte[1024];
+            Array.Copy(ogData4, ogData1, ogData4.Length);
+            byte[] ogData2 = new byte[1024];
+            Array.Copy(ogData4, ogData2, ogData4.Length);
+
+            ActionType action = serialization.ExtractAction(ogData1);
+
+            if (action == ActionType.DOORS || action == ActionType.REQUEST_ITEMS || action == ActionType.DESTROY_ITEM || action == ActionType.EXTRACTION_TO_SERVER || action == ActionType.REQUEST_MONSTERS) //This is for messages that only need info from the server as an awnser, and not send it to other people
+            {
+                //Debug.Log("TEMPORAL! Entro en el if de serverUDP");
+                serialization.Deserialize(ogData2);
+            }
+            else
+            {
+                Thread newConnection = new Thread(() => Send(ogData, clientID));
+                newConnection.Start();
+            }
         }
     }
 

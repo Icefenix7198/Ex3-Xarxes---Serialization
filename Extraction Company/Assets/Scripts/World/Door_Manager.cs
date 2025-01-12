@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Door_Manager : MonoBehaviour
 {
-    public List<Animator> animator;
+    public List<GameObject> Doors;
 
     public bool buttonA;
     public bool buttonB;
@@ -46,21 +46,21 @@ public class Door_Manager : MonoBehaviour
 
     public void ExecuteDoors()
     {
-        for (int i = 0; i < animator.Count; i++)
+        for (int i = 0; i < Doors.Count; i++)
         {
-            if (animator[i].CompareTag("GroupA"))
+            if (Doors[i].CompareTag("GroupA"))
             {
-                animator[i].SetBool("Button", buttonA);
+                Doors[i].transform.GetChild(0).GetComponent<Animator>().SetBool("Button", buttonA);
             }
 
-            if (animator[i].CompareTag("GroupB"))
+            if (Doors[i].CompareTag("GroupB"))
             {
-                animator[i].SetBool("Button", buttonB);
+                Doors[i].transform.GetChild(0).GetComponent<Animator>().SetBool("Button", buttonB);
             }
 
-            if (animator[i].CompareTag("GroupC"))
+            if (Doors[i].CompareTag("GroupC"))
             {
-                animator[i].SetBool("Button", buttonC);
+                Doors[i].transform.GetChild(0).GetComponent<Animator>().SetBool("Button", buttonC);
             }
         }
     }
