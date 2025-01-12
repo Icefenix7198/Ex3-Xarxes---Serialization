@@ -120,6 +120,19 @@ public class ServerUDP : MonoBehaviour
             serialization.Deserialize(tempData);
             deserializate = false;
         }
+
+        lock (messagesToSent)
+        {
+            if (messagesToSent.Count > 0)
+            {
+                foreach (var message in messagesToSent)
+                {
+                    MessageSender(message.data, message.clientID);
+                }
+
+                messagesToSent.Clear();
+            }
+        }
     }
 
     void Receive()
@@ -389,19 +402,6 @@ public class ServerUDP : MonoBehaviour
                             }
                         }
                     }
-                }
-            }
-
-            lock (messagesToSent)
-            {
-                if (messagesToSent.Count > 0)
-                {
-                    foreach (var message in messagesToSent)
-                    {
-                        MessageSender(message.data, message.clientID);
-                    }
-
-                    messagesToSent.Clear();
                 }
             }
         }
