@@ -388,7 +388,6 @@ public class ClientUDP : MonoBehaviour
                 }
             }
         }
-        
     }
 
     public void ReciveAck(string id)

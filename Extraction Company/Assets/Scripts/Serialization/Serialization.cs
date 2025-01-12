@@ -649,6 +649,15 @@ public class Serialization : MonoBehaviour
                         {
                             ID = reader.ReadString();
                             string playerName = reader.ReadString();
+
+                            for(int i = 0; i < s_udp.userSocketsList.Count; i++)
+                            {
+                                if (s_udp.userSocketsList[i].NetID == ID)
+                                {
+                                    playerName = s_udp.userSocketsList[i].name;
+                                }
+                            }
+
                             int numPlayer = -1;
 
                             int temp = reader.ReadInt32(); //We read the player number sent by create player
@@ -1029,9 +1038,6 @@ public class Serialization : MonoBehaviour
 
             try
             {
-                //string id = reader.ReadString();
-                //string clientID = reader.ReadString();
-
                 ID = reader.ReadString();
             }
             catch
@@ -1060,9 +1066,6 @@ public class Serialization : MonoBehaviour
 
             try
             {
-                //string id = reader.ReadString();
-                //string clientID = reader.ReadString();
-
                 ActionType tmpAction = (ActionType)reader.ReadInt32();
                 string tmpID = reader.ReadString();
                 name = reader.ReadString();
