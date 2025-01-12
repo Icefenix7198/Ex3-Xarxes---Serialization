@@ -222,7 +222,6 @@ public class ServerUDP : MonoBehaviour
 
             if (action == ActionType.DOORS || action == ActionType.REQUEST_ITEMS || action == ActionType.DESTROY_ITEM || action == ActionType.EXTRACTION_TO_SERVER || action == ActionType.REQUEST_MONSTERS) //This is for messages that only need info from the server as an awnser, and not send it to other people
             {
-                //Debug.Log("TEMPORAL! Entro en el if de serverUDP");
                 serialization.Deserialize(ogData2);
             }
             else

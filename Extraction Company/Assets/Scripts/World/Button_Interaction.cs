@@ -124,71 +124,73 @@ public class Button_Interaction : MonoBehaviour
         {
             string door = "";
 
-            if (this.CompareTag("GroupA"))
+            if (other.GetComponent<PlayerMovement>().isActiveAndEnabled)
             {
-                if (doorManager.buttonA == true)
+                if (this.CompareTag("GroupA"))
                 {
-                    rend.material.SetColor("_Color", Color.red);
-                    rend.material.SetColor("_EmissionColor", Color.red);
-                    doorManager.buttonA = false;
-                }
-                else if (doorManager.buttonA == false)
-                {
-                    rend.material.SetColor("_Color", Color.green);
-                    rend.material.SetColor("_EmissionColor", Color.green);
-                    doorManager.buttonA = true;
-                    doorManager.buttonB = false;
-                    doorManager.buttonC = false;
+                    if (doorManager.buttonA == true)
+                    {
+                        rend.material.SetColor("_Color", Color.red);
+                        rend.material.SetColor("_EmissionColor", Color.red);
+                        doorManager.buttonA = false;
+                    }
+                    else if (doorManager.buttonA == false)
+                    {
+                        rend.material.SetColor("_Color", Color.green);
+                        rend.material.SetColor("_EmissionColor", Color.green);
+                        doorManager.buttonA = true;
+                        doorManager.buttonB = false;
+                        doorManager.buttonC = false;
+                    }
+
+                    door = "A";
                 }
 
-                door = "A";
+                if (this.CompareTag("GroupB"))
+                {
+                    if (doorManager.buttonB == true)
+                    {
+                        rend.material.SetColor("_Color", Color.red);
+                        rend.material.SetColor("_EmissionColor", Color.red);
+                        doorManager.buttonB = false;
+
+                    }
+                    else if (doorManager.buttonB == false)
+                    {
+                        rend.material.SetColor("_Color", Color.green);
+                        rend.material.SetColor("_EmissionColor", Color.green);
+                        doorManager.buttonB = true;
+                        doorManager.buttonA = false;
+                        doorManager.buttonC = false;
+                    }
+
+                    door = "B";
+                }
+
+                if (this.CompareTag("GroupC"))
+                {
+                    if (doorManager.buttonC == true)
+                    {
+                        rend.material.SetColor("_Color", Color.red);
+                        rend.material.SetColor("_EmissionColor", Color.red);
+                        doorManager.buttonC = false;
+
+                    }
+                    else if (doorManager.buttonC == false)
+                    {
+                        rend.material.SetColor("_Color", Color.green);
+                        rend.material.SetColor("_EmissionColor", Color.green);
+                        doorManager.buttonC = true;
+                        doorManager.buttonA = false;
+                        doorManager.buttonB = false;
+                    }
+
+                    door = "C";
+                }
+
+                serialization.SendDoors(door, playerManager.player.ID);
+                doorManager.ExecuteDoors();
             }
-
-            if (this.CompareTag("GroupB"))
-            {
-                if (doorManager.buttonB == true)
-                {
-                    rend.material.SetColor("_Color", Color.red);
-                    rend.material.SetColor("_EmissionColor", Color.red);
-                    doorManager.buttonB = false;
-
-                }
-                else if (doorManager.buttonB == false)
-                {
-                    rend.material.SetColor("_Color", Color.green);
-                    rend.material.SetColor("_EmissionColor", Color.green);
-                    doorManager.buttonB = true;
-                    doorManager.buttonA = false;
-                    doorManager.buttonC = false;
-                }
-
-                door = "B";
-            }
-
-            if (this.CompareTag("GroupC"))
-            {
-                if (doorManager.buttonC == true)
-                {
-                    rend.material.SetColor("_Color", Color.red);
-                    rend.material.SetColor("_EmissionColor", Color.red);
-                    doorManager.buttonC = false;
-
-                }
-                else if (doorManager.buttonC == false)
-                {
-                    rend.material.SetColor("_Color", Color.green);
-                    rend.material.SetColor("_EmissionColor", Color.green);
-                    doorManager.buttonC = true;
-                    doorManager.buttonA = false;
-                    doorManager.buttonB = false;
-                }
-
-                door = "C";
-            }
-
-            serialization.SendDoors(door, playerManager.player.ID);
         }
-
-        doorManager.ExecuteDoors();
     }
 }
