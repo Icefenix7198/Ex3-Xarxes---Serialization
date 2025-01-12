@@ -276,7 +276,7 @@ public class ServerUDP : MonoBehaviour
                         scoketsUser.socket.SendTo(ogData1, ogData1.Length, SocketFlags.None, scoketsUser.Remote);
                     }
                 }
-                else if (action != ActionType.NONE)
+                else
                 {
                     if (scoketsUser.NetID != ID) //This is to send everyone excluding the original sender (example the movement action)
                     {
