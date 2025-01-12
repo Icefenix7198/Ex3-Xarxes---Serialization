@@ -39,7 +39,6 @@ public class Button_Interaction : MonoBehaviour
                 rend.material.SetColor("_Color", Color.red);
                 rend.material.SetColor("_EmissionColor", Color.red);
             }
-
             else
             {
                 rend.material.SetColor("_Color", Color.green);
@@ -54,7 +53,6 @@ public class Button_Interaction : MonoBehaviour
                 rend.material.SetColor("_Color", Color.red);
                 rend.material.SetColor("_EmissionColor", Color.red);
             }
-
             else
             {
                 rend.material.SetColor("_Color", Color.green);
@@ -69,7 +67,6 @@ public class Button_Interaction : MonoBehaviour
                 rend.material.SetColor("_Color", Color.red);
                 rend.material.SetColor("_EmissionColor", Color.red);
             }
-
             else
             {
                 rend.material.SetColor("_Color", Color.green);
@@ -122,12 +119,13 @@ public class Button_Interaction : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.E))
         {
-            string door = "";
+            string door = "Close";
 
             if (other.GetComponent<PlayerMovement>().isActiveAndEnabled)
             {
                 if (this.CompareTag("GroupA"))
                 {
+                    
                     if (doorManager.buttonA == true)
                     {
                         rend.material.SetColor("_Color", Color.red);
@@ -141,9 +139,8 @@ public class Button_Interaction : MonoBehaviour
                         doorManager.buttonA = true;
                         doorManager.buttonB = false;
                         doorManager.buttonC = false;
+                        door = "A";
                     }
-
-                    door = "A";
                 }
 
                 if (this.CompareTag("GroupB"))
@@ -153,7 +150,6 @@ public class Button_Interaction : MonoBehaviour
                         rend.material.SetColor("_Color", Color.red);
                         rend.material.SetColor("_EmissionColor", Color.red);
                         doorManager.buttonB = false;
-
                     }
                     else if (doorManager.buttonB == false)
                     {
@@ -162,9 +158,8 @@ public class Button_Interaction : MonoBehaviour
                         doorManager.buttonB = true;
                         doorManager.buttonA = false;
                         doorManager.buttonC = false;
+                        door = "B";
                     }
-
-                    door = "B";
                 }
 
                 if (this.CompareTag("GroupC"))
@@ -174,7 +169,6 @@ public class Button_Interaction : MonoBehaviour
                         rend.material.SetColor("_Color", Color.red);
                         rend.material.SetColor("_EmissionColor", Color.red);
                         doorManager.buttonC = false;
-
                     }
                     else if (doorManager.buttonC == false)
                     {
@@ -183,9 +177,8 @@ public class Button_Interaction : MonoBehaviour
                         doorManager.buttonC = true;
                         doorManager.buttonA = false;
                         doorManager.buttonB = false;
+                        door = "C";
                     }
-
-                    door = "C";
                 }
 
                 serialization.SendDoors(door, playerManager.player.ID);

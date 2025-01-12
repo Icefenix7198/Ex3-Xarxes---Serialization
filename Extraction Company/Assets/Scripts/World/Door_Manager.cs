@@ -24,19 +24,19 @@ public class Door_Manager : MonoBehaviour
     {
         if (door == "A")
         {
-            buttonA = !buttonA;
+            buttonA = true;
             buttonB = false;
             buttonC = false;
         }
         else if (door == "B")
         {
-            buttonB = !buttonB;
+            buttonB = true;
             buttonA = false;
             buttonC = false;
         }
         else if (door == "C")
         {
-            buttonC = !buttonC;
+            buttonC = true;
             buttonA = false;
             buttonB = false;
         }
