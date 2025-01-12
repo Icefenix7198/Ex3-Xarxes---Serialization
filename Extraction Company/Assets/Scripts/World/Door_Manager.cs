@@ -52,7 +52,7 @@ public class Door_Manager : MonoBehaviour
     {
         for (int i = 0; i < Doors.Count; i++)
         {
-            if (Doors[i].tag == "GroupA")
+            if (Doors[i].name == "DoorA")
             {
                 if (Doors[i].transform.GetChild(0).GetComponent<Animator>() != null)
                 {
@@ -60,7 +60,7 @@ public class Door_Manager : MonoBehaviour
                 }
 
             }
-            else if (Doors[i].tag == ("GroupB"))
+            else if (Doors[i].name == ("DoorB"))
             {
                 if (Doors[i].transform.GetChild(0).GetComponent<Animator>() != null)
                 {
@@ -68,7 +68,7 @@ public class Door_Manager : MonoBehaviour
                 }
 
             }
-            else if (Doors[i].tag == ("GroupC"))
+            else if (Doors[i].name == ("DoorC"))
             {
                 if (Doors[i].transform.GetChild(0).GetComponent<Animator>() != null)
                 {
